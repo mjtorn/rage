@@ -1,0 +1,19 @@
+* volume status display when changed (slider/image/percentage)
+* elm gesture drag to left/right for forward/rewind
+* elm gesture drag up/down for prev/next
+* emotion engine selection options
+* timeline thumbnails on position slider
+* playlist display + selection from playlist (on left?)
+* right click control panel (ala terminology)
+* about display/popup (from panel?)
+* mouse wheel for forward/rewind and/or prev/next and/or volume up/down
+* audio channel list/selection
+* spu channel list/selection
+* video channel list/selection
+* handle non-seekable content (eg streams)
+* prefer gl engine (needs wl/x11 independent preference selection)
+* cmdline options
+* add subtitle file cmdline
+* loop all option
+* show busy anim until opened cb or failure
+* quality option (smooth)
