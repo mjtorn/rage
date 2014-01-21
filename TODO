@@ -17,3 +17,4 @@
 * loop all option
 * show busy anim until opened cb or failure
 * quality option (smooth)
+* make Home/End/Insert/Delete/Tab/Pause do something vaguely sensible
