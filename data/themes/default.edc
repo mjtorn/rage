@@ -3,6 +3,8 @@ collections {
 //////////////////////////////////////////////////////////////////////////////
    //// the background and general container for the terminal
    group { name: "rage/core";
+      images.image: "bg_bevel.png" COMP;
+      images.image: "bevel_dark_out.png" COMP;
       images.image: "pm_fill.png" COMP;
       images.image: "pm_overlay.png" COMP;
       images.image: "pm_shadow.png" COMP;
@@ -69,6 +71,22 @@ collections {
             description { state: "default" 0.0;
                fixed: 1 1;
                image.normal: "pm_overlay.png";
+               fill.smooth: 0;
+            }
+         }
+         part { name: "bevel";
+            description { state: "default" 0.0;
+               image.normal: "bevel_dark_out.png";
+               image.border: 1 1 1 1;
+               image.middle: 0;
+               fill.smooth: 0;
+            }
+         }
+         part { name: "bevel2";
+            description { state: "default" 0.0;
+               image.normal: "bg_bevel.png";
+               image.border: 1 1 1 1;
+               image.middle: 0;
                fill.smooth: 0;
             }
          }
