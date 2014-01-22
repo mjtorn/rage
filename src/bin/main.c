@@ -980,7 +980,12 @@ elm_main(int argc, char **argv)
    int i;
    Inf *inf;
    
-   if (argc <= 1) goto end;
+   if (argc <= 1)
+     {
+        printf("Usage: rage {file-name}\n");
+        goto end;
+     }
+
    for (i = 1; i < argc; i++)
      {
         list = eina_list_append(list, eina_stringshare_add(argv[i]));
