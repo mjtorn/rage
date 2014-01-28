@@ -34,15 +34,12 @@ _cb_vid_frame(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUSED)
 {
    Video *sd = evas_object_smart_data_get(data);
    Evas_Coord ox, oy, ow, oh;
-//   double len, pos;
 
    if (!sd) return;
    evas_object_geometry_get(data, &ox, &oy, &ow, &oh);
    evas_object_show(sd->o_vid);
    evas_object_show(sd->clip);
    _ob_resize(data, ox, oy, ow, oh);
-//   len = emotion_object_play_length_get(sd->o_vid);
-//   pos = emotion_object_position_get(sd->o_vid);
    evas_object_smart_callback_call(data, "frame_decode", NULL);
 }
 
@@ -98,9 +95,6 @@ _cb_vid_progress(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUS
    Video *sd = evas_object_smart_data_get(data);
    if (!sd) return;
    evas_object_smart_callback_call(data, "frame_decode", NULL);
-//   DBG("progress: '%s' '%3.3f",
-//       emotion_object_progress_info_get(sd->o_vid),
-//       emotion_object_progress_status_get(sd->o_vid));
 }
 
 static void
@@ -109,9 +103,6 @@ _cb_vid_ref(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUSED)
    Video *sd = evas_object_smart_data_get(data);
    if (!sd) return;
    evas_object_smart_callback_call(data, "frame_decode", NULL);
-//   DBG("ref: '%s' num '%i'",
-//       emotion_object_ref_file_get(sd->o_vid),
-//       emotion_object_ref_num_get(sd->o_vid));
 }
 
 static void
