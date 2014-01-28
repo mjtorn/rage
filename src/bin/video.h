@@ -43,5 +43,7 @@ const char *video_spu_channel_name_get(Evas_Object *obj, int chan);
 int video_spu_button_count(Evas_Object *obj);
 int video_spu_button_get(Evas_Object *obj);
 void video_event_send(Evas_Object *obj, Emotion_Event ev);
+void video_lowquality_set(Evas_Object *obj, Eina_Bool lowq);
+Eina_Bool video_lowquality_get(Evas_Object *obj);
 
 #endif

@@ -164,6 +164,10 @@ key_handle(Evas_Object *win, Evas_Event_Key_Down *ev)
         video_ratio_size_get(inf->vid, &w, &h);
         if ((w > 1) && (h > 1)) evas_object_resize(win, w, h);
      }
+   else if (!strcmp(ev->keyname, "y"))
+     {
+        video_lowquality_set(inf->vid, !video_lowquality_get(inf->vid));
+     }
    else if (!strcmp(ev->keyname, "z"))
      {
         if (inf->zoom_mode == 0) inf->zoom_mode = 1;

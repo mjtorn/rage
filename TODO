@@ -16,5 +16,4 @@
 * add subtitle file cmdline
 * loop all option
 * show busy anim until opened cb or failure
-* quality option (smooth)
 * add button/control top-left next to audio to do fullscreen/normal toggle

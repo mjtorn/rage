@@ -20,6 +20,7 @@ struct _Video
       Eina_Bool down : 1;
    } down;
    Eina_Bool nosmooth : 1;
+   Eina_Bool lowqual : 1;
    Eina_Bool loop : 1;
    Eina_Bool fill : 1;
 };
@@ -289,7 +290,8 @@ _unsmooth_timeout(void *data)
    evas_object_geometry_get(data, &ox, &oy, &ow, &oh);
    sd->smooth_timer = NULL;
    sd->nosmooth = EINA_FALSE;
-   emotion_object_smooth_scale_set(sd->o_vid, !sd->nosmooth);
+   emotion_object_smooth_scale_set(sd->o_vid,
+                                   (!sd->nosmooth) & (!sd->lowqual));
    return EINA_FALSE;
 }
 
@@ -308,7 +310,8 @@ _smooth_handler(Evas_Object *obj)
           {
              sd->nosmooth = EINA_TRUE;
              sd->resizes = 0;
-             emotion_object_smooth_scale_set(sd->o_vid, !sd->nosmooth);
+             emotion_object_smooth_scale_set(sd->o_vid,
+                                             (!sd->nosmooth) & (!sd->lowqual));
              if (sd->smooth_timer)
                sd->smooth_timer = ecore_timer_del(sd->smooth_timer);
              sd->smooth_timer = ecore_timer_add(interval * 10,
@@ -801,6 +804,24 @@ video_event_send(Evas_Object *obj, Emotion_Event ev)
    Video *sd = evas_object_smart_data_get(obj);
    if (!sd) return;
    emotion_object_event_simple_send(sd->o_vid, ev);
+}
+
+void
+video_lowquality_set(Evas_Object *obj, Eina_Bool lowq)
+{
+   Video *sd = evas_object_smart_data_get(obj);
+   if (!sd) return;
+   sd->lowqual = lowq;
+   emotion_object_smooth_scale_set(sd->o_vid, 
+                                   (!sd->nosmooth) & (!sd->lowqual));
+}
+
+Eina_Bool
+video_lowquality_get(Evas_Object *obj)
+{
+   Video *sd = evas_object_smart_data_get(obj);
+   if (!sd) return EINA_FALSE;
+   return sd->lowqual;
 }
 
 
