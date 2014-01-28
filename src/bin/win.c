@@ -6,6 +6,7 @@
 #include "dnd.h"
 #include "key.h"
 #include "controls.h"
+#include "gesture.h"
 
 static void
 _cb_fullscreen(void *data EINA_UNUSED, Evas_Object *obj, void *event EINA_UNUSED)
@@ -29,6 +30,7 @@ _cb_win_del(void *data EINA_UNUSED, Evas *e EINA_UNUSED, Evas_Object *obj, void 
    
    if (inf->next_job) ecore_job_del(inf->next_job);
    if (inf->show_timeout) ecore_timer_del(inf->show_timeout);
+   if (inf->drag_anim) ecore_animator_del(inf->drag_anim);
    EINA_LIST_FREE(inf->file_list, f) eina_stringshare_del(f);
    evas_object_data_del(obj, "inf");
    free(inf);
@@ -265,6 +267,7 @@ win_add(void)
    evas_object_show(o);
    inf->event = o;
    dnd_init(win, o);
+   gesture_init(win, o);
 
    evas_object_event_callback_add(win, EVAS_CALLBACK_KEY_DOWN,
                                   _cb_key_down, win);

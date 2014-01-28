@@ -5,16 +5,22 @@ typedef struct _Inf Inf;
 
 struct _Inf
 {
-   Evas_Object *vid, *lay, *event;
+   Evas_Object *vid, *lay, *event, *glayer;
    Eina_List *file_list, *file_cur;
    Ecore_Job *next_job;
    Ecore_Timer *show_timeout;
+   Ecore_Animator *drag_anim;
    double last_action;
    double jump;
+   double start_pos;
+   double drag_time, drag_start;
    int zoom_mode;
+   int drag_dist, drag_momentum;
    Eina_Bool sized : 1;
    Eina_Bool last_action_rwind : 1;
    Eina_Bool playing : 1;
+   Eina_Bool was_playing : 1;
+   Eina_Bool dragging : 1;
 };
 
 // ui high level controls

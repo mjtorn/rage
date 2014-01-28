@@ -12,6 +12,7 @@ rage_LDADD = @RAGE_LIBS@
 rage_SOURCES = \
 controls.c controls.h \
 dnd.c dnd.h \
+gesture.c gesture.h \
 key.c key.h \
 main.c main.h \
 video.c video.h \

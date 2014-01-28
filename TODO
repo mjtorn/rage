@@ -1,6 +1,4 @@
 * volume status display when changed (slider/image/percentage)
-* elm gesture drag to left/right for forward/rewind
-* elm gesture drag up/down for prev/next
 * emotion engine selection options
 * timeline thumbnails on position slider
 * playlist display + selection from playlist (on left?)
