@@ -10,5 +10,10 @@ rage_CPPFLAGS = -I. \
 rage_LDADD = @RAGE_LIBS@
 
 rage_SOURCES = \
+controls.c controls.h \
+dnd.c dnd.h \
+key.c key.h \
 main.c main.h \
-video.c video.h
+video.c video.h \
+winvid.c winvid.h \
+win.c win.h
