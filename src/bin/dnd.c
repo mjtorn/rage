@@ -23,6 +23,45 @@ _cb_drag_pos(void *data EINA_UNUSED, Evas_Object *o EINA_UNUSED, Evas_Coord x, E
    printf("dnd at %i %i act:%i\n", x, y, action);
 }
 
+static int
+_xtov(char x)
+{
+   if ((x >= '0') && (x <= '9')) return x - '0';
+   if ((x >= 'a') && (x <= 'f')) return 10 + (x - 'a');
+   if ((x >= 'A') && (x <= 'F')) return 10 + (x - 'A');
+   return 0;
+}
+
+static char *
+_escape_parse(const char *str)
+{
+   char *dest = malloc(strlen(str) + 1);
+   char *d;
+   const char *s;
+
+   printf("conv '%s'\n", str);
+   for (d = dest, s = str; *s; d++)
+     {
+        if (s[0] == '%')
+          {
+             if (s[1] && s[2])
+               {
+                  *d = (_xtov(s[1]) << 4) | (_xtov(s[2]));
+                  s += 3;
+               }
+             else s++;
+          }
+        else
+          {
+             *d = s[0];
+             s++;
+          }
+     }
+   *d = 0;
+   printf("'%s'\n", dest);
+   return dest;
+}
+
 Eina_Bool
 _cb_drop(void *data, Evas_Object *o EINA_UNUSED, Elm_Selection_Data *ev)
 {
@@ -32,7 +71,7 @@ _cb_drop(void *data, Evas_Object *o EINA_UNUSED, Elm_Selection_Data *ev)
    if (!ev->data) return EINA_TRUE;
    if (strchr(ev->data, '\n'))
      {
-        char *p, *p2, *p3, *tb;
+        char *p, *p2, *p3, *tb, *tt;
         
         tb = malloc(strlen(ev->data) + 1);
         if (tb)
@@ -54,8 +93,13 @@ _cb_drop(void *data, Evas_Object *o EINA_UNUSED, Elm_Selection_Data *ev)
                        while ((*p) && (isspace(*p))) p++;
                        if (strlen(tb) > 0)
                          {
-                            win_video_insert(win, tb);
-                            inserted = EINA_TRUE;
+                            tt = _escape_parse(tb);
+                            if (tt)
+                              {
+                                 win_video_insert(win, tt);
+                                 inserted = EINA_TRUE;
+                                 free(tt);
+                              }
                          }
                     }
                   else
@@ -63,8 +107,13 @@ _cb_drop(void *data, Evas_Object *o EINA_UNUSED, Elm_Selection_Data *ev)
                        strcpy(tb, p);
                        if (strlen(tb) > 0)
                          {
-                            win_video_insert(win, tb);
-                            inserted = EINA_TRUE;
+                            tt = _escape_parse(tb);
+                            if (tt)
+                              {
+                                 win_video_insert(win, tt);
+                                 inserted = EINA_TRUE;
+                                 free(tt);
+                              }
                          }
                        break;
                     }
@@ -74,8 +123,13 @@ _cb_drop(void *data, Evas_Object *o EINA_UNUSED, Elm_Selection_Data *ev)
      }
    else
      {
-        win_video_insert(win, ev->data);
-        inserted = EINA_TRUE;
+        char *tt = _escape_parse(ev->data);
+        if (tt)
+          {
+             win_video_insert(win, tt);
+             inserted = EINA_TRUE;
+             free(tt);
+          }
      }
    if (inserted)
      {
