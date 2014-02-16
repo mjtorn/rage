@@ -324,3 +324,16 @@ win_list_size_update(Evas_Object *win)
         evas_object_size_hint_min_set(sizer, w, h);
      }
 }
+
+void
+win_list_content_update(Evas_Object *win)
+{
+   Eina_List *list;
+
+   if (!tb) return;
+   while ((list = elm_box_children_get(bx)))
+     {
+        evas_object_del(list->data);
+     }
+   _fill_box(win);
+}

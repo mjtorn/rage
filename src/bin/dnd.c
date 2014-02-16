@@ -2,6 +2,7 @@
 #include "main.h"
 #include "win.h"
 #include "winvid.h"
+#include "winlist.h"
 #include "dnd.h"
 
 void
@@ -76,7 +77,11 @@ _cb_drop(void *data, Evas_Object *o EINA_UNUSED, Elm_Selection_Data *ev)
         win_video_insert(win, ev->data);
         inserted = EINA_TRUE;
      }
-   if (inserted) win_video_next(win);
+   if (inserted)
+     {
+        win_video_next(win);
+        win_list_content_update(win);
+     }
    return EINA_TRUE;
 }
 
