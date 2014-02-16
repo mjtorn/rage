@@ -6,7 +6,7 @@
 #include "video.h"
 
 static Evas_Object *tb = NULL;
-static Evas_Object *mb, *sc, *rc, *bx;
+static Evas_Object *sc, *rc, *bx;
 static Ecore_Timer *bring_timer = NULL;
 
 static void
@@ -228,22 +228,13 @@ win_list_show(Evas_Object *win)
    evas_object_color_set(rc, 0, 0, 0, 0);
    elm_table_pack(tb, rc, 0, 0, 1, 1);
 
-   mb = elm_mapbuf_add(win);
-   elm_object_focus_allow_set(mb, EINA_FALSE);
-   evas_object_size_hint_weight_set(mb, 1.0, 1.0);
-   evas_object_size_hint_align_set(mb, -1.0, -1.0);
-   elm_mapbuf_alpha_set(mb, EINA_TRUE);
-//   elm_mapbuf_enabled_set(mb, EINA_TRUE);
-   elm_table_pack(tb, mb, 0, 0, 1, 1);
-   evas_object_show(mb);
-   
    sc = elm_scroller_add(win);
    elm_object_style_set(sc, "noclip");
    elm_object_focus_allow_set(sc, EINA_FALSE);
    evas_object_size_hint_weight_set(sc, 1.0, 1.0);
    evas_object_size_hint_align_set(sc, -1.0, -1.0);
    elm_scroller_content_min_limit(sc, EINA_TRUE, EINA_FALSE);
-   elm_object_content_set(mb, sc);
+   elm_table_pack(tb, sc, 0, 0, 1, 1);
    evas_object_show(sc);
    
    bx = elm_box_add(win);
