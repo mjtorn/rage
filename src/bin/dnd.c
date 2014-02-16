@@ -39,7 +39,6 @@ _escape_parse(const char *str)
    char *d;
    const char *s;
 
-   printf("conv '%s'\n", str);
    for (d = dest, s = str; *s; d++)
      {
         if (s[0] == '%')
@@ -58,7 +57,6 @@ _escape_parse(const char *str)
           }
      }
    *d = 0;
-   printf("'%s'\n", dest);
    return dest;
 }
 
