@@ -30,4 +30,6 @@ pos_indicator_big.png \
 bevel_dark_out.png \
 bg_bevel.png \
 win_glow.png \
-win_shadow.png
+win_shadow.png \
+bg_glint.png \
+bg_shine.png

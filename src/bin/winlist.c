@@ -238,6 +238,7 @@ win_list_show(Evas_Object *win)
    evas_object_show(mb);
    
    sc = elm_scroller_add(win);
+   elm_object_style_set(sc, "noclip");
    elm_object_focus_allow_set(sc, EINA_FALSE);
    evas_object_size_hint_weight_set(sc, 1.0, 1.0);
    evas_object_size_hint_align_set(sc, -1.0, -1.0);
