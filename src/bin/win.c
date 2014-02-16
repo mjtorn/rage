@@ -2,6 +2,7 @@
 #include "main.h"
 #include "win.h"
 #include "winvid.h"
+#include "winlist.h"
 #include "video.h"
 #include "dnd.h"
 #include "key.h"
@@ -143,6 +144,13 @@ _restart_vid(Evas_Object *win, Evas_Object *lay, Evas_Object *vid, const char *f
 }
 
 void
+win_video_restart(Evas_Object *win)
+{
+   Inf *inf = evas_object_data_get(win, "inf");
+   _restart_vid(win, inf->lay, inf->vid, inf->file_cur->data);
+}
+
+void
 win_video_next(Evas_Object *win)
 {
    Inf *inf = evas_object_data_get(win, "inf");
@@ -158,6 +166,7 @@ win_video_next(Evas_Object *win)
      }
    inf->file_cur = l;
    _restart_vid(win, inf->lay, inf->vid, l->data);
+   win_list_sel_update(win);
 }
 
 void
@@ -172,6 +181,7 @@ win_video_prev(Evas_Object *win)
    if (!l) return;
    inf->file_cur = l;
    _restart_vid(win, inf->lay, inf->vid, l->data);
+   win_list_sel_update(win);
 }
 
 void
@@ -184,6 +194,7 @@ win_video_first(Evas_Object *win)
    l = inf->file_list;
    inf->file_cur = l;
    _restart_vid(win, inf->lay, inf->vid, l->data);
+   win_list_sel_update(win);
 }
 
 void
@@ -197,6 +208,7 @@ win_video_last(Evas_Object *win)
    if (!l) return;
    inf->file_cur = l;
    _restart_vid(win, inf->lay, inf->vid, l->data);
+   win_list_sel_update(win);
 }
 
 Eina_Bool

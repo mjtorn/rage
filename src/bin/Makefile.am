@@ -17,4 +17,5 @@ key.c key.h \
 main.c main.h \
 video.c video.h \
 winvid.c winvid.h \
-win.c win.h
+win.c win.h \
+winlist.c winlist.h

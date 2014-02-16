@@ -28,4 +28,6 @@ icon_spanner2.png \
 icon_volume2.png \
 pos_indicator_big.png \
 bevel_dark_out.png \
-bg_bevel.png
+bg_bevel.png \
+win_glow.png \
+win_shadow.png

@@ -3,6 +3,7 @@
 #include "win.h"
 #include "video.h"
 #include "key.h"
+#include "winlist.h"
 
 void
 key_handle(Evas_Object *win, Evas_Event_Key_Down *ev)
@@ -163,6 +164,10 @@ key_handle(Evas_Object *win, Evas_Event_Key_Down *ev)
         
         video_ratio_size_get(inf->vid, &w, &h);
         if ((w > 1) && (h > 1)) evas_object_resize(win, w, h);
+     }
+   else if (!strcmp(ev->keyname, "backslash"))
+     {
+        win_list_toggle(win);
      }
    else if (!strcmp(ev->keyname, "y"))
      {

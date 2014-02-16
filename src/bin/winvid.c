@@ -2,6 +2,7 @@
 #include "main.h"
 #include "win.h"
 #include "video.h"
+#include "winlist.h"
 #include "winvid.h"
 
 static void
@@ -158,4 +159,14 @@ win_video_insert(Evas_Object *win, const char *file)
    inf->file_list = eina_list_append_relative_list
      (inf->file_list, eina_stringshare_add(file), inf->file_cur);
    evas_object_data_set(win, "file_list", inf->file_list);
+}
+
+void
+win_video_goto(Evas_Object *win, Eina_List *l)
+{
+   Inf *inf = evas_object_data_get(win, "inf");
+
+   inf->file_cur = l;
+   win_video_restart(win);
+   win_list_sel_update(win);
 }

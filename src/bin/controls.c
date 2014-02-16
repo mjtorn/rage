@@ -3,6 +3,7 @@
 #include "win.h"
 #include "video.h"
 #include "controls.h"
+#include "winlist.h"
 
 static void
 _cb_drag(void *data, Evas_Object *obj EINA_UNUSED, const char *emission EINA_UNUSED, const char *source EINA_UNUSED)
@@ -43,6 +44,18 @@ static void
 _cb_options(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, const char *emission EINA_UNUSED, const char *source EINA_UNUSED)
 {
 //   win_do_options(data);
+}
+
+static void
+_cb_list_show(void *data, Evas_Object *obj EINA_UNUSED, const char *emission EINA_UNUSED, const char *source EINA_UNUSED)
+{
+   win_list_show(data);
+}
+
+static void
+_cb_list_hide(void *data, Evas_Object *obj EINA_UNUSED, const char *emission EINA_UNUSED, const char *source EINA_UNUSED)
+{
+   win_list_hide(data);
 }
 
 static void
@@ -107,6 +120,10 @@ controls_init(Evas_Object *win, Evas_Object *lay)
                                   _cb_pos_pause, win);
    elm_layout_signal_callback_add(lay, "pos,action,options", "rage",
                                   _cb_options, win);
+   elm_layout_signal_callback_add(lay, "list,show", "rage",
+                                  _cb_list_show, win);
+   elm_layout_signal_callback_add(lay, "list,hide", "rage",
+                                  _cb_list_hide, win);
    sz = 0;
    elm_coords_finger_size_adjust(1, &sz, 1, &sz);
 

@@ -2,6 +2,7 @@
 #include "main.h"
 #include "win.h"
 #include "winvid.h"
+#include "winlist.h"
 
 static Eina_Bool
 _cb_show_timeout(void *data)
@@ -12,6 +13,12 @@ _cb_show_timeout(void *data)
    inf->show_timeout = NULL;
    evas_object_show(win);
    return EINA_FALSE;
+}
+
+static void
+_cb_resize(void *data EINA_UNUSED, Evas *e EINA_UNUSED, Evas_Object *obj, void *event_info EINA_UNUSED)
+{
+   win_list_size_update(obj);
 }
 
 EAPI_MAIN int
@@ -44,6 +51,7 @@ elm_main(int argc, char **argv)
    elm_theme_overlay_add(NULL, buf);
 
    win = win_add();
+   evas_object_event_callback_add(win, EVAS_CALLBACK_RESIZE, _cb_resize, NULL);
    evas_object_resize(win, 320, 200);
    
    win_video_init(win);

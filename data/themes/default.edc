@@ -240,6 +240,35 @@ collections {
             }
          }
          
+         part { name: "rage.list"; type: SWALLOW;
+            description { state: "default" 0.0;
+               align: 0.0 0.5;
+               rel1.relative: 1.0 0.0;
+               fixed: 1 1;
+            }
+            description { state: "visible" 0.0;
+               inherit: "default" 0.0;
+               align: 1.0 0.5;
+               visible: 1;
+            }
+         }
+         program {
+            signal: "list,state,visible"; source: "rage";
+            action: STATE_SET "visible" 0.0;
+            transition: DECELERATE 0.3;
+            target: "rage.list";
+         }
+         program {
+            signal: "list,state,hidden"; source: "rage";
+            action: STATE_SET "default" 0.0;
+            transition: ACCELERATE 0.5;
+            target: "rage.list";
+            after: "list_hidden";
+         }
+         program { name: "list_hidden";
+            action: SIGNAL_EMIT "list,state,hidden,finished" "rage";
+         }
+         
          part { name: "poscover"; mouse_events: 0;
             scale: 1;
             description { state: "default" 0.0;
@@ -1060,6 +1089,27 @@ collections {
             target: "posclip";
          }
          
+         part { name: "listevent"; type: RECT; repeat_events: 1;
+            description { state: "default" 0.0;
+               color: 0 0 0 0;
+               rel1.relative: 0.8 0.0;
+            }
+         }
+         part { name: "listevent2"; type: RECT; repeat_events: 1;
+            description { state: "default" 0.0;
+               color: 0 0 0 0;
+               rel2.relative: 0.2 1.0;
+            }
+         }
+         program {
+            signal: "mouse,in"; source: "listevent";
+            action: SIGNAL_EMIT "list,show" "rage";
+         }
+         program {
+            signal: "mouse,in"; source: "listevent2";
+            action: SIGNAL_EMIT "list,hide" "rage";
+         }
+         
          program {
             signal: "action,newvid"; source: "rage";
             action: SIGNAL_EMIT "mouse,move" "event";
@@ -1087,6 +1137,113 @@ collections {
          program {
             signal: "action,pause"; source: "rage";
             action: SIGNAL_EMIT "mouse,move" "event";
+         }
+      }
+   }
+   
+   group { name: "rage/list/item";
+      images.image: "win_shadow.png" COMP;
+      images.image: "win_glow.png" COMP;
+      
+      parts {
+         part { name: "shadow"; mouse_events: 0;
+            description { state: "default" 0.0;
+               fixed: 1 1;
+               rel1.to: "clip";
+               rel2.to: "clip";
+               image.normal: "win_shadow.png";
+               image.border: 14 14 14 14;
+               image.middle: 0;
+               rel1.offset: -7  -3;
+               rel2.offset: 6 11;
+               fill.smooth: 0;
+            }
+         }
+         part { name: "base"; type: RECT; mouse_events: 0;
+            description { state: "default" 0.0;
+               color: 32 32 32 255;
+               rel1.to: "clip";
+               rel2.to: "clip";
+            }
+         }
+         part { name: "glow"; mouse_events: 0;
+            description { state: "default" 0.0;
+               image.normal: "win_glow.png";
+               image.border: 9 9 9 9;
+               image.middle: 0;
+               rel1.to: "clip";
+               rel1.offset: -5  -5;
+               rel2.to: "clip";
+               rel2.offset: 4 4;
+               fill.smooth: 0;
+               color: 255 255 255 0;
+               visible: 0;
+            }
+            description { state: "selected" 0.0;
+               inherit: "default" 0.0;
+               color: 255 255 255 255;
+               visible: 1;
+            }
+         }
+         program {
+            signal: "rage,state,selected"; source: "rage";
+            action: STATE_SET "selected" 0.0;
+            transition: SINUSOIDAL 0.1;
+            target: "glow";
+         }
+         program {
+            signal: "rage,state,unselected"; source: "rage";
+            action: STATE_SET "default" 0.0;
+            transition: SINUSOIDAL 0.3;
+            target: "glow";
+         }
+         
+         part { name: "clip"; type: RECT;
+            description { state: "default" 0.0;
+               rel1.offset: 4 4;
+               rel2.offset: -5 -5;
+            }
+         }
+         part { name: "rage.sizer"; type: SWALLOW;
+            description { state: "default" 0.0;
+               min: 16 16;
+               rel1.to: "clip";
+               rel2.to: "clip";
+            }
+         }
+         part { name: "rage.content"; type: SWALLOW;
+            clip_to: "clip";
+            description { state: "default" 0.0;
+               rel1.to: "clip";
+               rel2.to: "clip";
+            }
+         }
+         part { name: "rage.title"; type: TEXT; mouse_events: 0;
+            effect: GLOW;
+            scale: 1;
+            description { state: "default" 0.0;
+               fixed: 1 1;
+               align: 0.0 1.0;
+               rel1.offset: 4 4;
+               rel2.offset: -5 -5;
+               color: 255 255 255 255;
+               color2: 51 153 255 128;
+               color3: 51 153 255 20;
+               text { font: "Sans"; size: 8;
+                  align: 0.0 1.0;
+                  min: 0 1;
+               }
+            }
+         }
+         part { name: "event"; type: RECT;
+            ignore_flags: ON_HOLD;
+            description { state: "default" 0.0;
+               color: 0 0 0 0;
+            }
+         }
+         program {
+            signal: "mouse,clicked,1"; source: "event";
+            action: SIGNAL_EMIT "rage,selected" "rage";
          }
       }
    }
