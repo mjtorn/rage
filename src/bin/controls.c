@@ -43,7 +43,9 @@ _cb_pos_pause(void *data, Evas_Object *obj EINA_UNUSED, const char *emission EIN
 static void
 _cb_options(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, const char *emission EINA_UNUSED, const char *source EINA_UNUSED)
 {
-//   win_do_options(data);
+   Inf *inf = evas_object_data_get(data, "inf");
+   elm_layout_signal_emit(inf->lay, "about,show", "rage");
+   //   win_do_options(data);
 }
 
 static void

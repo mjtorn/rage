@@ -32,4 +32,12 @@ bg_bevel.png \
 win_glow.png \
 win_shadow.png \
 bg_glint.png \
-bg_shine.png
+bg_shine.png \
+tv-bg.png \
+tv-over.png \
+r-0.png \
+r-1.png \
+r-2.png \
+r-3.png \
+r-4.png
+
