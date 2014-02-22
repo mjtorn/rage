@@ -31,16 +31,8 @@ elm_main(int argc, char **argv)
    int i;
    Inf *inf;
    
-   if (argc <= 1)
-     {
-        printf("Usage: rage {file-name}\n");
-        goto end;
-     }
-
    for (i = 1; i < argc; i++)
-     {
-        list = eina_list_append(list, eina_stringshare_add(argv[i]));
-     }
+     list = eina_list_append(list, eina_stringshare_add(argv[i]));
    
    elm_policy_set(ELM_POLICY_QUIT, ELM_POLICY_QUIT_LAST_WINDOW_CLOSED);
    elm_app_compile_bin_dir_set(PACKAGE_BIN_DIR);
@@ -59,7 +51,16 @@ elm_main(int argc, char **argv)
    EINA_LIST_FREE(list, f) eina_stringshare_del(f);
    
    inf = evas_object_data_get(win, "inf");
-   inf->show_timeout = ecore_timer_add(10.0, _cb_show_timeout, win);
+   if (argc <= 1)
+     {
+        elm_layout_signal_emit(inf->lay, "about,show", "rage");
+        elm_layout_signal_emit(inf->lay, "state,novideo", "rage");
+        evas_object_show(win);
+     }
+   else
+     {
+        inf->show_timeout = ecore_timer_add(10.0, _cb_show_timeout, win);
+     }
                         
    elm_run();
 
