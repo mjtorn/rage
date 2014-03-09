@@ -8,7 +8,6 @@
 * spu channel list/selection
 * video channel list/selection
 * handle non-seekable content (eg streams)
-* prefer gl engine (needs wl/x11 independent preference selection)
 * cmdline options
 * add subtitle file cmdline
 * loop all option
