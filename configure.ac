@@ -1,5 +1,3 @@
-dnl Process this file with autoconf to produce a configure script.
-
 # get rid of that stupid cache mechanism
 rm -f config.cache
 
@@ -19,29 +17,11 @@ AM_PROG_CC_C_O
 AC_C___ATTRIBUTE__
 
 efl_version="1.9.0"
-AC_SUBST(efl_version)
-
 requirements="\
    elementary >= ${efl_version} \
-   eina >= ${efl_version} \
-   eet >= ${efl_version} \
-   evas >= ${efl_version} \
-   ecore >= ${efl_version} \
-   ecore-evas >= ${efl_version} \
-   ecore-file >= ${efl_version} \
    edje >= ${efl_version} \
    emotion >= ${efl_version} \
-   ecore-input >= ${efl_version} \
-   ecore-imf >= ${efl_version} \
-   ecore-imf-evas >= ${efl_version} \
-   ecore-ipc >= ${efl_version} \
-   efreet >= ${efl_version} \
-   ethumb_client >= ${efl_version} \
    "
-
-EFL_ENABLE_EO_API_SUPPORT
-EFL_ENABLE_BETA_API_SUPPORT
-
 PKG_CHECK_MODULES([RAGE], [${requirements}])
 
 EFL_WITH_BIN([edje], [edje-cc], [edje_cc])
@@ -58,11 +38,7 @@ data/themes/Makefile
 data/themes/images/Makefile
 pkgbuild/PKGBUILD
 ])
-
 AC_OUTPUT
-
-#####################################################################
-## Info
 
 echo
 echo
