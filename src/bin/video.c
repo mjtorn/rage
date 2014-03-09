@@ -2,6 +2,7 @@
 #include <Emotion.h>
 #include "video.h"
 #include "rage_config.h"
+#include "config.h"
 
 typedef struct _Video Video;
 
@@ -407,15 +408,7 @@ video_add(Evas_Object *parent)
    Evas *e;
    Evas_Object *obj, *o;
    Video *sd;
-   char *modules[] =
-     {
-        NULL,
-        "gstreamer",
-        "xine",
-        "vlc",
-        "gstreamer1"
-     };
-   char *mod = NULL;
+   Config *config;
 
    EINA_SAFETY_ON_NULL_RETURN_VAL(parent, NULL);
    e = evas_object_evas_get(parent);
@@ -429,8 +422,8 @@ video_add(Evas_Object *parent)
    emotion_init();
    o = sd->o_vid = emotion_object_add(evas_object_evas_get(obj));
    emotion_object_keep_aspect_set(o, EMOTION_ASPECT_KEEP_NONE);
-   mod = modules[4];
-   if (!emotion_object_init(o, mod))
+   config = config_get();
+   if (!emotion_object_init(o, config->emotion_engine))
      {
         evas_object_del(sd->o_vid);
         sd->o_vid = NULL;

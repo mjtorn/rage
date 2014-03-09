@@ -3,6 +3,7 @@
 #include "win.h"
 #include "winvid.h"
 #include "winlist.h"
+#include "config.h"
 
 static Eina_Bool
 _cb_show_timeout(void *data)
@@ -30,9 +31,37 @@ elm_main(int argc, char **argv)
    Eina_List *list = NULL;
    int i;
    Inf *inf;
+   Config *config;
    
+   config_init();
+   config = config_get();
    for (i = 1; i < argc; i++)
-     list = eina_list_append(list, eina_stringshare_add(argv[i]));
+     {
+        if ((!strcmp(argv[i], "-h")) ||
+            (!strcmp(argv[i], "-help")) ||
+            (!strcmp(argv[i], "--help")))
+          {
+             printf("Usage: rage [OPTIONS] [file1] [file2] [...]\n"
+                    "  Where OPTIONS can ben"
+                    "    -e ENGINE\n"
+                    "      ENGINE is one of gstreamer1, xine or vlc\n"
+                    "      The default is gtsreamer1\n"
+                    "    -h | -help | --help\n"
+                    "      This help\n");
+             exit(0);
+          }
+        else if (!strcmp(argv[i], "-e"))
+          {
+             if (i < (argc - 1))
+               {
+                  i++;
+                  eina_stringshare_del(config->emotion_engine);
+                  config->emotion_engine = eina_stringshare_add(argv[i]);
+               }
+          }
+        else
+          list = eina_list_append(list, eina_stringshare_add(argv[i]));
+     }
    
    elm_policy_set(ELM_POLICY_QUIT, ELM_POLICY_QUIT_LAST_WINDOW_CLOSED);
    elm_app_compile_bin_dir_set(PACKAGE_BIN_DIR);
@@ -68,6 +97,7 @@ elm_main(int argc, char **argv)
                         
    elm_run();
 
+   config_shutdown();
    elm_shutdown();
    return 0;
 }
