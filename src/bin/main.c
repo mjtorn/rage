@@ -68,7 +68,6 @@ elm_main(int argc, char **argv)
                         
    elm_run();
 
-end:
    elm_shutdown();
    return 0;
 }
