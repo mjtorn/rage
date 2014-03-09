@@ -38,7 +38,11 @@ elm_main(int argc, char **argv)
    elm_app_compile_bin_dir_set(PACKAGE_BIN_DIR);
    elm_app_compile_data_dir_set(PACKAGE_DATA_DIR);
    elm_app_info_set(elm_main, "rage", "themes/default.edj");
-   
+
+#if (ELM_VERSION_MAJOR > 1) || (ELM_VERSION_MINOR >= 10)
+   elm_config_accel_preference_set("accel");
+#endif
+
    snprintf(buf, sizeof(buf), "%s/themes/default.edj", elm_app_data_dir_get());
    elm_theme_overlay_add(NULL, buf);
 
