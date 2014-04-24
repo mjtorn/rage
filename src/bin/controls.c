@@ -51,6 +51,8 @@ _cb_options(void *data EINA_UNUSED, Evas_Object *obj EINA_UNUSED, const char *em
 static void
 _cb_list_show(void *data, Evas_Object *obj EINA_UNUSED, const char *emission EINA_UNUSED, const char *source EINA_UNUSED)
 {
+   Inf *inf = evas_object_data_get(data, "inf");
+   if (eina_list_count(inf->file_list) <= 1) return;
    win_list_show(data);
 }
 
