@@ -1012,6 +1012,7 @@ collections {
                text { font: "Sans"; size: 8;
                   align: 1.0 1.0;
                   min: 1 1;
+                  elipsis: -1;
                }
             }
          }
@@ -1037,6 +1038,7 @@ collections {
                   align: 1.0 1.0;
                   min: 1 1;
                   text: "/";
+                  elipsis: -1;
                }
             }
          }
@@ -1059,6 +1061,7 @@ collections {
                text { font: "Sans"; size: 8;
                   align: 1.0 1.0;
                   min: 1 1;
+                  elipsis: -1;
                }
             }
          }
@@ -1349,6 +1352,7 @@ collections {
                text { font: "Sans"; size: 8;
                   align: 0.0 1.0;
                   min: 0 1;
+                  elipsis: 0;
                }
             }
          }
