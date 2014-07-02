@@ -1,7 +1,7 @@
 * volume status display when changed (slider/image/percentage)
 * emotion engine selection options
 * timeline thumbnails on position slider
-* right click control panel (ala terminology)
+* right click control panel (ala terminology - need elm config ui code)
 * about display/popup (from panel?)
 * mouse wheel for forward/rewind and/or prev/next and/or volume up/down
 * audio channel list/selection
@@ -12,3 +12,5 @@
 * loop all option
 * show busy anim until opened cb or failure
 * add button/control top-left next to audio to do fullscreen/normal toggle
+* hide mouse on timeout in fullscreen move
+* fullscreen mode should request suspend of screensaver (needs elm work)
