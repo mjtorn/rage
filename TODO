@@ -14,3 +14,4 @@
 * add button/control top-left next to audio to do fullscreen/normal toggle
 * hide mouse on timeout in fullscreen move
 * fullscreen mode should request suspend of screensaver (needs elm work)
+* detect letterboxing and auto-crop
