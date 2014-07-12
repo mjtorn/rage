@@ -45,7 +45,7 @@ elm_main(int argc, char **argv)
                     "  Where OPTIONS can ben"
                     "    -e ENGINE\n"
                     "      ENGINE is one of gstreamer1, xine or vlc\n"
-                    "      The default is gtsreamer1\n"
+                    "      The default is gstreamer1\n"
                     "    -h | -help | --help\n"
                     "      This help\n");
              exit(0);
