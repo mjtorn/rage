@@ -151,7 +151,7 @@ key_handle(Evas_Object *win, Evas_Event_Key_Down *ev)
    else if ((!strcmp(ev->keyname, "q")) ||
             (!strcmp(ev->key, "Escape")))
      {
-        elm_exit();
+        evas_object_del(win);
      }
    else if ((!strcmp(ev->keyname, "f")) ||
             (!strcmp(ev->key, "F11")))

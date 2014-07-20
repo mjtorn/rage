@@ -39,5 +39,12 @@ r-0.png \
 r-1.png \
 r-2.png \
 r-3.png \
-r-4.png
+r-4.png \
+icon_close.png \
+icon_close2.png \
+icon_fullscreen.png \
+icon_fullscreen2.png \
+icon_unfullscreen.png \
+icon_unfullscreen2.png
+
 

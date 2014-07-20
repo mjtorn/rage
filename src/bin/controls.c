@@ -63,6 +63,24 @@ _cb_list_hide(void *data, Evas_Object *obj EINA_UNUSED, const char *emission EIN
 }
 
 static void
+_cb_win_fullscreen(void *data EINA_UNUSED, Evas_Object *obj, const char *emission EINA_UNUSED, const char *source EINA_UNUSED)
+{
+   elm_win_fullscreen_set(elm_object_top_widget_get(obj), EINA_TRUE);
+}
+
+static void
+_cb_win_unfullscreen(void *data EINA_UNUSED, Evas_Object *obj, const char *emission EINA_UNUSED, const char *source EINA_UNUSED)
+{
+   elm_win_fullscreen_set(elm_object_top_widget_get(obj), EINA_FALSE);
+}
+
+static void
+_cb_win_close(void *data EINA_UNUSED, Evas_Object *obj, const char *emission EINA_UNUSED, const char *source EINA_UNUSED)
+{
+   evas_object_del(elm_object_top_widget_get(obj));
+}
+
+static void
 _time_print(double t, double max, int size, char *buf, Eina_Bool subsec)
 {
    double tsf;
@@ -128,6 +146,12 @@ controls_init(Evas_Object *win, Evas_Object *lay)
                                   _cb_list_show, win);
    elm_layout_signal_callback_add(lay, "list,hide", "rage",
                                   _cb_list_hide, win);
+   elm_layout_signal_callback_add(lay, "win,fullscreen", "rage",
+                                  _cb_win_fullscreen, win);
+   elm_layout_signal_callback_add(lay, "win,unfullscreen", "rage",
+                                  _cb_win_unfullscreen, win);
+   elm_layout_signal_callback_add(lay, "win,close", "rage",
+                                  _cb_win_close, win);
    sz = 0;
    elm_coords_finger_size_adjust(1, &sz, 1, &sz);
 
@@ -141,6 +165,8 @@ controls_init(Evas_Object *win, Evas_Object *lay)
    FINGER_SIZE("rage.pos.swallow");
    FINGER_SIZE("rage.vol.swallow");
    FINGER_SIZE("rage.options.swallow");
+   FINGER_SIZE("rage.win.fullscreen");
+   FINGER_SIZE("rage.win.close");
    FINGER_SIZE("rage.pos.prev.swallow");
    FINGER_SIZE("rage.pos.play.swallow");
    FINGER_SIZE("rage.pos.next.swallow");
