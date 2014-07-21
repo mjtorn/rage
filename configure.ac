@@ -16,7 +16,7 @@ AC_PROG_CC
 AM_PROG_CC_C_O
 AC_C___ATTRIBUTE__
 
-efl_version="1.9.0"
+efl_version="1.10.99"
 requirements="\
    elementary >= ${efl_version} \
    edje >= ${efl_version} \

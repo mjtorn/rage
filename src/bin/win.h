@@ -5,10 +5,11 @@ typedef struct _Inf Inf;
 
 struct _Inf
 {
-   Evas_Object *vid, *lay, *event, *glayer;
+   Evas_Object *vid, *lay, *event, *event2, *glayer;
    Eina_List *file_list, *file_cur;
    Ecore_Job *next_job;
    Ecore_Timer *show_timeout;
+   Ecore_Timer *mouse_idle_timeout;
    Ecore_Animator *drag_anim;
    double last_action;
    double jump;

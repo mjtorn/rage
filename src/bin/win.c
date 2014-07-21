@@ -14,6 +14,8 @@ _cb_fullscreen(void *data EINA_UNUSED, Evas_Object *obj, void *event EINA_UNUSED
 {
    Inf *inf = evas_object_data_get(obj, "inf");
    elm_layout_signal_emit(inf->lay, "state,win,fullscreen", "rage");
+   elm_win_noblank_set(obj, EINA_TRUE);
+   evas_object_show(inf->event2);
 }
 
 static void
@@ -21,6 +23,8 @@ _cb_unfullscreen(void *data EINA_UNUSED, Evas_Object *obj, void *event EINA_UNUS
 {
    Inf *inf = evas_object_data_get(obj, "inf");
    elm_layout_signal_emit(inf->lay, "state,win,normal", "rage");
+   elm_win_noblank_set(obj, EINA_FALSE);
+   evas_object_hide(inf->event2);
 }
 
 static void
@@ -28,10 +32,11 @@ _cb_win_del(void *data EINA_UNUSED, Evas *e EINA_UNUSED, Evas_Object *obj, void 
 {
    Inf *inf = evas_object_data_get(obj, "inf");
    const char *f;
-   
+
    if (inf->next_job) ecore_job_del(inf->next_job);
    if (inf->show_timeout) ecore_timer_del(inf->show_timeout);
    if (inf->drag_anim) ecore_animator_del(inf->drag_anim);
+   if (inf->mouse_idle_timeout) ecore_timer_del(inf->mouse_idle_timeout);
    EINA_LIST_FREE(inf->file_list, f) eina_stringshare_del(f);
    evas_object_data_del(obj, "inf");
    free(inf);
@@ -41,6 +46,25 @@ static void
 _cb_key_down(void *data, Evas *evas EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info)
 {
    key_handle(data, event_info);
+}
+
+static Eina_Bool
+_cb_mouse_idle(void *data)
+{
+   Inf *inf = evas_object_data_get(data, "inf");
+   inf->mouse_idle_timeout = NULL;
+   if (elm_win_fullscreen_get(data)) evas_object_show(inf->event2);
+   return EINA_FALSE;
+}
+
+static void
+_cb_mouse_move(void *data, Evas *evas EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED)
+{
+   Inf *inf = evas_object_data_get(data, "inf");
+
+   if (inf->mouse_idle_timeout) ecore_timer_del(inf->mouse_idle_timeout);
+   inf->mouse_idle_timeout = ecore_timer_add(5.0, _cb_mouse_idle, data);
+   evas_object_hide(inf->event2);
 }
 
 void
@@ -273,11 +297,30 @@ win_add(void)
    controls_init(win, o);
    
    o = evas_object_rectangle_add(evas_object_evas_get(win));
+   evas_object_size_hint_weight_set(o, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
    elm_win_resize_object_add(win, o);
    evas_object_color_set(o, 0, 0, 0, 0);
    evas_object_repeat_events_set(o, EINA_TRUE);
    evas_object_show(o);
    inf->event = o;
+   evas_object_event_callback_add(o, EVAS_CALLBACK_MOUSE_MOVE,
+                                  _cb_mouse_move, win);
+   evas_object_event_callback_add(o, EVAS_CALLBACK_MOUSE_IN,
+                                  _cb_mouse_move, win);
+
+   o = elm_button_add(win);
+   evas_object_size_hint_weight_set(o, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+   elm_win_resize_object_add(win, o);
+   evas_object_color_set(o, 0, 0, 0, 0);
+   evas_object_repeat_events_set(o, EINA_TRUE);
+   elm_object_cursor_set(o, "blank");
+   elm_object_cursor_theme_search_enabled_set(o, EINA_TRUE);
+   inf->event2 = o;
+   evas_object_event_callback_add(o, EVAS_CALLBACK_MOUSE_MOVE,
+                                  _cb_mouse_move, win);
+   evas_object_event_callback_add(o, EVAS_CALLBACK_MOUSE_OUT,
+                                  _cb_mouse_move, win);
+   
    dnd_init(win, o);
    gesture_init(win, o);
 
