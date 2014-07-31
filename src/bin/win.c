@@ -307,6 +307,8 @@ win_add(void)
                                   _cb_mouse_move, win);
    evas_object_event_callback_add(o, EVAS_CALLBACK_MOUSE_IN,
                                   _cb_mouse_move, win);
+   dnd_init(win, o);
+   gesture_init(win, o);
 
    o = elm_button_add(win);
    evas_object_size_hint_weight_set(o, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -320,9 +322,6 @@ win_add(void)
                                   _cb_mouse_move, win);
    evas_object_event_callback_add(o, EVAS_CALLBACK_MOUSE_OUT,
                                   _cb_mouse_move, win);
-   
-   dnd_init(win, o);
-   gesture_init(win, o);
 
    evas_object_event_callback_add(win, EVAS_CALLBACK_KEY_DOWN,
                                   _cb_key_down, win);
