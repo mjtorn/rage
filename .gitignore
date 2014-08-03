@@ -42,6 +42,7 @@
 /src/bin/Makefile
 /src/bin/Makefile.in
 /src/bin/rage
+/src/bin/rage_thumb
 pkgbuild/PKGBUILD
 pkgbuild/pkg
 pkgbuild/src
