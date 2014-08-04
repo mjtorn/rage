@@ -45,6 +45,8 @@ icon_close2.png \
 icon_fullscreen.png \
 icon_fullscreen2.png \
 icon_unfullscreen.png \
-icon_unfullscreen2.png
-
-
+icon_unfullscreen2.png \
+inset_round_hilight.png \
+inset_round_shading.png \
+inset_round_shadow.png \
+speaker.png
