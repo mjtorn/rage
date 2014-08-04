@@ -138,7 +138,7 @@ win_do_next(Evas_Object *win)
                {
                   double pos = video_position_get(inf->vid);
                   double len = video_length_get(inf->vid);
-                  
+
                   if ((len - pos) > 5.0)
                     {
                        video_position_set(inf->vid, len - 5.0);
@@ -198,7 +198,7 @@ win_video_prev(Evas_Object *win)
 {
    Inf *inf = evas_object_data_get(win, "inf");
    Eina_List *l;
-   
+
    if (!inf->file_list) return;
    if (!inf->file_cur) l = eina_list_last(inf->file_list);
    else l = inf->file_cur->prev;
@@ -213,7 +213,7 @@ win_video_first(Evas_Object *win)
 {
    Inf *inf = evas_object_data_get(win, "inf");
    Eina_List *l;
-   
+
    if (!inf->file_list) return;
    l = inf->file_list;
    inf->file_cur = l;
@@ -226,7 +226,7 @@ win_video_last(Evas_Object *win)
 {
    Inf *inf = evas_object_data_get(win, "inf");
    Eina_List *l;
-   
+
    if (!inf->file_list) return;
    l = eina_list_last(inf->file_list);
    if (!l) return;
@@ -240,7 +240,7 @@ win_video_have_next(Evas_Object *win)
 {
    Inf *inf = evas_object_data_get(win, "inf");
    Eina_List *l;
-   
+
    if (!inf->file_list) return EINA_FALSE;
    if (!inf->file_cur) return EINA_FALSE;
    else l = inf->file_cur->next;
@@ -253,7 +253,7 @@ win_video_have_prev(Evas_Object *win)
 {
    Inf *inf = evas_object_data_get(win, "inf");
    Eina_List *l;
-   
+
    if (!inf->file_list) return EINA_FALSE;
    if (!inf->file_cur) return EINA_FALSE;
    else l = inf->file_cur->prev;
@@ -269,19 +269,19 @@ win_add(void)
    Inf *inf = calloc(1, sizeof(Inf));
 
    if (!inf) return NULL;
-   
+
    win = elm_win_add(NULL, "Rage", ELM_WIN_BASIC);
    if (!win) return NULL;
-   
+
    elm_win_title_set(win, "Rage");
    elm_win_autodel_set(win, EINA_TRUE);
-   
+
    evas_object_data_set(win, "inf", inf);
    evas_object_event_callback_add(win, EVAS_CALLBACK_DEL, _cb_win_del, NULL);
    evas_object_smart_callback_add(win, "fullscreen", _cb_fullscreen, NULL);
    evas_object_smart_callback_add(win, "unfullscreen", _cb_unfullscreen, NULL);
    evas_object_smart_callback_add(win, "normal", _cb_unfullscreen, NULL);
-   
+
    o = evas_object_image_add(evas_object_evas_get(win));
    snprintf(buf, sizeof(buf), "%s/images/rage.png", elm_app_data_dir_get());
    evas_object_image_file_set(o, buf, NULL);
@@ -295,7 +295,7 @@ win_add(void)
    evas_object_show(o);
    inf->lay = o;
    controls_init(win, o);
-   
+
    o = evas_object_rectangle_add(evas_object_evas_get(win));
    evas_object_size_hint_weight_set(o, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
    elm_win_resize_object_add(win, o);
@@ -334,7 +334,7 @@ win_title_update(Evas_Object *win)
    Inf *inf = evas_object_data_get(win, "inf");
    const char *file, *s;
    char buf[4096];
-   
+
    if (!inf->file_cur)
      {
         elm_win_title_set(win, "Rage");
@@ -393,7 +393,7 @@ win_aspect_adjust(Evas_Object *win)
 {
    Inf *inf = evas_object_data_get(win, "inf");
    int w = 1, h = 1;
-   
+
    video_ratio_size_get(inf->vid, &w, &h);
    if (inf->zoom_mode == 1)
      evas_object_size_hint_aspect_set(inf->vid, EVAS_ASPECT_CONTROL_NEITHER,
@@ -415,6 +415,6 @@ void
 win_frame_decode(Evas_Object *win)
 {
    Inf *inf = evas_object_data_get(win, "inf");
-   
+
    controls_update(inf->lay, inf->vid);
 }

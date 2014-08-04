@@ -472,6 +472,14 @@ video_file_set(Evas_Object *obj, const char *file)
    video_position_set(obj, 0.0);
 }
 
+const char *
+video_file_get(Evas_Object *obj)
+{
+   Video *sd = evas_object_smart_data_get(obj);
+   if (!sd) return NULL;
+   return sd->file;
+}
+
 void
 video_mute_set(Evas_Object *obj, Eina_Bool mute)
 {

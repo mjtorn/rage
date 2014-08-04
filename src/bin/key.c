@@ -9,8 +9,7 @@ void
 key_handle(Evas_Object *win, Evas_Event_Key_Down *ev)
 {
    Inf *inf = evas_object_data_get(win, "inf");
-   
-   printf("%s | %s\n", ev->key, ev->keyname);
+
    if ((!strcmp(ev->key, "Left")) ||
        (!strcmp(ev->key, "bracketleft")))
      {
@@ -20,7 +19,7 @@ key_handle(Evas_Object *win, Evas_Event_Key_Down *ev)
         else
           {
              double pos = video_position_get(inf->vid);
-             
+
              if (!inf->last_action_rwind)
                {
                   double t = ecore_time_get();
@@ -161,7 +160,7 @@ key_handle(Evas_Object *win, Evas_Event_Key_Down *ev)
    else if (!strcmp(ev->keyname, "n"))
      {
         int w, h;
-        
+
         video_ratio_size_get(inf->vid, &w, &h);
         if ((w > 1) && (h > 1)) evas_object_resize(win, w, h);
      }

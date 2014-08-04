@@ -20,7 +20,8 @@ winvid.c winvid.h \
 win.c win.h \
 winlist.c winlist.h \
 config.c config.h \
-sha1.c sha1.h
+sha1.c sha1.h \
+videothumb.c videothumb.h
 
 internal_bindir = $(libdir)/rage/utils
 internal_bin_PROGRAMS = rage_thumb

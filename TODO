@@ -1,6 +1,5 @@
 * volume status display when changed (slider/image/percentage)
 * emotion engine selection options (gui)
-* timeline thumbnails on position slider
 * right click control panel (ala terminology - need elm config ui code)
 * about display/popup (from panel?)
 * mouse wheel for forward/rewind and/or prev/next and/or volume up/down
@@ -13,4 +12,4 @@
 * show busy anim until opened cb or failure
 * add button/control top-left next to audio to do fullscreen/normal toggle
 * detect letterboxing and auto-crop
-
+* thumbnail picker show all thumbs for video in a grid to select position

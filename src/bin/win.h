@@ -5,7 +5,7 @@ typedef struct _Inf Inf;
 
 struct _Inf
 {
-   Evas_Object *vid, *lay, *event, *event2, *glayer;
+   Evas_Object *vid, *lay, *event, *event2, *glayer, *vidthumb;
    Eina_List *file_list, *file_cur;
    Ecore_Job *next_job;
    Ecore_Timer *show_timeout;

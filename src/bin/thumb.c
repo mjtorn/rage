@@ -63,7 +63,6 @@ elm_main(int argc, char **argv)
         char key[128];
 
         snprintf(key, sizeof(key), "%i", pos);
-        pos += incr;
         evas_object_image_file_set(vidimage, argv[1], key);
         evas_object_image_size_get(vidimage, &iw, &ih);
         if ((iw <= 0) || (ih <= 0)) break;
@@ -75,10 +74,10 @@ elm_main(int argc, char **argv)
         elm_win_render(subwin);
         pixels = evas_object_image_data_get(image, EINA_FALSE);
         if (pixels)
-          {
-             eet_data_image_write(ef, key, pixels, w, h,
-                                  0, 0, 70, EET_IMAGE_JPEG);
-          }
+          eet_data_image_write(ef, key, pixels, w, h,
+                               0, 0, 70, EET_IMAGE_JPEG);
+        else
+          exit(6);
         evas_object_image_data_set(image, pixels);
      }
    eet_close(ef);

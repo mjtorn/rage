@@ -5,6 +5,7 @@
 
 Evas_Object *video_add(Evas_Object *parent);
 void video_file_set(Evas_Object *obj, const char *file);
+const char *video_file_get(Evas_Object *obj);
 void video_mute_set(Evas_Object *obj, Eina_Bool mute);
 Eina_Bool video_mute_get(Evas_Object *obj);
 void video_play_set(Evas_Object *obj, Eina_Bool play);

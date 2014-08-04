@@ -32,7 +32,8 @@ elm_main(int argc, char **argv)
    int i;
    Inf *inf;
    Config *config;
-   
+
+   elm_need_efreet();
    config_init();
    config = config_get();
    for (i = 1; i < argc; i++)
@@ -62,7 +63,7 @@ elm_main(int argc, char **argv)
         else
           list = eina_list_append(list, eina_stringshare_add(argv[i]));
      }
-   
+
    elm_policy_set(ELM_POLICY_QUIT, ELM_POLICY_QUIT_LAST_WINDOW_CLOSED);
    elm_app_compile_bin_dir_set(PACKAGE_BIN_DIR);
    elm_app_compile_data_dir_set(PACKAGE_DATA_DIR);
@@ -78,11 +79,11 @@ elm_main(int argc, char **argv)
    win = win_add();
    evas_object_event_callback_add(win, EVAS_CALLBACK_RESIZE, _cb_resize, NULL);
    evas_object_resize(win, 320, 200);
-   
+
    win_video_init(win);
    win_video_file_list_set(win, list);
    EINA_LIST_FREE(list, f) eina_stringshare_del(f);
-   
+
    inf = evas_object_data_get(win, "inf");
    if (argc <= 1)
      {
@@ -94,7 +95,7 @@ elm_main(int argc, char **argv)
      {
         inf->show_timeout = ecore_timer_add(10.0, _cb_show_timeout, win);
      }
-                        
+
    elm_run();
 
    config_shutdown();

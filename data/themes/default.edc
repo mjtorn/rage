@@ -35,6 +35,10 @@ collections {
       images.image: "horizontal_separated_bar_small_glow.png" COMP;
       images.image: "vgrad_shadow_bi.png" COMP;
       
+      images.image: "win_shadow.png" COMP;
+      images.image: "bg_shine.png" COMP;
+      images.image: "bg_glint.png" COMP;
+
       set { name: "pos_indicator";
          image { image: "pos_indicator_big.png" COMP; size: 32 28 99999 99999; }
          image { image: "pos_indicator.png" COMP; size: 0 0 31 27; }
@@ -61,6 +65,7 @@ collections {
       script {
          public pos_visible;
          public pos_timer;
+         public drag_is_down;
          
          public pos_timeout(val) {
             set_int(pos_visible, 0);
@@ -1261,6 +1266,212 @@ collections {
             }
          }
          
+         part { name: "dragover_master"; type: RECT;
+            clip_to: "posclip";
+            description { state: "default" 0.0;
+               visible: 1;
+            }
+            description { state: "novideo" 0.0;
+               visible: 0;
+            }
+         }
+         program {
+            signal: "state,novideo"; source: "rage";
+            action: STATE_SET "novideo" 0.0;
+            target: "dragover_master";
+         }
+         program {
+            signal: "state,video"; source: "rage";
+            action: STATE_SET "default" 0.0;
+            target: "dragover_master";
+         }
+         part { name: "dragover_active"; type: RECT;
+            clip_to: "dragover_master";
+            description { state: "default" 0.0;
+               color: 255 255 255 0;
+               visible: 0;
+            }
+            description { state: "visible" 0.0;
+               visible: 1;
+               color: 255 255 255 255;
+            }
+         }
+         part { name: "dragover_event"; type: RECT; repeat_events: 1;
+            clip_to: "posclip";
+            description { state: "default" 0.0;
+               rel1.to_x: "bar_bg";
+               rel1.to_y: "posevent";
+               rel2.to_x: "bar_bg";
+               color: 0 0 0 0;
+               fixed: 1 1;
+            }
+         }
+         program {
+            signal: "mouse,in"; source: "dragover_event";
+            action: STATE_SET "visible" 0.0;
+            transition: SINUSOIDAL 0.5;
+            target: "dragover_active";
+         }
+         program {
+            signal: "mouse,out"; source: "dragover_event";
+            action: STATE_SET "default" 0.0;
+            transition: SINUSOIDAL 1.0;
+            target: "dragover_active";
+         }
+         part { name: "dragover"; type: SPACER;
+            description { state: "default" 0.0;
+               rel1.to: "dragover_event";
+               rel1.relative: 0.5 0.0;
+               rel2.to: "dragover_event";
+               rel2.relative: 0.5 0.0;
+               fixed: 1 1;
+            }
+         }
+         part { name: "dragshadow"; mouse_events: 0;
+            clip_to: "dragover_active";
+            description { state: "default" 0.0;
+               fixed: 1 1;
+               rel1.to: "rage.dragable.content";
+               rel2.to: "rage.dragable.content";
+               image.normal: "win_shadow.png";
+               image.border: 14 14 14 14;
+               image.middle: 0;
+               rel1.offset: -7  -3;
+               rel2.offset: 6 11;
+               fill.smooth: 0;
+            }
+         }
+         part { name: "dragover_fill"; mouse_events: 0;
+            clip_to: "dragover_active";
+            description { state: "default" 0.0;
+               fixed: 1 1;
+               image.normal: "pm_fill.png";
+               fill {
+                  size.relative: 0.0 0.0;
+                  size.offset: 64 64;
+               }
+               rel1.to: "rage.dragable.content";
+               rel2.to: "rage.dragable.content";
+            }
+         }
+         part { name: "rage.dragable.content"; type: SWALLOW;
+            clip_to: "dragover_active";
+            description { state: "default" 0.0;
+               rel1.to: "dragover";
+               rel2.to: "dragover";
+               align: 0.5 1.0;
+               fixed: 1 1;
+            }
+         }
+         part { name: "dragover_clip"; type: RECT;
+            clip_to: "dragover_active";
+            description { state: "default" 0.0;
+               rel1.to: "rage.dragable.content";
+               rel2.to: "rage.dragable.content";
+               fixed: 1 1;
+            }
+         }
+         part { name: "dragover_glintclip"; type: RECT;
+            clip_to: "dragover_active";
+            description { state: "default" 0.0;
+               rel1.to: "dragover_clip";
+               rel2.to: "dragover_clip";
+               rel1.offset: 0 -10;
+            }
+         }
+         part { name: "shine"; mouse_events: 0;
+            clip_to: "dragover_clip";
+            description { state: "default" 0.0;
+               image.normal: "bg_shine.png";
+               fill.smooth: 0;
+               rel1.to: "dragover_clip";
+               rel2.to: "dragover_clip";
+               align: 0.5 0.0;
+               aspect: (255/120) (255/120);
+               aspect_preference: HORIZONTAL;
+            }
+         }
+         part { name: "glint"; mouse_events: 0;
+            clip_to: "dragover_glintclip";
+            description { state: "default" 0.0;
+               fixed: 1 1;
+               min: 79 5;
+               max: 79 5;
+               rel1 {
+                 relative: 0.0 0.0;
+                 offset: 0 0;
+                 to: "dragover_clip";
+               }
+               rel2 {
+                 relative: 1.0 0.0;
+                 offset: -1 0;
+                 to: "dragover_clip";
+               }
+               image.normal: "bg_glint.png";
+            }
+         }
+         part { name: "dragover_bevel2";
+            clip_to: "dragover_active";
+            description { state: "default" 0.0;
+               image.normal: "bg_bevel.png";
+               image.border: 1 1 1 1;
+               image.middle: 0;
+               fill.smooth: 0;
+               rel1.to: "rage.dragable.content";
+               rel2.to: "rage.dragable.content";
+            }
+         }
+         program { name: "dragmove";
+            signal: "mouse,move"; source: "dragover_event";
+            script {
+               new mx, my, x, y, w, h;
+               new Float:pos, Float:px, Float:pw;
+
+               get_mouse(mx, my);
+               get_geometry(PART:"dragover_event", x, y, w, h);
+               x = mx - x;
+               y = my - y;
+               px = x;
+               pw = w;
+               if (w > 0) pos = px / pw;
+               else pos = 0.5;
+               custom_state(PART:"dragover", "default", 0.0);
+               set_state_val(PART:"dragover", STATE_REL1, pos, 0.0);
+               set_state_val(PART:"dragover", STATE_REL2, pos, 0.0);
+               set_state(PART:"dragover", "custom", 0.0);
+               send_message(MSG_FLOAT, 13, pos);
+               if (get_int(drag_is_down) == 1)
+                 send_message(MSG_FLOAT, 10, pos);
+            }
+         }
+         program { name: "dragdown";
+            signal: "mouse,down,1"; source: "dragover_event";
+            script {
+               new mx, my, x, y, w, h;
+               new Float:pos, Float:px, Float:pw;
+
+               set_int(drag_is_down, 1);
+               get_mouse(mx, my);
+               get_geometry(PART:"dragover_event", x, y, w, h);
+               x = mx - x;
+               y = my - y;
+               px = x;
+               pw = w;
+               if (w > 0) pos = px / pw;
+               else pos = 0.5;
+               custom_state(PART:"dragover", "default", 0.0);
+               set_state_val(PART:"dragover", STATE_REL1, pos, 0.0);
+               set_state_val(PART:"dragover", STATE_REL2, pos, 0.0);
+               set_state(PART:"dragover", "custom", 0.0);
+               send_message(MSG_FLOAT, 10, pos);
+            }
+         }
+         program { name: "dragup";
+            signal: "mouse,up,1"; source: "dragover_event";
+            script {
+               set_int(drag_is_down, 0);
+            }
+         }
          part { name: "event"; type: RECT; repeat_events: 1;
             description { state: "default" 0.0;
                color: 0 0 0 0;
