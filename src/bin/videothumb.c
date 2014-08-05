@@ -12,6 +12,7 @@ struct _Videothumb
    Ecore_Event_Handler *exe_handler;
    const char *file;
    const char *realfile;
+   char *realpath;
    double pos;
    unsigned int realpos;
    int iw, ih;
@@ -87,7 +88,7 @@ _thumb_match_update(Evas_Object *obj, const char *file)
    Videothumb *sd = evas_object_smart_data_get(obj);
 
    if (!sd) return;
-   if (!strcmp(sd->file, file)) _thumb_update(obj);
+   if (!strcmp(sd->realpath, file)) _thumb_update(obj);
 }
 
 static Eina_Bool
@@ -103,8 +104,11 @@ _cb_thumb_exe(void *data, int type EINA_UNUSED, void *event)
         Eina_List *l;
         Evas_Object *o;
 
-        _busy_del(sd->file);
-        EINA_LIST_FOREACH(vidthumbs, l, o) _thumb_match_update(o, sd->file);
+        _busy_del(sd->realpath);
+        EINA_LIST_FOREACH(vidthumbs, l, o)
+          {
+             _thumb_match_update(o, sd->realpath);
+          }
         if ((sd->iw <= 0) || (sd->ih <= 0))
           {
              if (sd->exe_handler)
@@ -144,7 +148,7 @@ _videothumb_image_load(Evas_Object *obj)
    if (!sd->file) return;
    sd->o_img = evas_object_image_filled_add(evas_object_evas_get(obj));
    evas_object_smart_member_add(sd->o_img, obj);
-   if (!sha1((unsigned char *)sd->file, strlen(sd->file), sum)) return;
+   if (!sha1((unsigned char *)sd->realpath, strlen(sd->realpath), sum)) return;
    snprintf(buf_base, sizeof(buf_base), "%s/rage/thumb/%02x",
             efreet_cache_home_get(), sum[0]);
    snprintf(buf_file, sizeof(buf_base),
@@ -170,7 +174,7 @@ _videothumb_image_load(Evas_Object *obj)
         Eina_Bool ok = EINA_FALSE;
         struct stat st1, st2;
 
-        if (stat(sd->file, &st1) == 0)
+        if (stat(sd->realpath, &st1) == 0)
           {
              if (stat(sd->realfile, &st2) == 0)
                {
@@ -183,14 +187,14 @@ _videothumb_image_load(Evas_Object *obj)
              return;
           }
      }
-   if (!_busy_add(sd->file)) return;
+   if (!_busy_add(sd->realpath)) return;
    ecore_exe_run_priority_set(10);
    if (sd->thumb_exe)
      {
         ecore_exe_free(sd->thumb_exe);
         sd->thumb_exe = NULL;
      }
-   s = ecore_file_escape_name(sd->file);
+   s = ecore_file_escape_name(sd->realpath);
    if (s)
      {
         libdir = elm_app_lib_dir_get();
@@ -283,6 +287,7 @@ _smart_del(Evas_Object *obj)
    vidthumbs = eina_list_remove(vidthumbs, obj);
    if (sd->file) eina_stringshare_del(sd->file);
    if (sd->realfile) eina_stringshare_del(sd->realfile);
+   if (sd->realpath) free(sd->realpath);
    if (sd->o_img) evas_object_del(sd->o_img);
    if (sd->thumb_exe) ecore_exe_free(sd->thumb_exe);
    if (sd->exe_handler) ecore_event_handler_del(sd->exe_handler);
@@ -366,6 +371,7 @@ videothumb_file_set(Evas_Object *obj, const char *file, double pos)
    if ((sd->file == file) && (sd->pos == pos)) return;
    if (sd->file) eina_stringshare_del(sd->file);
    sd->file = eina_stringshare_add(file);
+   sd->realpath = ecore_file_realpath(sd->file);
    sd->pos = pos;
    _videothumb_eval(obj, EINA_TRUE);
 }

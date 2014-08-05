@@ -316,11 +316,86 @@ collections {
             target: "novid_clip2";
          }
 
+         part { name: "art_clip"; type: RECT; mouse_events: 0;
+            description { state: "default" 0.0;
+               max: 0 0;
+               visible: 0;
+               color: 255 255 255 0;
+               rel1.to: "base";
+               rel2.to: "base";
+               fixed: 1 1;
+               aspect: 1.0 1.0; aspect_preference: BOTH;
+            }
+            description { state: "visible" 0.0;
+               inherit: "default" 0.0;
+               max: 9999 9999;
+               visible: 1;
+               color: 255 255 255 255;
+            }
+         }
+         part { name: "art_clip2"; type: RECT; mouse_events: 0;
+            description { state: "default" 0.0;
+               visible: 0;
+               color: 255 255 255 0;
+               rel1.to: "base";
+               rel2.to: "base";
+               fixed: 1 1;
+               aspect: 1.0 1.0; aspect_preference: BOTH;
+            }
+            description { state: "visible" 0.0;
+               inherit: "default" 0.0;
+               visible: 1;
+               color: 255 255 255 255;
+            }
+         }
+         part { name: "artshadow"; mouse_events: 0;
+            clip_to: "art_clip2";
+            description { state: "default" 0.0;
+               fixed: 1 1;
+               rel1.to: "art_clip";
+               rel2.to: "art_clip";
+               image.normal: "win_shadow.png";
+               image.border: 14 14 14 14;
+               image.middle: 0;
+               rel1.offset: -7  -3;
+               rel2.offset: 6 11;
+               fill.smooth: 0;
+            }
+         }
+         part { name: "rage.art"; type: SWALLOW;
+            clip_to: "art_clip";
+            description { state: "default" 0.0;
+               rel1.to: "art_clip";
+               rel2.to: "art_clip";
+            }
+         }
+         program {
+            signal: "action,newvid"; source: "rage";
+            action: STATE_SET "default" 0.0;
+            transition: ACCELERATE 0.2;
+            target: "art_clip";
+            target: "art_clip2";
+         }
+         program {
+            signal: "state,noart"; source: "rage";
+            action: STATE_SET "default" 0.0;
+            transition: ACCELERATE 1.0;
+            target: "art_clip";
+            target: "art_clip2";
+         }
+         program {
+            signal: "state,art"; source: "rage";
+            action: STATE_SET "visible" 0.0;
+            transition: DECELERATE 1.0;
+            target: "art_clip";
+            target: "art_clip2";
+         }
+
          part { name: "rage.content"; type: SWALLOW;
             description { state: "default" 0.0;
             }
          }
-         
+
          part { name: "rage.list"; type: SWALLOW;
             description { state: "default" 0.0;
                align: 0.0 0.5;
@@ -1557,13 +1632,13 @@ collections {
          }
          program { name: "posshow";
             action: STATE_SET "visible" 0.0;
-            transition: SINUSOIDAL 0.3 CURRENT;
+            transition: SINUSOIDAL 0.3;
             target: "poscover";
             target: "posclip";
          }
          program { name: "poshide";
             action: STATE_SET "default" 0.0;
-            transition: SINUSOIDAL 1.0 CURRENT;
+            transition: SINUSOIDAL 1.0;
             target: "poscover";
             target: "posclip";
          }

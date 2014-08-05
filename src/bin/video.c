@@ -1,5 +1,4 @@
 #include <Elementary.h>
-#include <Emotion.h>
 #include "video.h"
 #include "rage_config.h"
 #include "config.h"
@@ -825,6 +824,29 @@ video_lowquality_get(Evas_Object *obj)
    return sd->lowqual;
 }
 
+const char *
+video_meta_title_get(Evas_Object *obj)
+{
+   Video *sd = evas_object_smart_data_get(obj);
+   if (!sd) return NULL;
+   return emotion_object_meta_info_get(sd->o_vid, EMOTION_META_INFO_TRACK_TITLE);
+}
+
+const char *
+video_meta_artist_get(Evas_Object *obj)
+{
+   Video *sd = evas_object_smart_data_get(obj);
+   if (!sd) return NULL;
+   return emotion_object_meta_info_get(sd->o_vid, EMOTION_META_INFO_TRACK_ARTIST);
+}
+
+const char *
+video_meta_album_get(Evas_Object *obj)
+{
+   Video *sd = evas_object_smart_data_get(obj);
+   if (!sd) return NULL;
+   return emotion_object_meta_info_get(sd->o_vid, EMOTION_META_INFO_TRACK_ALBUM);
+}
 
 // emotion_object_seekable_get
 // emotion_object_play_speed_set

@@ -5,7 +5,7 @@ typedef struct _Inf Inf;
 
 struct _Inf
 {
-   Evas_Object *vid, *lay, *event, *event2, *glayer, *vidthumb;
+   Evas_Object *vid, *lay, *event, *event2, *glayer, *vidthumb, *artimg;
    Eina_List *file_list, *file_cur;
    Ecore_Job *next_job;
    Ecore_Timer *show_timeout;
@@ -42,6 +42,7 @@ Eina_Bool win_video_have_prev(Evas_Object *win);
 Evas_Object *win_add(void);
 void win_title_update(Evas_Object *win);
 void win_show(Evas_Object *win, int w, int h);
+void win_art(Evas_Object *win, const char *path);
 void win_aspect_adjust(Evas_Object *win);
 void win_frame_decode(Evas_Object *win);
 

@@ -8,6 +8,7 @@
 #include "key.h"
 #include "controls.h"
 #include "gesture.h"
+#include "albumart.h"
 
 static void
 _cb_fullscreen(void *data EINA_UNUSED, Evas_Object *obj, void *event EINA_UNUSED)
@@ -364,6 +365,48 @@ win_title_update(Evas_Object *win)
 }
 
 void
+win_art(Evas_Object *win, const char *path)
+{
+   Inf *inf = evas_object_data_get(win, "inf");
+
+   if (!path)
+     {
+        elm_layout_signal_emit(inf->lay, "state,noart", "rage");
+        if (inf->artimg)
+          {
+             evas_object_del(inf->artimg);
+             inf->artimg = NULL;
+          }
+     }
+   else
+     {
+        int iw, ih;
+
+        if (inf->artimg)
+          {
+             evas_object_del(inf->artimg);
+             inf->artimg = NULL;
+          }
+        inf->artimg = evas_object_image_filled_add(evas_object_evas_get(win));
+        evas_object_image_file_set(inf->artimg, path, NULL);
+        evas_object_image_size_get(inf->artimg, &iw, &ih);
+        if ((iw > 0) && (ih > 0))
+          {
+             evas_object_size_hint_aspect_set(inf->artimg,
+                                              EVAS_ASPECT_CONTROL_NEITHER,
+                                              iw, ih);
+             elm_object_part_content_set(inf->lay, "rage.art", inf->artimg);
+             elm_layout_signal_emit(inf->lay, "state,art", "rage");
+          }
+        else
+          {
+             evas_object_del(inf->artimg);
+             inf->artimg = NULL;
+          }
+     }
+}
+
+void
 win_show(Evas_Object *win, int w, int h)
 {
    Inf *inf = evas_object_data_get(win, "inf");
@@ -378,6 +421,9 @@ win_show(Evas_Object *win, int w, int h)
           }
         evas_object_show(win);
      }
+   if (!video_has_video_get(inf->vid)) albumart_find(win, inf->vid);
+   else albumart_find(win, NULL);
+
    if (!video_has_video_get(inf->vid))
      elm_layout_signal_emit(inf->lay, "state,novideo", "rage");
    else
