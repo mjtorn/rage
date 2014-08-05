@@ -752,11 +752,8 @@ collections {
          part { name: "bar_bg"; type: SPACER;
             description { state: "default" 0.0;
                fixed: 1 1;
-               rel1.to_x: "pos_playev";
                rel1.offset: 0 -1;
-               rel1.relative: 1.5 1.0;
-               rel2.to_x: "pos_nextev";
-               rel2.relative: -0.5 1.0;
+               rel1.relative: 0.0 1.0;
                min: 1 1;
             }
          }
@@ -895,8 +892,10 @@ collections {
             scale: 1;
             description { state: "default" 0.0;
                fixed: 1 1;
-               rel1.relative: 0.0 1.0;
-               rel2.relative: 0.0 1.0;
+               rel1.relative: 0.0 0.0;
+               rel1.to_y: "dragover_event";
+               rel2.relative: 0.0 0.0;
+               rel2.to_y: "dragover_event";
                min: 20 20;
                align: 0.0 1.0;
             }
@@ -906,9 +905,11 @@ collections {
             description { state: "default" 0.0;
                fixed: 1 1;
                rel1.to_x: "rage.pos.prev.swallow";
-               rel1.relative: 1.0 1.0;
+               rel1.to_y: "dragover_event";
+               rel1.relative: 1.0 0.0;
                rel2.to_x: "rage.pos.prev.swallow";
-               rel2.relative: 1.0 1.0;
+               rel2.to_y: "dragover_event";
+               rel2.relative: 1.0 0.0;
                min: 20 20;
                align: 0.0 1.0;
             }
@@ -917,7 +918,10 @@ collections {
             scale: 1;
             description { state: "default" 0.0;
                fixed: 1 1;
-               rel1.relative: 1.0 1.0;
+               rel1.relative: 1.0 0.0;
+               rel1.to_y: "dragover_event";
+               rel2.relative: 1.0 0.0;
+               rel2.to_y: "dragover_event";
                min: 20 20;
                align: 1.0 1.0;
             }
@@ -1334,20 +1338,18 @@ collections {
             scale: 1;
             description { state: "default" 0.0;
                fixed: 1 1;
-               rel1.to_y: "pos_next";
-               rel1.to_x: "slash";
+               rel1.to: "slash";
                rel1.relative: 0.0 0.0;
-               rel1.offset: -1 -6;
-               rel2.to_y: "pos_next";
-               rel2.to_x: "slash";
-               rel2.relative: 0.0 0.0;
-               rel2.offset: -1 -6;
+               rel1.offset: -1 0;
+               rel2.to: "slash";
+               rel2.relative: 0.0 1.0;
+               rel2.offset: -1 -1;
                color: 255 255 255 255;
                color2: 51 153 255 128;
                color3: 51 153 255 20;
-               align: 1.0 1.0;
+               align: 1.0 0.5;
                text { font: "Sans"; size: 8;
-                  align: 1.0 1.0;
+                  align: 1.0 0.5;
                   min: 1 1;
                   elipsis: -1;
                }
@@ -1359,20 +1361,18 @@ collections {
             scale: 1;
             description { state: "default" 0.0;
                fixed: 1 1;
-               rel1.to_y: "pos_next";
-               rel1.to_x: "rage.length";
+               rel1.to: "rage.length";
                rel1.relative: 0.0 0.0;
-               rel1.offset: -1 -6;
-               rel2.to_y: "pos_next";
-               rel2.to_x: "rage.length";
-               rel2.relative: 0.0 0.0;
-               rel2.offset: -1 -6;
+               rel1.offset: -1 0;
+               rel2.to: "rage.length";
+               rel2.relative: 0.0 1.0;
+               rel2.offset: -1 -1;
                color: 255 255 255 255;
                color2: 51 153 255 128;
                color3: 51 153 255 20;
-               align: 1.0 1.0;
+               align: 1.0 0.5;
                text { font: "Sans"; size: 8;
-                  align: 1.0 1.0;
+                  align: 1.0 0.5;
                   min: 1 1;
                   text: "/";
                   elipsis: -1;
@@ -1385,18 +1385,18 @@ collections {
             scale: 1;
             description { state: "default" 0.0;
                fixed: 1 1;
-               rel1.to_y: "pos_next";
-               rel1.relative: 1.0 0.0;
-               rel1.offset: -6 -6;
-               rel2.to_y: "pos_next";
-               rel2.relative: 1.0 0.0;
-               rel2.offset: -6 -6;
+               rel1.to: "pos_next";
+               rel1.relative: 0.0 0.0;
+               rel1.offset: -6 0;
+               rel2.to: "pos_next";
+               rel2.relative: 0.0 1.0;
+               rel2.offset: -6 -1;
                color: 255 255 255 255;
                color2: 51 153 255 128;
                color3: 51 153 255 20;
-               align: 1.0 1.0;
+               align: 1.0 0.5;
                text { font: "Sans"; size: 8;
-                  align: 1.0 1.0;
+                  align: 1.0 0.5;
                   min: 1 1;
                   elipsis: -1;
                }
