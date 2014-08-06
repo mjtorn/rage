@@ -77,6 +77,12 @@ elm_main(int argc, char **argv)
    elm_theme_overlay_add(NULL, buf);
 
    win = win_add();
+   if (!win)
+     {
+        printf("ERROR - cannto create window!\n");
+        goto end;
+     }
+
    evas_object_event_callback_add(win, EVAS_CALLBACK_RESIZE, _cb_resize, NULL);
    evas_object_resize(win, 320, 200);
 
@@ -98,6 +104,7 @@ elm_main(int argc, char **argv)
 
    elm_run();
 
+end:
    config_shutdown();
    elm_shutdown();
    return 0;
