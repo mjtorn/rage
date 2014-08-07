@@ -643,7 +643,7 @@ video_chapter_name_get(Evas_Object *obj, int chapter)
 {
    Video *sd = evas_object_smart_data_get(obj);
    if (!sd) return NULL;
-   return emotion_object_chapter_name_get(obj, chapter);
+   return emotion_object_chapter_name_get(sd->o_vid, chapter);
 }
 
 void
@@ -683,7 +683,7 @@ video_title_get(Evas_Object *obj)
 {
    Video *sd = evas_object_smart_data_get(obj);
    if (!sd) return NULL;
-   return emotion_object_title_get(obj);
+   return emotion_object_title_get(sd->o_vid);
 }
 
 int
@@ -715,7 +715,7 @@ video_audio_channel_name_get(Evas_Object *obj, int chan)
 {
    Video *sd = evas_object_smart_data_get(obj);
    if (!sd) return NULL;
-   return emotion_object_audio_channel_name_get(obj, chan);
+   return emotion_object_audio_channel_name_get(sd->o_vid, chan);
 }
 
 int
@@ -747,7 +747,7 @@ video_video_channel_name_get(Evas_Object *obj, int chan)
 {
    Video *sd = evas_object_smart_data_get(obj);
    if (!sd) return NULL;
-   return emotion_object_video_channel_name_get(obj, chan);
+   return emotion_object_video_channel_name_get(sd->o_vid, chan);
 }
 
 int
@@ -779,7 +779,7 @@ video_spu_channel_name_get(Evas_Object *obj, int chan)
 {
    Video *sd = evas_object_smart_data_get(obj);
    if (!sd) return NULL;
-   return emotion_object_spu_channel_name_get(obj, chan);
+   return emotion_object_spu_channel_name_get(sd->o_vid, chan);
 }
 
 int
