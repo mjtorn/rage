@@ -362,7 +362,7 @@ collections {
                fill.smooth: 0;
             }
          }
-         part { name: "rage.art"; type: SWALLOW;
+         part { name: "rage.art"; type: SWALLOW; mouse_events: 0;
             clip_to: "art_clip";
             description { state: "default" 0.0;
                rel1.to: "art_clip";
@@ -372,8 +372,8 @@ collections {
          part { name: "art_glintclip"; type: RECT;
             clip_to: "art_clip2";
             description { state: "default" 0.0;
-               rel1.to: "dragover_clip";
-               rel2.to: "dragover_clip";
+               rel1.to: "art_clip2";
+               rel2.to: "art_clip2";
                rel1.offset: 0 -10;
             }
          }
@@ -408,7 +408,7 @@ collections {
                image.normal: "bg_glint.png";
             }
          }
-         part { name: "art_bevel2";
+         part { name: "art_bevel2"; mouse_events: 0;
             clip_to: "art_clip2";
             description { state: "default" 0.0;
                image.normal: "bg_bevel.png";
@@ -1479,8 +1479,8 @@ collections {
                visible: 0;
             }
             description { state: "visible" 0.0;
-               visible: 1;
                color: 255 255 255 255;
+               visible: 1;
             }
          }
          part { name: "dragover_event"; type: RECT; repeat_events: 1;
@@ -1541,7 +1541,7 @@ collections {
                rel2.to: "rage.dragable.content";
             }
          }
-         part { name: "rage.dragable.content"; type: SWALLOW;
+         part { name: "rage.dragable.content"; type: SWALLOW; mouse_events: 0;
             clip_to: "dragover_active";
             description { state: "default" 0.0;
                rel1.to: "dragover";
@@ -1597,7 +1597,7 @@ collections {
                image.normal: "bg_glint.png";
             }
          }
-         part { name: "dragover_bevel2";
+         part { name: "dragover_bevel2"; mouse_events: 0;
             clip_to: "dragover_active";
             description { state: "default" 0.0;
                image.normal: "bg_bevel.png";
