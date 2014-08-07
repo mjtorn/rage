@@ -369,6 +369,56 @@ collections {
                rel2.to: "art_clip";
             }
          }
+         part { name: "art_glintclip"; type: RECT;
+            clip_to: "art_clip2";
+            description { state: "default" 0.0;
+               rel1.to: "dragover_clip";
+               rel2.to: "dragover_clip";
+               rel1.offset: 0 -10;
+            }
+         }
+         part { name: "artshine"; mouse_events: 0;
+            clip_to: "art_clip2";
+            description { state: "default" 0.0;
+               image.normal: "bg_shine.png";
+               fill.smooth: 0;
+               rel1.to: "art_clip2";
+               rel2.to: "art_clip2";
+               align: 0.5 0.0;
+               aspect: (255/120) (255/120);
+               aspect_preference: HORIZONTAL;
+            }
+         }
+         part { name: "artglint"; mouse_events: 0;
+            clip_to: "art_glintclip";
+            description { state: "default" 0.0;
+               fixed: 1 1;
+               min: 79 5;
+               max: 79 5;
+               rel1 {
+                 relative: 0.0 0.0;
+                 offset: 0 0;
+                 to: "art_clip2";
+               }
+               rel2 {
+                 relative: 1.0 0.0;
+                 offset: -1 0;
+                 to: "art_clip2";
+               }
+               image.normal: "bg_glint.png";
+            }
+         }
+         part { name: "art_bevel2";
+            clip_to: "art_clip2";
+            description { state: "default" 0.0;
+               image.normal: "bg_bevel.png";
+               image.border: 1 1 1 1;
+               image.middle: 0;
+               fill.smooth: 0;
+               rel1.to: "art_clip2";
+               rel2.to: "art_clip2";
+            }
+         }
          program {
             signal: "action,newvid"; source: "rage";
             action: STATE_SET "default" 0.0;
