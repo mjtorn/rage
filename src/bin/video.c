@@ -812,7 +812,7 @@ video_lowquality_set(Evas_Object *obj, Eina_Bool lowq)
    Video *sd = evas_object_smart_data_get(obj);
    if (!sd) return;
    sd->lowqual = lowq;
-   emotion_object_smooth_scale_set(sd->o_vid, 
+   emotion_object_smooth_scale_set(sd->o_vid,
                                    (!sd->nosmooth) & (!sd->lowqual));
 }
 
