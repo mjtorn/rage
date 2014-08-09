@@ -1,7 +1,8 @@
+AUTOMAKE_OPTIONS = subdir-objects
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = src data
-
+DISTCLEANFILES =
+CLEANFILES =
 MAINTAINERCLEANFILES = \
 Makefile.in \
 $(PACKAGE_TARNAME)-$(PACKAGE_VERSION).tar.gz \
@@ -29,6 +30,11 @@ m4/ltversion.m4
 EXTRA_DIST = README AUTHORS COPYING autogen.sh rage.spec pkgbuild/PKGBUILD
 
 .PHONY: doc
+
+include src/bin/Makefile.mk
+include data/desktop/Makefile.mk
+include data/icons/Makefile.mk
+include data/themes/Makefile.mk
 
 doc:
 	@echo "Empty doc target until we have real documentation."

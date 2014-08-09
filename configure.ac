@@ -29,13 +29,6 @@ EFL_WITH_BIN([edje], [edje-cc], [edje_cc])
 AC_CONFIG_FILES([
 Makefile
 rage.spec
-src/Makefile
-src/bin/Makefile
-data/Makefile
-data/desktop/Makefile
-data/icons/Makefile
-data/themes/Makefile
-data/themes/images/Makefile
 pkgbuild/PKGBUILD
 ])
 AC_OUTPUT
