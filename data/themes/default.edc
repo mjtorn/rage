@@ -446,6 +446,11 @@ collections {
             }
          }
 
+         part { name: "rage.gesture"; type: SWALLOW;
+            description { state: "default" 0.0;
+            }
+         }
+
          part { name: "rage.list"; type: SWALLOW;
             description { state: "default" 0.0;
                align: 0.0 0.5;
