@@ -86,7 +86,7 @@ static void
 _cb_play_finish(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUSED)
 {
    Inf *inf = evas_object_data_get(data, "inf");
-   if (!inf->playing) win_show(data, 160, 160);
+   if (!inf->playing) win_show(data, 160, 200);
    inf->playing = EINA_FALSE;
 }
 

@@ -453,7 +453,10 @@ win_aspect_adjust(Evas_Object *win)
      {
         if ((!video_has_video_get(inf->vid)) &&
             (video_has_audio_get(inf->vid)))
-          w = h = 160;
+          {
+             w = 160;
+             h = 200;
+          }
         win_show(win, w, h);
      }
 }

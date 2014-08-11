@@ -4,7 +4,6 @@ data/themes/images/bg_bevel.png \
 data/themes/images/bg_glint.png \
 data/themes/images/bg_shine.png \
 data/themes/images/glow_exclam.png \
-data/themes/images/horizontal_separated_bar_small_glow.png \
 data/themes/images/icon_arrow_right.png \
 data/themes/images/icon_close2.png \
 data/themes/images/icon_close.png \
@@ -30,24 +29,24 @@ data/themes/images/icon_unfullscreen2.png \
 data/themes/images/icon_unfullscreen.png \
 data/themes/images/icon_volume2.png \
 data/themes/images/icon_volume.png \
-data/themes/images/inset_round_hilight.png \
-data/themes/images/inset_round_shading.png \
-data/themes/images/inset_round_shadow.png \
 data/themes/images/pm_fill.png \
 data/themes/images/pm_overlay.png \
 data/themes/images/pm_shadow.png \
-data/themes/images/pos_indicator_big.png \
-data/themes/images/pos_indicator.png \
 data/themes/images/r-0.png \
 data/themes/images/r-1.png \
 data/themes/images/r-2.png \
 data/themes/images/r-3.png \
 data/themes/images/r-4.png \
-data/themes/images/speaker.png \
 data/themes/images/tv-bg.png \
 data/themes/images/tv-over.png \
-data/themes/images/vgrad_shadow_bi.png \
 data/themes/images/win_glow.png \
-data/themes/images/win_shadow.png
+data/themes/images/win_shadow.png \
+data/themes/images/posglow.png \
+data/themes/images/speaker-base.png \
+data/themes/images/speaker-bevel-hi.png \
+data/themes/images/speaker-bevel-lo.png \
+data/themes/images/speaker-over.png \
+data/themes/images/speaker-shadow.png \
+data/themes/images/vgrad-dark-inv.png
 
 EXTRA_DIST += $(THEME_IMGS)

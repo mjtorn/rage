@@ -94,7 +94,6 @@ elm_main(int argc, char **argv)
    if (argc <= 1)
      {
         elm_layout_signal_emit(inf->lay, "about,show", "rage");
-        elm_layout_signal_emit(inf->lay, "state,novideo", "rage");
         evas_object_show(win);
      }
    else

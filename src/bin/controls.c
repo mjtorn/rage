@@ -179,13 +179,13 @@ controls_update(Evas_Object *lay, Evas_Object *vid)
    double p;
 
    _time_print(video_position_get(vid), video_length_get(vid),
-               sizeof(buf), buf, EINA_TRUE);
+               sizeof(buf), buf, EINA_FALSE);
    elm_object_part_text_set(lay, "rage.pos", buf);
    _time_print(video_length_get(vid), video_length_get(vid),
                sizeof(buf), buf, EINA_FALSE);
    elm_object_part_text_set(lay, "rage.length", buf);
    elm_layout_signal_emit(lay, "action,frame", "rage");
-   
+
    if (video_length_get(vid) > 0.0)
      p = video_position_get(vid) / video_length_get(vid);
    else p = 0.0;
