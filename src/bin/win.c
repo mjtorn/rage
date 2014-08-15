@@ -325,7 +325,14 @@ win_add(void)
    evas_object_event_callback_add(o, EVAS_CALLBACK_MOUSE_OUT,
                                   _cb_mouse_move, win);
 
-   evas_object_event_callback_add(win, EVAS_CALLBACK_KEY_DOWN,
+   // a dummy button to collect key events and have focus
+   o = elm_button_add(win);
+   evas_object_size_hint_weight_set(o, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+   elm_win_resize_object_add(win, o);
+   evas_object_lower(o);
+   evas_object_show(o);
+   elm_object_focus_set(o, EINA_TRUE);
+   evas_object_event_callback_add(o, EVAS_CALLBACK_KEY_DOWN,
                                   _cb_key_down, win);
    return win;
 }
