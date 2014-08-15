@@ -192,7 +192,7 @@ key_handle(Evas_Object *win, Evas_Event_Key_Down *ev)
      {
         video_event_send(inf->vid, EMOTION_EVENT_SELECT);
      }
-   else if ((!strcmp(ev->key, "comman")) ||
+   else if ((!strcmp(ev->key, "comma")) ||
             (!strcmp(ev->key, "less")))
      {
         video_event_send(inf->vid, EMOTION_EVENT_ANGLE_PREV);
