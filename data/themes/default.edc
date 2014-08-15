@@ -304,7 +304,7 @@ collections {
                image.normal: "speaker-base.png";
             }
          }
-         part { name: "art_clip"; type: RECT; mouse_events: 0;
+         part { name: "art_clip"; type: RECT;
             clip_to: "speaker_clip";
             description { state: "default" 0.0;
                visible: 0;
@@ -324,8 +324,16 @@ collections {
                color: 255 255 255 255;
             }
          }
-         part { name: "rage.art"; type: SWALLOW; mouse_events: 0;
+         part { name: "art_clip2"; type: RECT;
             clip_to: "art_clip";
+            description { state: "default" 0.0;
+               rel1.to: "speaker_base";
+               rel2.to: "speaker_base";
+               fixed: 1 1;
+            }
+         }
+         part { name: "rage.art"; type: SWALLOW; mouse_events: 0;
+            clip_to: "art_clip2";
             description { state: "default" 0.0;
                rel1.to: "art_clip";
                rel2.to: "art_clip";
