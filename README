@@ -10,15 +10,15 @@ Rage 0.1.0
 Requirements:
 -------------
 
-  * elementary (>= 1.9.0)
-  * eina (>= 1.9.0)
-  * eet (>= 1.9.0)
-  * evas (>= 1.9.0)
-  * ecore (>= 1.9.0)
-  * edje (>= 1.9.0)
-  * emotion (>= 1.9.0)
-  * ecore-imf (>= 1.9.0)
-  * ecore-imf-evas (>= 1.9.0)
-  * ecore-input (>= 1.9.0)
-  * ethumb (>= 1.9.0)
+  * elementary (>= 1.11.0)
+  * eina (>= 1.11.0)
+  * eet (>= 1.11.0)
+  * evas (>= 1.11.0)
+  * ecore (>= 1.11.0)
+  * edje (>= 1.11.0)
+  * emotion (>= 1.11.0)
+  * ecore-imf (>= 1.11.0)
+  * ecore-imf-evas (>= 1.11.0)
+  * ecore-input (>= 1.11.0)
+  * ethumb (>= 1.11.0)
 
