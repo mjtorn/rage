@@ -10,6 +10,6 @@
 * add subtitle file cmdline
 * loop all option
 * show busy anim until opened cb or failure
-* add button/control top-left next to audio to do fullscreen/normal toggle
-* detect letterboxing and auto-crop
 * thumbnail picker show all thumbs for video in a grid to select position
+* fix initial sizing in audio mode to account for scaling
+* add title/album/artis/file display inside window in music mode (at pos?)

@@ -47,6 +47,7 @@ data/themes/images/speaker-bevel-hi.png \
 data/themes/images/speaker-bevel-lo.png \
 data/themes/images/speaker-over.png \
 data/themes/images/speaker-shadow.png \
-data/themes/images/vgrad-dark-inv.png
+data/themes/images/vgrad-dark-inv.png \
+data/themes/images/vgrad-dark-inv-trans.png
 
 EXTRA_DIST += $(THEME_IMGS)

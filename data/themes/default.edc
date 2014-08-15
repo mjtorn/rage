@@ -35,6 +35,7 @@ collections {
       images.image: "bg_glint.png" COMP;
 
       images.image: "vgrad-dark-inv.png" COMP;
+      images.image: "vgrad-dark-inv-trans.png" COMP;
       images.image: "posglow.png" COMP;
          
       images.image: "speaker-base.png" COMP;
@@ -237,8 +238,16 @@ collections {
             description { state: "default" 0.0;
             }
          }
-         part { name: "controlbar_shadow"; mouse_events: 0;
+
+         part { name: "controlbar_shadow_clip"; type: RECT;
             clip_to: "controlbar_clip";
+            description { state: "default" 0.0;
+               rel2.relative: 1.0 0.0;
+               rel2.to_y: "controlbar";
+            }
+         }
+         part { name: "controlbar_shadow"; mouse_events: 0;
+            clip_to: "controlbar_shadow_clip";
             description { state: "default" 0.0;
                fixed: 1 1;
                rel1.to: "controlbar";
@@ -466,6 +475,37 @@ collections {
             }
          }
 
+         part { name: "rage.list"; type: SWALLOW;
+            description { state: "default" 0.0;
+               align: 0.0 0.5;
+               rel1.relative: 1.0 0.0;
+               rel2.relative: 1.0 0.0;
+               rel2.to_y: "controlbar";
+               fixed: 1 1;
+            }
+            description { state: "visible" 0.0;
+               inherit: "default" 0.0;
+               align: 1.0 0.5;
+               visible: 1;
+            }
+         }
+         program {
+            signal: "list,state,visible"; source: "rage";
+            action: STATE_SET "visible" 0.0;
+            transition: DECELERATE 0.3;
+            target: "rage.list";
+         }
+         program {
+            signal: "list,state,hidden"; source: "rage";
+            action: STATE_SET "default" 0.0;
+            transition: ACCELERATE 0.5;
+            target: "rage.list";
+            after: "list_hidden";
+         }
+         program { name: "list_hidden";
+            action: SIGNAL_EMIT "list,state,hidden,finished" "rage";
+         }
+
          part { name: "controlbar_clip"; type: RECT;
             description { state: "default" 0.0;
                color: 255 255 255 0;
@@ -479,7 +519,7 @@ collections {
          part { name: "controlbar"; mouse_events: 0;
             clip_to: "controlbar_clip";
             description { state: "default" 0.0;
-               image.normal: "vgrad-dark-inv.png";
+               image.normal: "vgrad-dark-inv-trans.png";
                fill {
                   smooth: 0;
                   size.relative: 0.0 1.0;
@@ -487,6 +527,20 @@ collections {
                }
                rel1.to: "rage.pos.prev.swallow";
             }
+            description { state: "novideo" 0.0;
+               inherit: "default" 0.0;
+               image.normal: "vgrad-dark-inv.png";
+            }
+         }
+         program {
+            signal: "state,novideo"; source: "rage";
+            action: STATE_SET "novideo" 0.0;
+            target: "controlbar";
+         }
+         program {
+            signal: "state,video"; source: "rage";
+            action: STATE_SET "default" 0.0;
+            target: "controlbar";
          }
 
          part { name: "posclip"; type: RECT;
@@ -961,35 +1015,6 @@ collections {
                }
                image.normal: "bg_glint.png";
             }
-         }
-
-         part { name: "rage.list"; type: SWALLOW;
-            description { state: "default" 0.0;
-               align: 0.0 0.5;
-               rel1.relative: 1.0 0.0;
-               fixed: 1 1;
-            }
-            description { state: "visible" 0.0;
-               inherit: "default" 0.0;
-               align: 1.0 0.5;
-               visible: 1;
-            }
-         }
-         program {
-            signal: "list,state,visible"; source: "rage";
-            action: STATE_SET "visible" 0.0;
-            transition: DECELERATE 0.3;
-            target: "rage.list";
-         }
-         program {
-            signal: "list,state,hidden"; source: "rage";
-            action: STATE_SET "default" 0.0;
-            transition: ACCELERATE 0.5;
-            target: "rage.list";
-            after: "list_hidden";
-         }
-         program { name: "list_hidden";
-            action: SIGNAL_EMIT "list,state,hidden,finished" "rage";
          }
 
 #define STATE_FADE_PROG(_name) \
