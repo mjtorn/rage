@@ -281,3 +281,9 @@ albumart_find(Evas_Object *win, Evas_Object *vid)
 
    eina_strbuf_free(sb);
 }
+
+char *
+albumart_file_get(const char *file)
+{
+   return _thumbpath(file);
+}

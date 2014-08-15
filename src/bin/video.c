@@ -2,18 +2,19 @@
 #include "video.h"
 #include "rage_config.h"
 #include "config.h"
+#include "albumart.h"
 
 typedef struct _Video Video;
 
 struct _Video
 {
    Evas_Object_Smart_Clipped_Data __clipped_data;
-   Evas_Object *clip, *o_vid, *o_event;
+   Evas_Object *clip, *o_vid, *o_img, *o_event;
    Ecore_Timer *smooth_timer;
    Ecore_Job *restart_job;
    const char *file;
    int w, h;
-   int iw, ih, piw, pih;
+   int iw, ih, piw, pih, tw, th;
    int resizes;
    struct {
       Evas_Coord x, y;
@@ -23,12 +24,57 @@ struct _Video
    Eina_Bool lowqual : 1;
    Eina_Bool loop : 1;
    Eina_Bool fill : 1;
+   Eina_Bool novid : 1;
+   Eina_Bool doart : 1;
 };
 
 static Evas_Smart *_smart = NULL;
 static Evas_Smart_Class _parent_sc = EVAS_SMART_CLASS_INIT_NULL;
 
 static void _ob_resize(Evas_Object *obj, Evas_Coord x, Evas_Coord y, Evas_Coord w, Evas_Coord h);
+
+static void
+_art_check(Evas_Object *obj)
+{
+   Video *sd = evas_object_smart_data_get(obj);
+   if (!sd) return;
+   if (!sd->novid)
+     {
+        if (!emotion_object_video_handled_get(sd->o_vid))
+          sd->novid = EINA_TRUE;
+     }
+   else
+     {
+        if (!emotion_object_video_handled_get(sd->o_vid))
+          sd->novid = EINA_FALSE;
+     }
+   if (sd->doart)
+     {
+        char *thumb = NULL, *realfile;
+
+        evas_object_show(sd->o_img);
+        realfile = ecore_file_realpath(sd->file);
+        if (realfile)
+          {
+             thumb = albumart_file_get(realfile);
+             free(realfile);
+          }
+        if (thumb)
+          {
+             Evas_Coord ox, oy, ow, oh;
+
+             if (ecore_file_exists(thumb))
+               {
+                  evas_object_image_file_set(sd->o_img, thumb, NULL);
+                  evas_object_image_size_get(sd->o_img, &(sd->tw), &(sd->th));
+                  evas_object_geometry_get(obj, &ox, &oy, &ow, &oh);
+                  _ob_resize(obj, ox, oy, ow, oh);
+               }
+             free(thumb);
+          }
+     }
+   else evas_object_hide(sd->o_img);
+}
 
 static void
 _cb_vid_frame(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUSED)
@@ -39,6 +85,7 @@ _cb_vid_frame(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUSED)
    if (!sd) return;
    evas_object_geometry_get(data, &ox, &oy, &ow, &oh);
    evas_object_show(sd->o_vid);
+   evas_object_hide(sd->o_img);
    evas_object_show(sd->clip);
    _ob_resize(data, ox, oy, ow, oh);
    evas_object_smart_callback_call(data, "frame_decode", NULL);
@@ -112,6 +159,7 @@ _cb_open_done(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUSED)
    Video *sd = evas_object_smart_data_get(data);
    if (!sd) return;
    evas_object_smart_callback_call(data, "opened", NULL);
+   _art_check(data);
 }
 
 static void
@@ -204,11 +252,11 @@ _ob_resize(Evas_Object *obj, Evas_Coord x, Evas_Coord y, Evas_Coord w, Evas_Coor
           {
              int iw = 1, ih = 1;
              double ratio;
-             
+
              ratio = emotion_object_ratio_get(sd->o_vid);
              if (ratio > 0.0) sd->iw = (sd->ih * ratio);
              else ratio = (double)sd->iw / (double)sd->ih;
-             
+
              iw = w;
              ih = ((double)w + 1.0) / ratio;
              if (ih > h)
@@ -231,6 +279,29 @@ _ob_resize(Evas_Object *obj, Evas_Coord x, Evas_Coord y, Evas_Coord w, Evas_Coor
         sd->pih = sd->ih;
         evas_object_smart_callback_call(obj, "frame_resize", NULL);
      }
+   if ((sd->tw > 0) && (sd->th > 0))
+     {
+        int iw, ih;
+
+        iw = (sd->tw * h) / sd->th;
+        ih = h;
+        if (iw < w)
+          {
+             ih = (sd->th * w) / sd->tw;
+             iw = w;
+          }
+        x += ((w - iw) / 2);
+        y += ((h - ih) / 2);
+        w = iw;
+        h = ih;
+        evas_object_show(sd->o_img);
+     }
+   else
+     {
+        evas_object_hide(sd->o_img);
+     }
+   evas_object_move(sd->o_img, x, y);
+   evas_object_resize(sd->o_img, w, h);
 }
 
 static void _smart_calculate(Evas_Object *obj);
@@ -261,6 +332,7 @@ _smart_del(Evas_Object *obj)
    if (sd->file) eina_stringshare_del(sd->file);
    if (sd->clip) evas_object_del(sd->clip);
    if (sd->o_vid) evas_object_del(sd->o_vid);
+   if (sd->o_img) evas_object_del(sd->o_img);
    if (sd->o_event) evas_object_del(sd->o_event);
    if (sd->smooth_timer) sd->smooth_timer = ecore_timer_del(sd->smooth_timer);
    if (sd->restart_job) ecore_job_del(sd->restart_job);
@@ -300,7 +372,7 @@ _smooth_handler(Evas_Object *obj)
 {
    Video *sd = evas_object_smart_data_get(obj);
    double interval;
-   
+
    if (!sd) return;
    interval = ecore_animator_frametime_get();
    if (interval <= 0.0) interval = 1.0/60.0;
@@ -359,7 +431,7 @@ _mouse_down_cb(void *data, Evas *e EINA_UNUSED, Evas_Object *obj EINA_UNUSED, vo
    Evas_Event_Mouse_Down *ev = event;
    Video *sd = evas_object_smart_data_get(data);
    if (!sd) return;
-   
+
    if (sd->down.down) return;
    if (ev->button != 1) return;
    sd->down.x = ev->canvas.x;
@@ -374,7 +446,7 @@ _mouse_up_cb(void *data, Evas *e EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void
    Video *sd = evas_object_smart_data_get(data);
    Evas_Coord dx, dy;
    if (!sd) return;
-   
+
    if (!sd->down.down) return;
    sd->down.down = EINA_FALSE;
    dx = abs(ev->canvas.x - sd->down.x);
@@ -446,7 +518,9 @@ video_add(Evas_Object *parent)
    evas_object_smart_callback_add(o, "button_change", _cb_button_change, obj);
    evas_object_smart_member_add(o, obj);
    evas_object_clip_set(o, sd->clip);
-   evas_object_raise(sd->o_event);
+
+   sd->o_img = evas_object_image_filled_add(e);
+   evas_object_smart_member_add(sd->o_img, obj);
 
    sd->o_event = evas_object_rectangle_add(e);
    evas_object_color_set(sd->o_event, 0, 0, 0, 0);
@@ -463,12 +537,29 @@ void
 video_file_set(Evas_Object *obj, const char *file)
 {
    Video *sd = evas_object_smart_data_get(obj);
+   const char *extn;
    if (!sd) return;
+   evas_object_hide(sd->o_img);
    evas_object_hide(sd->o_vid);
    evas_object_hide(sd->clip);
    eina_stringshare_replace(&(sd->file), file);
    emotion_object_file_set(sd->o_vid, sd->file);
    video_position_set(obj, 0.0);
+   if ((sd->file) && (sd->doart))
+     {
+        extn = strchr(sd->file, '.');
+        if (extn)
+          {
+             if ((!strcasecmp(extn, ".mp3")) ||
+                 (!strcasecmp(extn, ".oga")) ||
+                 (!strcasecmp(extn, ".aac")) ||
+                 (!strcasecmp(extn, ".flac")) ||
+                 (!strcasecmp(extn, ".wav")))
+               {
+                  _art_check(obj);
+               }
+          }
+     }
 }
 
 const char *
@@ -525,6 +616,22 @@ video_loop_get(Evas_Object *obj)
    Video *sd = evas_object_smart_data_get(obj);
    if (!sd) return EINA_FALSE;
    return sd->loop;
+}
+
+void
+video_art_set(Evas_Object *obj, Eina_Bool art)
+{
+   Video *sd = evas_object_smart_data_get(obj);
+   if (!sd) return;
+   sd->doart = art;
+}
+
+Eina_Bool
+video_art_get(Evas_Object *obj)
+{
+   Video *sd = evas_object_smart_data_get(obj);
+   if (!sd) return EINA_FALSE;
+   return sd->doart;
 }
 
 void
@@ -597,7 +704,7 @@ video_ratio_size_get(Evas_Object *obj, int *w, int *h)
    else
      {
         double ratio;
-        
+
         ratio = emotion_object_ratio_get(sd->o_vid);
         if (ratio > 0.0) sd->iw = (sd->ih * ratio) + 0.5;
         else ratio = (double)sd->iw / (double)sd->ih;

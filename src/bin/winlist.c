@@ -185,6 +185,7 @@ _fill_box(Evas_Object *win)
         evas_object_size_hint_min_set(o, w, h);
         
         o = video_add(win);
+        video_art_set(o, EINA_TRUE);
         evas_object_data_set(o, "base", base);
         evas_object_data_set(base, "video", o);
         video_mute_set(o, EINA_TRUE);

@@ -12,6 +12,8 @@ void video_play_set(Evas_Object *obj, Eina_Bool play);
 Eina_Bool video_play_get(Evas_Object *obj);
 void video_loop_set(Evas_Object *obj, Eina_Bool loop);
 Eina_Bool video_loop_get(Evas_Object *obj);
+void video_art_set(Evas_Object *obj, Eina_Bool art);
+Eina_Bool video_art_get(Evas_Object *obj);
 void video_fill_set(Evas_Object *obj, Eina_Bool fill);
 Eina_Bool video_fill_get(Evas_Object *obj);
 void video_position_set(Evas_Object *obj, double pos);
