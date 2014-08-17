@@ -261,6 +261,7 @@ collections {
          }
 
          part { name: "prefsize"; type: SPACER;
+            scale: 1;
             description { state: "default" 0.0;
                rel2.to: "controlbar";
                rel2.relative: 1.0 0.0;
