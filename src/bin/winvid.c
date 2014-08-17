@@ -86,7 +86,16 @@ static void
 _cb_play_finish(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUSED)
 {
    Inf *inf = evas_object_data_get(data, "inf");
-   if (!inf->playing) win_show(data, 160, 200);
+   if (!inf->playing)
+     {
+        Evas_Coord mw = 1, mh = 1;
+
+        elm_layout_signal_emit(inf->lay, "pref,size,on", "rage");
+        edje_object_message_signal_process(elm_layout_edje_get(inf->lay));
+        edje_object_size_min_calc(elm_layout_edje_get(inf->lay), &mw, &mh);
+        elm_layout_signal_emit(inf->lay, "pref,size,off", "rage");
+        win_show(data, mw, mh);
+     }
    inf->playing = EINA_FALSE;
 }
 

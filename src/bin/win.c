@@ -461,8 +461,14 @@ win_aspect_adjust(Evas_Object *win)
         if ((!video_has_video_get(inf->vid)) &&
             (video_has_audio_get(inf->vid)))
           {
-             w = 160;
-             h = 200;
+             Evas_Coord mw = 1, mh = 1;
+
+             elm_layout_signal_emit(inf->lay, "pref,size,on", "rage");
+             edje_object_message_signal_process(elm_layout_edje_get(inf->lay));
+             edje_object_size_min_calc(elm_layout_edje_get(inf->lay), &mw, &mh);
+             elm_layout_signal_emit(inf->lay, "pref,size,off", "rage");
+             w = mw;
+             h = mh;
           }
         win_show(win, w, h);
      }

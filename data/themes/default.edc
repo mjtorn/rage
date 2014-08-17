@@ -260,6 +260,27 @@ collections {
             }
          }
 
+         part { name: "prefsize"; type: SPACER;
+            description { state: "default" 0.0;
+               rel2.to: "controlbar";
+               rel2.relative: 1.0 0.0;
+            }
+            description { state: "pref" 0.0;
+               inherit: "default" 0.0;
+               min: 160 160;
+            }
+         }
+         program {
+            signal: "pref,size,on"; source: "rage";
+            action: STATE_SET "pref" 0.0;
+            target: "prefsize";
+         }
+         program {
+            signal: "pref,size,off"; source: "rage";
+            action: STATE_SET "default" 0.0;
+            target: "prefsize";
+         }
+
          part { name: "novid_clip"; type: RECT;
             description { state: "default" 0.0;
             }
