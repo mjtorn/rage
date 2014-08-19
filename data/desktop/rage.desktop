@@ -3,7 +3,9 @@
 Type=Application
 Name=Rage
 GenericName=Video Player
+GenericName[ru]=Видеоплеер
 Comment=Video player
+Comment[ru]=Видеоплеер
 Exec=rage
 Icon=rage
 Categories=AudioVideo;Player;
