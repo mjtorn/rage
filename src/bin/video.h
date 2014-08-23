@@ -6,6 +6,7 @@
 Evas_Object *video_add(Evas_Object *parent);
 void video_file_set(Evas_Object *obj, const char *file);
 const char *video_file_get(Evas_Object *obj);
+void video_sub_file_set(Evas_Object *obj, const char *file);
 void video_mute_set(Evas_Object *obj, Eina_Bool mute);
 Eina_Bool video_mute_get(Evas_Object *obj);
 void video_play_set(Evas_Object *obj, Eina_Bool play);
@@ -51,5 +52,6 @@ Eina_Bool video_lowquality_get(Evas_Object *obj);
 const char *video_meta_title_get(Evas_Object *obj);
 const char *video_meta_artist_get(Evas_Object *obj);
 const char *video_meta_album_get(Evas_Object *obj);
+void video_file_autosub_set(Evas_Object *obj, const char *file, const char *sub);
 
 #endif

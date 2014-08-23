@@ -571,6 +571,14 @@ video_file_get(Evas_Object *obj)
 }
 
 void
+video_sub_file_set(Evas_Object *obj, const char *file)
+{
+   Video *sd = evas_object_smart_data_get(obj);
+   if (!sd) return;
+   emotion_object_video_subtitle_file_set(sd->o_vid, file);
+}
+
+void
 video_mute_set(Evas_Object *obj, Eina_Bool mute)
 {
    Video *sd = evas_object_smart_data_get(obj);
@@ -955,6 +963,45 @@ video_meta_album_get(Evas_Object *obj)
    return emotion_object_meta_info_get(sd->o_vid, EMOTION_META_INFO_TRACK_ALBUM);
 }
 
+void
+video_file_autosub_set(Evas_Object *obj, const char *file, const char *sub)
+{
+   if ((file) && (!sub))
+     {
+        const char *subtypes[] =
+          {
+             ".srt",
+             ".SRT",
+             ".sub",
+             ".SUB",
+             NULL
+          };
+        char *sub = alloca(strlen(file) + 1 + 16);
+        char *p;
+        int i;
+        Eina_Bool found = EINA_FALSE;
+
+        strcpy(sub, file);
+        p = strchr(sub, '.');
+        if (p)
+          {
+             for (i = 0; subtypes[i]; i++)
+               {
+                  strcpy(p, subtypes[i]);
+                  if (ecore_file_exists(sub))
+                    {
+                       video_sub_file_set(obj, sub);
+                       found = EINA_TRUE;
+                       break;
+                    }
+               }
+          }
+        if (!found) video_sub_file_set(obj, NULL);
+     }
+   else video_sub_file_set(obj, sub);
+   video_file_set(obj, file);
+}
+
 // emotion_object_seekable_get
 // emotion_object_play_speed_set
 // emotion_object_play_speed_get
@@ -962,7 +1009,6 @@ video_meta_album_get(Evas_Object *obj)
 // emotion_object_buffer_size_get
 // emotion_object_video_mute_set
 // emotion_object_video_mute_get
-// emotion_object_video_subtitle_file_set
 // emotion_object_spu_mute_set
 // emotion_object_spu_mute_get
 // emotion_object_progress_info_get

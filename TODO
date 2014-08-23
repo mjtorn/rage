@@ -7,7 +7,6 @@
 * spu channel list/selection
 * video channel list/selection
 * handle non-seekable content (eg streams)
-* add subtitle file cmdline
 * loop all option
 * show busy anim until opened cb or failure
 * thumbnail picker show all thumbs for video in a grid to select position

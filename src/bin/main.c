@@ -27,11 +27,11 @@ elm_main(int argc, char **argv)
 {
    Evas_Object *win;
    char buf[4096];
-   const char *f;
    Eina_List *list = NULL;
    int i;
    Inf *inf;
    Config *config;
+   Winvid_Entry *vid = NULL;
 
    elm_need_efreet();
    config_init();
@@ -60,8 +60,23 @@ elm_main(int argc, char **argv)
                   config->emotion_engine = eina_stringshare_add(argv[i]);
                }
           }
+        else if (!strcmp(argv[i], "-sub"))
+          {
+             if (i < (argc - 1))
+               {
+                  i++;
+                  if (vid) eina_stringshare_replace(&(vid->sub), argv[i]);
+               }
+          }
         else
-          list = eina_list_append(list, eina_stringshare_add(argv[i]));
+          {
+             vid = calloc(1, sizeof(Winvid_Entry));
+             if (vid)
+               {
+                  vid->file = eina_stringshare_add(argv[i]);
+                  list = eina_list_append(list, vid);
+               }
+          }
      }
 
    elm_policy_set(ELM_POLICY_QUIT, ELM_POLICY_QUIT_LAST_WINDOW_CLOSED);
@@ -84,11 +99,18 @@ elm_main(int argc, char **argv)
      }
 
    evas_object_event_callback_add(win, EVAS_CALLBACK_RESIZE, _cb_resize, NULL);
-   evas_object_resize(win, 320, 200);
+   evas_object_resize(win,
+                      320 * elm_config_scale_get(),
+                      200 * elm_config_scale_get());
 
    win_video_init(win);
    win_video_file_list_set(win, list);
-   EINA_LIST_FREE(list, f) eina_stringshare_del(f);
+   EINA_LIST_FREE(list, vid)
+     {
+        if (vid->file) eina_stringshare_del(vid->file);
+        if (vid->sub) eina_stringshare_del(vid->sub);
+        free(vid);
+     }
 
    inf = evas_object_data_get(win, "inf");
    if (argc <= 1)

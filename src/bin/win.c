@@ -32,13 +32,18 @@ static void
 _cb_win_del(void *data EINA_UNUSED, Evas *e EINA_UNUSED, Evas_Object *obj, void *ev EINA_UNUSED)
 {
    Inf *inf = evas_object_data_get(obj, "inf");
-   const char *f;
+   Winvid_Entry *vid;
 
    if (inf->next_job) ecore_job_del(inf->next_job);
    if (inf->show_timeout) ecore_timer_del(inf->show_timeout);
    if (inf->drag_anim) ecore_animator_del(inf->drag_anim);
    if (inf->mouse_idle_timeout) ecore_timer_del(inf->mouse_idle_timeout);
-   EINA_LIST_FREE(inf->file_list, f) eina_stringshare_del(f);
+   EINA_LIST_FREE(inf->file_list, vid)
+     {
+        if (vid->file) eina_stringshare_del(vid->file);
+        if (vid->sub) eina_stringshare_del(vid->sub);
+        free(vid);
+     }
    evas_object_data_del(obj, "inf");
    free(inf);
 }
@@ -156,11 +161,11 @@ win_do_next(Evas_Object *win)
 }
 
 static void
-_restart_vid(Evas_Object *win, Evas_Object *lay, Evas_Object *vid, const char *file)
+_restart_vid(Evas_Object *win, Evas_Object *lay, Evas_Object *vid, const char *file, const char *sub)
 {
    video_position_set(vid, 0.0);
    video_play_set(vid, EINA_FALSE);
-   video_file_set(vid, file);
+   video_file_autosub_set(vid, file, sub);
    video_position_set(vid, 0.0);
    video_play_set(vid, EINA_TRUE);
    elm_layout_signal_emit(lay, "action,newvid", "rage");
@@ -172,7 +177,8 @@ void
 win_video_restart(Evas_Object *win)
 {
    Inf *inf = evas_object_data_get(win, "inf");
-   _restart_vid(win, inf->lay, inf->vid, inf->file_cur->data);
+   Winvid_Entry *vid = inf->file_cur->data;
+   _restart_vid(win, inf->lay, inf->vid, vid->file, vid->sub);
 }
 
 void
@@ -180,6 +186,7 @@ win_video_next(Evas_Object *win)
 {
    Inf *inf = evas_object_data_get(win, "inf");
    Eina_List *l;
+   Winvid_Entry *vid;
 
    if (!inf->file_list) return;
    if (!inf->file_cur) l = inf->file_list;
@@ -190,7 +197,8 @@ win_video_next(Evas_Object *win)
         return;
      }
    inf->file_cur = l;
-   _restart_vid(win, inf->lay, inf->vid, l->data);
+   vid = l->data;
+   _restart_vid(win, inf->lay, inf->vid, vid->file, vid->sub);
    win_list_sel_update(win);
 }
 
@@ -199,13 +207,15 @@ win_video_prev(Evas_Object *win)
 {
    Inf *inf = evas_object_data_get(win, "inf");
    Eina_List *l;
+   Winvid_Entry *vid;
 
    if (!inf->file_list) return;
    if (!inf->file_cur) l = eina_list_last(inf->file_list);
    else l = inf->file_cur->prev;
    if (!l) return;
    inf->file_cur = l;
-   _restart_vid(win, inf->lay, inf->vid, l->data);
+   vid = l->data;
+   _restart_vid(win, inf->lay, inf->vid, vid->file, vid->sub);
    win_list_sel_update(win);
 }
 
@@ -214,11 +224,13 @@ win_video_first(Evas_Object *win)
 {
    Inf *inf = evas_object_data_get(win, "inf");
    Eina_List *l;
+   Winvid_Entry *vid;
 
    if (!inf->file_list) return;
    l = inf->file_list;
    inf->file_cur = l;
-   _restart_vid(win, inf->lay, inf->vid, l->data);
+   vid = l->data;
+   _restart_vid(win, inf->lay, inf->vid, vid->file, vid->sub);
    win_list_sel_update(win);
 }
 
@@ -227,12 +239,14 @@ win_video_last(Evas_Object *win)
 {
    Inf *inf = evas_object_data_get(win, "inf");
    Eina_List *l;
+   Winvid_Entry *vid;
 
    if (!inf->file_list) return;
    l = eina_list_last(inf->file_list);
    if (!l) return;
    inf->file_cur = l;
-   _restart_vid(win, inf->lay, inf->vid, l->data);
+   vid = l->data;
+   _restart_vid(win, inf->lay, inf->vid, vid->file, vid->sub);
    win_list_sel_update(win);
 }
 
@@ -343,13 +357,15 @@ win_title_update(Evas_Object *win)
    Inf *inf = evas_object_data_get(win, "inf");
    const char *file, *s;
    char buf[4096];
+   Winvid_Entry *vid;
 
    if (!inf->file_cur)
      {
         elm_win_title_set(win, "Rage");
         return;
      }
-   file = inf->file_cur->data;
+   vid = inf->file_cur->data;
+   file = vid->file;
    if (!file)
      {
         elm_win_title_set(win, "Rage");

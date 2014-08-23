@@ -208,11 +208,19 @@ win_video_file_list_set(Evas_Object *win, Eina_List *list)
 {
    Inf *inf = evas_object_data_get(win, "inf");
    Eina_List *l, *list2 = NULL;
-   const char *f;
+   Winvid_Entry *vid;
 
-   EINA_LIST_FOREACH(list, l, f)
+   EINA_LIST_FOREACH(list, l, vid)
      {
-        list2 = eina_list_append(list2, eina_stringshare_add(f));
+        Winvid_Entry *vid2;
+
+        vid2 = calloc(1, sizeof(Winvid_Entry));
+        if (vid2)
+          {
+             if (vid->file) vid2->file = eina_stringshare_add(vid->file);
+             if (vid->sub) vid2->sub = eina_stringshare_add(vid->sub);
+             list2 = eina_list_append(list2, vid2);
+          }
      }
    inf->file_list = list2;
    win_video_next(win);
@@ -222,9 +230,12 @@ void
 win_video_insert(Evas_Object *win, const char *file)
 {
    Inf *inf = evas_object_data_get(win, "inf");
+   Winvid_Entry *vid;
 
-   inf->file_list = eina_list_append_relative_list
-     (inf->file_list, eina_stringshare_add(file), inf->file_cur);
+   vid = calloc(1, sizeof(Winvid_Entry));
+   vid->file = eina_stringshare_add(file);
+   inf->file_list = eina_list_append_relative_list(inf->file_list, vid,
+                                                   inf->file_cur);
    evas_object_data_set(win, "file_list", inf->file_list);
 }
 
