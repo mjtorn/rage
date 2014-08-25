@@ -21,6 +21,7 @@ requirements="\
    elementary >= ${efl_version} \
    edje >= ${efl_version} \
    emotion >= ${efl_version} \
+   eio >= ${efl_version} \
    "
 PKG_CHECK_MODULES([RAGE], [${requirements}])
 

@@ -1,4 +1,5 @@
 #include <Elementary.h>
+#include <Eio.h>
 #include "main.h"
 #include "win.h"
 #include "winvid.h"
@@ -60,37 +61,59 @@ _escape_parse(const char *str)
    return dest;
 }
 
-static Eina_Bool
-_recurse_dir(Evas_Object *win, const char *path)
+struct _recurse_data
 {
-   Eina_Bool ret = EINA_FALSE;
-   Eina_List *ls, *l;
-   char *p, *escape;
-   const char *full;
+   Evas_Object *win;
+   Eina_Bool inserted;
+};
 
-   ls = ecore_file_ls(path);
-   EINA_LIST_FOREACH(ls, l, p)
+static void
+_cb_recurse_end(void *data, Eio_File *f EINA_UNUSED)
+{
+   struct _recurse_data *d = data;
+   if (d->inserted)
      {
-        escape = _escape_parse(p);
-        full = eina_stringshare_printf("%s/%s", path, escape);
-        free(escape);
-        if (ecore_file_is_dir(full))
-          {
-             ret = _recurse_dir(win, full);
-             eina_stringshare_del(full);
-             continue;
-          }
-
-        printf("inserting '%s'\n", full);
-        win_video_insert(win, full);
-        eina_stringshare_del(full);
-        ret = EINA_TRUE;
+        win_video_next(d->win);
+        win_list_content_update(d->win);
      }
 
-   EINA_LIST_FREE(ls, p)
-     free(p);
+   free(d);
+}
 
-   return ret;
+static void
+_cb_recurse_error(void *data EINA_UNUSED, Eio_File *f EINA_UNUSED, int error)
+{
+   printf("error recursing: %d\n", error);
+}
+
+static Eina_Bool
+_cb_recurse_filter(void *data EINA_UNUSED, Eio_File *f EINA_UNUSED, const Eina_File_Direct_Info *info)
+{
+   return info->type == EINA_FILE_REG || info->type == EINA_FILE_DIR;
+}
+
+static void
+_cb_recurse(void *data, Eio_File *f EINA_UNUSED, const Eina_File_Direct_Info *info)
+{
+   struct _recurse_data *d = data;
+   char *path;
+   if (info->type == EINA_FILE_DIR)
+      return;
+
+   path = _escape_parse(info->path);
+   printf("inserting '%s'\n", path);
+   win_video_insert(d->win, path);
+   d->inserted = EINA_TRUE;
+   free(path);
+}
+
+static void
+_recurse_dir(Evas_Object *win, const char *path)
+{
+   struct _recurse_data *data = calloc(1, sizeof(*data));
+   data->win = win;
+   eio_dir_stat_ls(path, _cb_recurse_filter, _cb_recurse, _cb_recurse_end,
+                   _cb_recurse_error, data);
 }
 
 Eina_Bool
@@ -128,7 +151,7 @@ _cb_drop(void *data, Evas_Object *o EINA_UNUSED, Elm_Selection_Data *ev)
                               {
                                  if (ecore_file_is_dir(tt))
                                    {
-                                      inserted = _recurse_dir(win, tt);
+                                      _recurse_dir(win, tt);
                                    }
                                  else
                                    {
@@ -149,7 +172,7 @@ _cb_drop(void *data, Evas_Object *o EINA_UNUSED, Elm_Selection_Data *ev)
                               {
                                  if (ecore_file_is_dir(tt))
                                    {
-                                      inserted = _recurse_dir(win, tt);
+                                      _recurse_dir(win, tt);
                                    }
                                  else
                                    {
@@ -172,7 +195,7 @@ _cb_drop(void *data, Evas_Object *o EINA_UNUSED, Elm_Selection_Data *ev)
           {
              if (ecore_file_is_dir(tt))
                {
-                  inserted = _recurse_dir(win, tt);
+                  _recurse_dir(win, tt);
                }
              else
                {
@@ -193,10 +216,17 @@ _cb_drop(void *data, Evas_Object *o EINA_UNUSED, Elm_Selection_Data *ev)
 void
 dnd_init(Evas_Object *win, Evas_Object *tgt)
 {
+   eio_init();
    elm_drop_target_add(tgt,
                        ELM_SEL_FORMAT_TEXT | ELM_SEL_FORMAT_IMAGE,
                        _cb_drag_enter, win,
                        _cb_drag_leave, win,
                        _cb_drag_pos, win,
                        _cb_drop, win);
+}
+
+void
+dnd_shutdown(void)
+{
+   eio_shutdown();
 }

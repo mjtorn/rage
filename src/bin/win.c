@@ -48,6 +48,7 @@ _cb_win_del(void *data EINA_UNUSED, Evas *e EINA_UNUSED, Evas_Object *obj, void 
      }
    evas_object_data_del(obj, "inf");
    free(inf);
+   dnd_shutdown();
 }
 
 static void
