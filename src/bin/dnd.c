@@ -60,6 +60,39 @@ _escape_parse(const char *str)
    return dest;
 }
 
+static Eina_Bool
+_recurse_dir(Evas_Object *win, const char *path)
+{
+   Eina_Bool ret = EINA_FALSE;
+   Eina_List *ls, *l;
+   char *p, *escape;
+   const char *full;
+
+   ls = ecore_file_ls(path);
+   EINA_LIST_FOREACH(ls, l, p)
+     {
+        escape = _escape_parse(p);
+        full = eina_stringshare_printf("%s/%s", path, escape);
+        free(escape);
+        if (ecore_file_is_dir(full))
+          {
+             ret = _recurse_dir(win, full);
+             eina_stringshare_del(full);
+             continue;
+          }
+
+        printf("inserting '%s'\n", full);
+        win_video_insert(win, full);
+        eina_stringshare_del(full);
+        ret = EINA_TRUE;
+     }
+
+   EINA_LIST_FREE(ls, p)
+     free(p);
+
+   return ret;
+}
+
 Eina_Bool
 _cb_drop(void *data, Evas_Object *o EINA_UNUSED, Elm_Selection_Data *ev)
 {
@@ -94,8 +127,15 @@ _cb_drop(void *data, Evas_Object *o EINA_UNUSED, Elm_Selection_Data *ev)
                             tt = _escape_parse(tb);
                             if (tt)
                               {
-                                 win_video_insert(win, tt);
-                                 inserted = EINA_TRUE;
+                                 if (ecore_file_is_dir(tt))
+                                   {
+                                      inserted = _recurse_dir(win, tt);
+                                   }
+                                 else
+                                   {
+                                      win_video_insert(win, tt);
+                                      inserted = EINA_TRUE;
+                                   }
                                  free(tt);
                               }
                          }
@@ -108,8 +148,15 @@ _cb_drop(void *data, Evas_Object *o EINA_UNUSED, Elm_Selection_Data *ev)
                             tt = _escape_parse(tb);
                             if (tt)
                               {
-                                 win_video_insert(win, tt);
-                                 inserted = EINA_TRUE;
+                                 if (ecore_file_is_dir(tt))
+                                   {
+                                      inserted = _recurse_dir(win, tt);
+                                   }
+                                 else
+                                   {
+                                      win_video_insert(win, tt);
+                                      inserted = EINA_TRUE;
+                                   }
                                  free(tt);
                               }
                          }
@@ -124,8 +171,15 @@ _cb_drop(void *data, Evas_Object *o EINA_UNUSED, Elm_Selection_Data *ev)
         char *tt = _escape_parse(ev->data);
         if (tt)
           {
-             win_video_insert(win, tt);
-             inserted = EINA_TRUE;
+             if (ecore_file_is_dir(tt))
+               {
+                  inserted = _recurse_dir(win, tt);
+               }
+             else
+               {
+                  win_video_insert(win, tt);
+                  inserted = EINA_TRUE;
+               }
              free(tt);
           }
      }
