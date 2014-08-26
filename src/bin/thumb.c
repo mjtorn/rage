@@ -22,7 +22,7 @@ elm_main(int argc, char **argv)
    elm_app_compile_data_dir_set(PACKAGE_DATA_DIR);
    elm_app_info_set(elm_main, "rage", "themes/default.edj");
 
-   elm_config_engine_set("buffer");
+   elm_config_preferred_engine_set("buffer");
    win = elm_win_add(NULL, "Rage", ELM_WIN_BASIC);
    subwin = elm_win_add(win, "inlined", ELM_WIN_INLINED_IMAGE);
    image = elm_win_inlined_image_object_get(subwin);
