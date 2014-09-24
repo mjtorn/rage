@@ -154,6 +154,8 @@ _cb_recurse(void *data, Eio_File *f EINA_UNUSED, const Eina_File_Direct_Info *in
    struct _recurse_data *d = data;
    if (info->type == EINA_FILE_DIR)
       return;
+   else if (!emotion_object_extension_may_play_get(info->path))
+      return;
 
    d->list = eina_list_sorted_insert(d->list, EINA_COMPARE_CB(_pathcmp), _escape_parse(info->path));
 }
@@ -190,6 +192,7 @@ _cb_drop(void *data, Evas_Object *o EINA_UNUSED, Elm_Selection_Data *ev)
              free(esc);
              continue;
           }
+        else if (!emotion_object_extension_may_play_get(esc)) continue;
 
         playlist = eina_list_sorted_insert(playlist, EINA_COMPARE_CB(_pathcmp), esc);
      }
