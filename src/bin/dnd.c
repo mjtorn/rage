@@ -20,7 +20,7 @@ _cb_drag_leave(void *data EINA_UNUSED, Evas_Object *o EINA_UNUSED)
 void
 _cb_drag_pos(void *data EINA_UNUSED, Evas_Object *o EINA_UNUSED, Evas_Coord x, Evas_Coord y, Elm_Xdnd_Action action)
 {
-   printf("dnd at %i %i act:%i\n", x, y, action);
+   /* printf("dnd at %i %i act:%i\n", x, y, action); */
 }
 
 static int
