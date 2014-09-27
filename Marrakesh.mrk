@@ -1,0 +1,62 @@
+PROJ: Rage
+PROJICON: data/icons/rage.png
+BRIEF: A beautiful video media player
+VERSION: 0.1.0
+LICENSE: BSD-2
+COPYING: COPYING AUTHORS
+NEEDS: 1.11
+DOMAIN: rage
+REPO: http://git.enlightenment.org/apps/rage.git
+DEVREPO: git+ssh://git@git.enlightenment.org/apps/rage.git
+CONTACT: Carsten Haitzler <raster@rasterman.com>
+CATEGORY: media
+TAGS: video audio media film movies music player
+
+BIN: bin/rage
+SRC:
+rage_config.h
+src/bin/albumart.c
+src/bin/albumart.h
+src/bin/config.c
+src/bin/config.h
+src/bin/controls.c
+src/bin/controls.h
+src/bin/dnd.c
+src/bin/dnd.h
+src/bin/gesture.c
+src/bin/gesture.h
+src/bin/key.c
+src/bin/key.h
+src/bin/main.c
+src/bin/main.h
+src/bin/sha1.c
+src/bin/sha1.h
+src/bin/video.c
+src/bin/video.h
+src/bin/videothumb.c
+src/bin/videothumb.h
+src/bin/win.c
+src/bin/win.h
+src/bin/winlist.c
+src/bin/winlist.h
+src/bin/winvid.c
+src/bin/winvid.h
+DEPS:
+elementary eina eet evas ecore ecore-file edje emotion
+INC: src/bin
+
+BIN: lib/rage/utils/rage_thumb
+SRC:
+src/bin/thumb.c
+src/bin/sha1.c
+src/bin/sha1.h
+DEPS:
+elementary eina eet evas ecore ecore-file edje emotion
+INC: src/bin
+
+DATA:
+data/themes/default.edj > share/rage/themes/default.edj
+
+DESKTOP: data/desktop/rage.desktop
+
+ICON: data/icons/rage.png
