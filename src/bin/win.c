@@ -234,7 +234,8 @@ win_video_next(Evas_Object *win)
    else l = inf->file_cur->next;
    if (!l)
      {
-        elm_exit();
+        // Do not exit when hitting End
+        //elm_exit();
         return;
      }
    inf->file_cur = l;

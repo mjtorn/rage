@@ -36,7 +36,8 @@ _cb_stop(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUSED)
         if (inf->next_job) ecore_job_del(inf->next_job);
         inf->next_job = ecore_job_add(_cb_stop_next, data);
      }
-   else elm_exit();
+   // Called when the last video stops, do not exit
+   //else elm_exit();
 }
 
 static void
