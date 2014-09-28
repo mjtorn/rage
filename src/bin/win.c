@@ -235,13 +235,13 @@ _local_artwork_get(void *data)
 {
    Evas_Object *win = data;
    Inf *inf = evas_object_data_get(win, "inf");
-   
+
    if (!inf) return EINA_FALSE;
    if (!inf->vid) return EINA_FALSE;
-   
+
    const char *file = NULL;
    const char *filename = video_file_get(inf->vid);
-   
+
    Efreet_Uri *uri = efreet_uri_decode(filename);
    if (uri)
      {
@@ -267,7 +267,7 @@ _local_artwork_get(void *data)
 
              Evas_Object *artwork = video_meta_artwork_get(inf->vid, file, EMOTION_ARTWORK_PREVIEW_IMAGE);
              if (!artwork) artwork = video_meta_artwork_get(inf->vid, file, EMOTION_ARTWORK_IMAGE);
-	     
+
              if (artwork)
                {
                   evas_object_image_save(artwork, path, NULL, NULL);
@@ -281,7 +281,7 @@ _local_artwork_get(void *data)
                }
           }
       }
-  
+
 
    return EINA_TRUE;
 }
@@ -443,7 +443,8 @@ win_video_next(Evas_Object *win)
    if (!l)
      {
         if (inf->browse_mode) browser_show(win);
-        else elm_exit();
+        // Do not exit when hitting End
+        //else elm_exit();
         return EINA_FALSE;
      }
    inf->file_cur = l;

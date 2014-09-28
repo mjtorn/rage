@@ -46,7 +46,8 @@ _cb_stop(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUSED)
      {
         elm_layout_signal_emit(inf->lay, "state,default", "rage");
         if (inf->browse_mode) browser_show(data);
-        else elm_exit();
+        // Called when the last video stops, do not exit
+        //else elm_exit();
      }
    mpris_playback_status_change();
 }
