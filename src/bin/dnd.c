@@ -18,7 +18,7 @@ _cb_drag_leave(void *data EINA_UNUSED, Evas_Object *o EINA_UNUSED)
 }
 
 void
-_cb_drag_pos(void *data EINA_UNUSED, Evas_Object *o EINA_UNUSED, Evas_Coord x, Evas_Coord y, Elm_Xdnd_Action action)
+_cb_drag_pos(void *data EINA_UNUSED, Evas_Object *o EINA_UNUSED, Evas_Coord x EINA_UNUSED, Evas_Coord y EINA_UNUSED, Elm_Xdnd_Action action EINA_UNUSED)
 {
    /* printf("dnd at %i %i act:%i\n", x, y, action); */
 }
