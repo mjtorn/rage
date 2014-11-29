@@ -250,6 +250,41 @@ win_video_last(Evas_Object *win)
    win_list_sel_update(win);
 }
 
+void
+win_video_delete(Evas_Object *win)
+{
+   Inf *inf = evas_object_data_get(win, "inf");
+   Eina_List *l, *l_next;
+   Winvid_Entry *vid;
+
+   int direction = NULL; // -1 prev, 1 next
+
+   if (!inf->file_list) return;
+
+   // If we're able to delete something, do it,
+   // and decide on next/prev
+   if (win_video_have_next(win) || win_video_have_prev(win))
+     {
+        EINA_LIST_FOREACH_SAFE(inf->file_list, l, l_next, vid)
+          {
+             if (l == inf->file_cur)
+               {
+                  if (vid->file) eina_stringshare_del(vid->file);
+                  if (vid->sub) eina_stringshare_del(vid->sub);
+                  free(vid);
+                  inf->file_list = eina_list_remove_list(inf->file_list, l);
+                  direction = (l_next == NULL ? -1 : 1);
+                  break;
+               }
+          }
+     }
+
+   // Move to a direction and update playlist, which is confused
+   if (direction == -1) win_do_prev(win);
+   else if (direction == 1) win_do_next(win);
+   win_list_content_update(win);
+}
+
 Eina_Bool
 win_video_have_next(Evas_Object *win)
 {

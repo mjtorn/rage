@@ -130,6 +130,10 @@ key_handle(Evas_Object *win, Evas_Event_Key_Down *ev)
         if (win_video_have_next(win)) win_video_last(win);
         else win_video_next(win);
      }
+   else if (!strcmp(ev->key, "Delete"))
+     {
+        win_video_delete(win);
+     }
    else if ((!strcmp(ev->keyname, "m")) ||
             (!strcmp(ev->key, "XF86AudioMute")))
      {

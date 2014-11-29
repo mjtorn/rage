@@ -37,6 +37,7 @@ void win_video_next(Evas_Object *win);
 void win_video_prev(Evas_Object *win);
 void win_video_first(Evas_Object *win);
 void win_video_last(Evas_Object *win);
+void win_video_delete(Evas_Object *win);
 Eina_Bool win_video_have_next(Evas_Object *win);
 Eina_Bool win_video_have_prev(Evas_Object *win);
 Evas_Object *win_add(void);
