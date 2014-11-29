@@ -110,6 +110,13 @@ key_handle(Evas_Object *win, Evas_Event_Key_Down *ev)
         video_stop(inf->vid);
         elm_layout_signal_emit(inf->lay, "action,stop", "rage");
      }
+   else if (!strcmp(ev->keyname, "c"))
+     {
+        printf("(c)lear!\n");
+        video_stop(inf->vid);
+        elm_layout_signal_emit(inf->lay, "action,stop", "rage");
+        win_video_free(win);
+     }
    else if ((!strcmp(ev->key, "Prior")) ||
             (!strcmp(ev->key, "XF86AudioPrev")))
      {

@@ -240,6 +240,35 @@ win_video_insert(Evas_Object *win, const char *file)
 }
 
 void
+win_video_free(Evas_Object *win)
+{
+   Winvid_Entry *vid;
+   Inf *inf = evas_object_data_get(win, "inf");
+   if (!inf->file_list)
+     {
+        printf("AAAAIEEEEEE, no file_list\n");
+        return;
+     }
+
+   EINA_LIST_FREE(inf->file_list, vid)
+     {
+        printf("[%p] Free %s\n", vid, vid->file);
+        if (vid->file) eina_stringshare_del(vid->file);
+        if (vid->sub) eina_stringshare_del(vid->sub);
+        free(vid);
+     }
+
+   // Clean up inf state and reinit window
+   // to not confuse rage
+   inf->file_cur = NULL;
+   inf->vid = NULL;
+   win_video_init(win);
+
+   // Refresh to get rid of playlist icons/preview videos
+   win_list_content_update(win);
+}
+
+void
 win_video_goto(Evas_Object *win, Eina_List *l)
 {
    Inf *inf = evas_object_data_get(win, "inf");
