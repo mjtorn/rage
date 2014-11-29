@@ -73,6 +73,15 @@ _cb_mouse_move(void *data, Evas *evas EINA_UNUSED, Evas_Object *obj EINA_UNUSED,
    evas_object_hide(inf->event2);
 }
 
+static void
+_cb_mouse_down(void *data, Evas *evas EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info)
+{
+   Evas_Event_Mouse_Down *m_info = event_info;
+
+   if (m_info->flags & EVAS_BUTTON_DOUBLE_CLICK)
+     elm_win_fullscreen_set(data, !elm_win_fullscreen_get(data));
+}
+
 void
 win_do_play(Evas_Object *win)
 {
@@ -357,6 +366,8 @@ win_add(void)
                                   _cb_mouse_move, win);
    evas_object_event_callback_add(o, EVAS_CALLBACK_MOUSE_IN,
                                   _cb_mouse_move, win);
+   evas_object_event_callback_add(o, EVAS_CALLBACK_MOUSE_DOWN,
+                                  _cb_mouse_down, win);
    elm_object_part_content_set(inf->lay, "rage.gesture", o);
    gesture_init(win, o);
    dnd_init(win, o);
