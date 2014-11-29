@@ -1,6 +1,7 @@
 #include <Elementary.h>
 #include "main.h"
 #include "win.h"
+#include "winvid.h"
 #include "video.h"
 #include "key.h"
 #include "winlist.h"
