@@ -121,6 +121,7 @@ elm_main(int argc, char **argv)
      {
         if (vid->file) eina_stringshare_del(vid->file);
         if (vid->sub) eina_stringshare_del(vid->sub);
+        if (vid->uri) efreet_uri_free(vid->uri);
         free(vid);
      }
 

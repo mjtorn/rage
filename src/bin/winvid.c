@@ -219,6 +219,7 @@ win_video_file_list_set(Evas_Object *win, Eina_List *list)
           {
              if (vid->file) vid2->file = eina_stringshare_add(vid->file);
              if (vid->sub) vid2->sub = eina_stringshare_add(vid->sub);
+             vid2->uri = efreet_uri_decode(vid->file);
              list2 = eina_list_append(list2, vid2);
           }
      }
@@ -234,6 +235,7 @@ win_video_insert(Evas_Object *win, const char *file)
 
    vid = calloc(1, sizeof(Winvid_Entry));
    vid->file = eina_stringshare_add(file);
+   vid->uri = efreet_uri_decode(vid->file);
    inf->file_list = eina_list_append_relative_list(inf->file_list, vid,
                                                    inf->file_cur);
    evas_object_data_set(win, "file_list", inf->file_list);
@@ -255,6 +257,7 @@ win_video_free(Evas_Object *win)
         printf("[%p] Free %s\n", vid, vid->file);
         if (vid->file) eina_stringshare_del(vid->file);
         if (vid->sub) eina_stringshare_del(vid->sub);
+        if (vid->uri) efreet_uri_free(vid->uri);
         free(vid);
      }
 

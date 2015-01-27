@@ -174,7 +174,7 @@ _fill_box(Evas_Object *win)
         elm_layout_signal_callback_add(o, "rage,selected", "rage", _cb_selected, win);
         evas_object_data_set(o, "list", l);
 
-        s = ecore_file_file_get(vid->file);
+        s = ecore_file_file_get(vid->uri ? vid->uri->path : vid->file);
         if ((s) && (s[0] != 0)) elm_object_part_text_set(o, "rage.title", s);
         else elm_object_part_text_set(o, "rage.title", vid->file);
 

@@ -4,6 +4,7 @@
 typedef struct _Winvid_Entry
 {
    const char *file;
+   Efreet_Uri *uri;
    const char *sub;
 } Winvid_Entry;
 

@@ -42,6 +42,7 @@ _cb_win_del(void *data EINA_UNUSED, Evas *e EINA_UNUSED, Evas_Object *obj, void 
      {
         if (vid->file) eina_stringshare_del(vid->file);
         if (vid->sub) eina_stringshare_del(vid->sub);
+        if (vid->uri) efreet_uri_free(vid->uri);
         free(vid);
      }
    evas_object_data_del(obj, "inf");
@@ -280,6 +281,7 @@ win_video_delete(Evas_Object *win)
                {
                   if (vid->file) eina_stringshare_del(vid->file);
                   if (vid->sub) eina_stringshare_del(vid->sub);
+                  if (vid->uri) efreet_uri_free(vid->uri);
                   free(vid);
                   inf->file_list = eina_list_remove_list(inf->file_list, l);
                   direction = (l_next == NULL ? -1 : 1);
@@ -425,7 +427,7 @@ win_title_update(Evas_Object *win)
      }
    else
      {
-        s = ecore_file_file_get(file);
+        s = ecore_file_file_get(vid->uri ? vid->uri->path : file);
         if ((s) && (s[0] != 0))
           snprintf(buf, sizeof(buf), "Rage: %s", s);
         else
