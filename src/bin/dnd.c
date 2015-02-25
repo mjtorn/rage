@@ -6,6 +6,9 @@
 #include "winlist.h"
 #include "dnd.h"
 
+static int pending_dir = 0;
+static Eina_List *playlist = NULL;
+
 void
 _cb_drag_enter(void *data EINA_UNUSED, Evas_Object *o EINA_UNUSED)
 {
@@ -22,6 +25,31 @@ void
 _cb_drag_pos(void *data EINA_UNUSED, Evas_Object *o EINA_UNUSED, Evas_Coord x EINA_UNUSED, Evas_Coord y EINA_UNUSED, Elm_Xdnd_Action action EINA_UNUSED)
 {
    /* printf("dnd at %i %i act:%i\n", x, y, action); */
+}
+
+static void
+_dnd_finish(Evas_Object *win)
+{
+   Eina_List *l;
+   char *path;
+
+   if (!eina_list_count(playlist))
+      goto end;
+
+   EINA_LIST_FOREACH(playlist, l, path)
+     {
+        printf("inserting '%s'\n", path);
+        win_video_insert(win, path);
+        free(path);
+     }
+
+   win_video_next(win);
+   win_list_content_update(win);
+
+end:
+   pending_dir = 0;
+   eina_list_free(playlist);
+   playlist = NULL;
 }
 
 static int
@@ -64,18 +92,46 @@ _escape_parse(const char *str)
 struct _recurse_data
 {
    Evas_Object *win;
-   Eina_Bool inserted;
+   Eina_List *list;
 };
+
+static int
+_pathcmp(const char *p1, const char *p2)
+{
+   int i = 0;
+
+   if (!p1)
+      return 1;
+
+   if (!p2)
+      return -1;
+
+   /* skip common path */
+   while (p1[i] == p2[i])
+      ++i;
+
+   return strcasecmp(p1+i, p2+i);
+}
 
 static void
 _cb_recurse_end(void *data, Eio_File *f EINA_UNUSED)
 {
    struct _recurse_data *d = data;
-   if (d->inserted)
+
+   if (!eina_list_count(d->list))
+      goto end;
+
+   if (!playlist)
      {
-        win_video_next(d->win);
-        win_list_content_update(d->win);
+        playlist = d->list;
+        goto end;
      }
+
+   playlist = eina_list_sorted_merge(playlist, d->list, EINA_COMPARE_CB(_pathcmp));
+
+end:
+   if (--pending_dir == 0)
+       _dnd_finish(d->win);
 
    free(d);
 }
@@ -96,15 +152,10 @@ static void
 _cb_recurse(void *data, Eio_File *f EINA_UNUSED, const Eina_File_Direct_Info *info)
 {
    struct _recurse_data *d = data;
-   char *path;
    if (info->type == EINA_FILE_DIR)
       return;
 
-   path = _escape_parse(info->path);
-   printf("inserting '%s'\n", path);
-   win_video_insert(d->win, path);
-   d->inserted = EINA_TRUE;
-   free(path);
+   d->list = eina_list_sorted_insert(d->list, EINA_COMPARE_CB(_pathcmp), _escape_parse(info->path));
 }
 
 static void
@@ -120,96 +171,35 @@ Eina_Bool
 _cb_drop(void *data, Evas_Object *o EINA_UNUSED, Elm_Selection_Data *ev)
 {
    Evas_Object *win = data;
-   Eina_Bool inserted = EINA_FALSE;
+   char **plist, **p, *esc;
 
-   if (!ev->data) return EINA_TRUE;
-   if (strchr(ev->data, '\n'))
-     {
-        char *p, *p2, *p3, *tb, *tt;
+   if (!ev->data)
+      return EINA_TRUE;
 
-        tb = malloc(strlen(ev->data) + 1);
-        if (tb)
-          {
-             for (p = ev->data; p;)
-               {
-                  p2 = strchr(p, '\n');
-                  p3 = strchr(p, '\r');
-                  if (p2 && p3)
-                    {
-                       if (p3 < p2) p2 = p3;
-                    }
-                  if (p2)
-                    {
-                       strncpy(tb, p, p2 - p);
-                       tb[p2 - p] = 0;
-                       p = p2;
-                       while ((*p) && (isspace(*p))) p++;
-                       if (strlen(tb) > 0)
-                         {
-                            tt = _escape_parse(tb);
-                            if (tt)
-                              {
-                                 if (ecore_file_is_dir(tt))
-                                   {
-                                      _recurse_dir(win, tt);
-                                   }
-                                 else
-                                   {
-                                      win_video_insert(win, tt);
-                                      inserted = EINA_TRUE;
-                                   }
-                                 free(tt);
-                              }
-                         }
-                    }
-                  else
-                    {
-                       strcpy(tb, p);
-                       if (strlen(tb) > 0)
-                         {
-                            tt = _escape_parse(tb);
-                            if (tt)
-                              {
-                                 if (ecore_file_is_dir(tt))
-                                   {
-                                      _recurse_dir(win, tt);
-                                   }
-                                 else
-                                   {
-                                      win_video_insert(win, tt);
-                                      inserted = EINA_TRUE;
-                                   }
-                                 free(tt);
-                              }
-                         }
-                       break;
-                    }
-               }
-             free(tb);
-          }
-     }
-   else
+   plist = eina_str_split((char *) ev->data, "\n", -1);
+   for (p = plist; *p != NULL; ++p)
      {
-        char *tt = _escape_parse(ev->data);
-        if (tt)
+        esc = _escape_parse(*p);
+        if (!esc)
+           continue;
+
+        if (ecore_file_is_dir(esc))
           {
-             if (ecore_file_is_dir(tt))
-               {
-                  _recurse_dir(win, tt);
-               }
-             else
-               {
-                  win_video_insert(win, tt);
-                  inserted = EINA_TRUE;
-               }
-             free(tt);
+             pending_dir++;
+             _recurse_dir(win, esc);
+             free(esc);
+             continue;
           }
+
+        playlist = eina_list_sorted_insert(playlist, EINA_COMPARE_CB(_pathcmp), esc);
      }
-   if (inserted)
-     {
-        win_video_next(win);
-        win_list_content_update(win);
-     }
+
+   free(*plist);
+   free(plist);
+
+   if (!pending_dir)
+      _dnd_finish(win);
+
    return EINA_TRUE;
 }
 
