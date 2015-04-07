@@ -267,7 +267,7 @@ win_video_delete(Evas_Object *win)
    Eina_List *l, *l_next;
    Winvid_Entry *vid;
 
-   int direction = NULL; // -1 prev, 1 next
+   int direction = 0; // -1 prev, 1 next
 
    if (!inf->file_list) return;
 
@@ -284,7 +284,7 @@ win_video_delete(Evas_Object *win)
                   if (vid->uri) efreet_uri_free(vid->uri);
                   free(vid);
                   inf->file_list = eina_list_remove_list(inf->file_list, l);
-                  direction = (l_next == NULL ? -1 : 1);
+                  direction = (l_next == 0 ? -1 : 1);
                   break;
                }
           }
