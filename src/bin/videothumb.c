@@ -371,7 +371,20 @@ videothumb_file_set(Evas_Object *obj, const char *file, double pos)
    if ((sd->file == file) && (sd->pos == pos)) return;
    if (sd->file) eina_stringshare_del(sd->file);
    sd->file = eina_stringshare_add(file);
-   sd->realpath = ecore_file_realpath(sd->file);
+   if (!strncasecmp(sd->file, "file:/", 6))
+     {
+        Efreet_Uri *uri = efreet_uri_decode(sd->file);
+        if (uri)
+          {
+             sd->realpath = strdup(uri->path);
+             efreet_uri_free(uri);
+          }
+     }
+   else if ((!strncasecmp(sd->file, "http:/", 6)) ||
+            (!strncasecmp(sd->file, "https:/", 7)))
+     sd->realpath = strdup(sd->file);
+   else
+     sd->realpath = ecore_file_realpath(sd->file);
    sd->pos = pos;
    _videothumb_eval(obj, EINA_TRUE);
 }
