@@ -20,6 +20,33 @@ static FILE *fout = NULL;
 static Evas_Object *fetchwin = NULL;
 
 static char *
+_inpath(const char *file)
+{
+   char *realpath = NULL;
+
+   if (!strncasecmp(file, "file:/", 6))
+     {
+        Efreet_Uri *uri = efreet_uri_decode(file);
+        if (uri)
+          {
+             realpath = ecore_file_realpath(uri->path);
+             efreet_uri_free(uri);
+          }
+     }
+   else if ((!strncasecmp(file, "http:/", 6)) ||
+            (!strncasecmp(file, "https:/", 7)))
+     realpath = strdup(file);
+   else
+     realpath = ecore_file_realpath(file);
+   if (realpath && (!realpath[0]))
+     {
+        free(realpath);
+        return NULL;
+     }
+   return realpath;
+}
+
+static char *
 _thumbpath(const char *file)
 {
    char buf_base[PATH_MAX];
@@ -202,7 +229,7 @@ albumart_find(Evas_Object *win, Evas_Object *vid)
 {
    const char *file, *album, *artist, *title;
    Eina_Strbuf *sb;
-   char *realfile, *path;
+   char *path;
 
    if (fetchfile)
      {
@@ -236,9 +263,7 @@ albumart_find(Evas_Object *win, Evas_Object *vid)
 
    file = video_file_get(vid);
    if (!file) return;
-   realfile = ecore_file_realpath(file);
-   if (!realfile) fetchfile = strdup(file);
-   else fetchfile = realfile;
+   fetchfile = _inpath(file);
 
    path = _thumbpath(fetchfile);
    if (path)
