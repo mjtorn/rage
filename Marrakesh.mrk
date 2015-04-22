@@ -1,10 +1,10 @@
 PROJ: Rage
 PROJICON: data/icons/rage.png
 BRIEF: A beautiful video media player
-VERSION: 0.1.0
+VERSION: 0.1.2
 LICENSE: BSD-2
 COPYING: COPYING AUTHORS
-NEEDS: 1.11
+NEEDS: 1.13
 DOMAIN: rage
 REPO: http://git.enlightenment.org/apps/rage.git
 DEVREPO: git+ssh://git@git.enlightenment.org/apps/rage.git
