@@ -50,10 +50,23 @@ _art_check(Evas_Object *obj)
      }
    if (sd->doart)
      {
-        char *thumb = NULL, *realfile;
+        char *thumb = NULL, *realfile = NULL;
 
         evas_object_show(sd->o_img);
-        realfile = ecore_file_realpath(sd->file);
+        if (!strncasecmp(sd->file, "file:/", 6))
+          {
+             Efreet_Uri *uri = efreet_uri_decode(sd->file);
+             if (uri)
+               {
+                  realfile = ecore_file_realpath(uri->path);
+                  efreet_uri_free(uri);
+               }
+          }
+        else if ((!strncasecmp(sd->file, "http:/", 6)) ||
+                 (!strncasecmp(sd->file, "https:/", 7)))
+          realfile = strdup(sd->file);
+        else
+          realfile = ecore_file_realpath(sd->file);
         if (realfile)
           {
              thumb = albumart_file_get(realfile);

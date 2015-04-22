@@ -376,7 +376,7 @@ videothumb_file_set(Evas_Object *obj, const char *file, double pos)
         Efreet_Uri *uri = efreet_uri_decode(sd->file);
         if (uri)
           {
-             sd->realpath = strdup(uri->path);
+             sd->realpath = ecore_file_realpath(uri->path);
              efreet_uri_free(uri);
           }
      }
