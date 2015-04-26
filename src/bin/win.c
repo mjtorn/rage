@@ -332,7 +332,11 @@ win_add(void)
    if (!inf) return NULL;
 
    win = elm_win_add(NULL, "Rage", ELM_WIN_BASIC);
-   if (!win) return NULL;
+   if (!win)
+     {
+        free(inf);
+        return NULL;
+     }
 
    elm_win_title_set(win, "Rage");
    elm_win_autodel_set(win, EINA_TRUE);
