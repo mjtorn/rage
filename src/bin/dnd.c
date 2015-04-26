@@ -103,7 +103,7 @@ _cb_drop(void *data, Evas_Object *o EINA_UNUSED, Elm_Selection_Data *ev)
    if (strchr(ev->data, '\n'))
      {
         char *p, *p2, *p3, *tb, *tt;
-        
+
         tb = malloc(strlen(ev->data) + 1);
         if (tb)
           {
@@ -115,7 +115,6 @@ _cb_drop(void *data, Evas_Object *o EINA_UNUSED, Elm_Selection_Data *ev)
                     {
                        if (p3 < p2) p2 = p3;
                     }
-                  else if (!p2) p3 = p2;
                   if (p2)
                     {
                        strncpy(tb, p, p2 - p);
