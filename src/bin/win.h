@@ -10,6 +10,7 @@ struct _Inf
    Ecore_Job *next_job;
    Ecore_Timer *show_timeout;
    Ecore_Timer *mouse_idle_timeout;
+   Ecore_Timer *albumart_timeout;
    Ecore_Animator *drag_anim;
    double last_action;
    double jump;

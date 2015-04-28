@@ -38,6 +38,7 @@ _cb_win_del(void *data EINA_UNUSED, Evas *e EINA_UNUSED, Evas_Object *obj, void 
    if (inf->show_timeout) ecore_timer_del(inf->show_timeout);
    if (inf->drag_anim) ecore_animator_del(inf->drag_anim);
    if (inf->mouse_idle_timeout) ecore_timer_del(inf->mouse_idle_timeout);
+   if (inf->albumart_timeout) ecore_timer_del(inf->albumart_timeout);
    EINA_LIST_FREE(inf->file_list, vid)
      {
         if (vid->file) eina_stringshare_del(vid->file);
@@ -81,6 +82,22 @@ _cb_mouse_down(void *data, Evas *evas EINA_UNUSED, Evas_Object *obj EINA_UNUSED,
 
    if (m_info->flags & EVAS_BUTTON_DOUBLE_CLICK)
      elm_win_fullscreen_set(data, !elm_win_fullscreen_get(data));
+}
+
+static Eina_Bool
+_cb_albumart_delay(void *data)
+{
+   Evas_Object *win = data;
+   Inf *inf = evas_object_data_get(win, "inf");
+
+   if (!inf) return EINA_FALSE;
+   inf->albumart_timeout = NULL;
+   if (!inf->vid) return EINA_FALSE;
+
+   if ((!video_has_video_get(inf->vid)) && (video_has_audio_get(inf->vid)))
+     albumart_find(win, inf->vid);
+   else albumart_find(win, NULL);
+   return EINA_FALSE;
 }
 
 void
@@ -497,8 +514,8 @@ win_show(Evas_Object *win, int w, int h)
           }
         evas_object_show(win);
      }
-   if (!video_has_video_get(inf->vid)) albumart_find(win, inf->vid);
-   else albumart_find(win, NULL);
+   if (inf->albumart_timeout) ecore_timer_del(inf->albumart_timeout);
+   inf->albumart_timeout = ecore_timer_add(0.2, _cb_albumart_delay, win);
 
    if (!video_has_video_get(inf->vid))
      elm_layout_signal_emit(inf->lay, "state,novideo", "rage");
