@@ -1805,7 +1805,7 @@ collections {
          part { name: "listevent2"; type: RECT; repeat_events: 1;
             description { state: "default" 0.0;
                color: 0 0 0 0;
-               rel2.relative: 0.2 1.0;
+               rel2.relative: 0.8 1.0;
             }
          }
          program {
