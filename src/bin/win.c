@@ -29,6 +29,8 @@ _cb_unfullscreen(void *data EINA_UNUSED, Evas_Object *obj, void *event EINA_UNUS
 }
 
 static void
+_cb_mouse_move(void *data, Evas *evas, Evas_Object *obj, void *event_info);
+static void
 _cb_win_del(void *data EINA_UNUSED, Evas *e EINA_UNUSED, Evas_Object *obj, void *ev EINA_UNUSED)
 {
    Inf *inf = evas_object_data_get(obj, "inf");
@@ -46,6 +48,17 @@ _cb_win_del(void *data EINA_UNUSED, Evas *e EINA_UNUSED, Evas_Object *obj, void 
         if (vid->uri) efreet_uri_free(vid->uri);
         free(vid);
      }
+   evas_object_event_callback_del_full(inf->event, EVAS_CALLBACK_MOUSE_MOVE,
+                                  _cb_mouse_move, obj);
+   evas_object_event_callback_del_full(inf->event, EVAS_CALLBACK_MOUSE_IN,
+                                  _cb_mouse_move, obj);
+   evas_object_event_callback_del_full(inf->event, EVAS_CALLBACK_MOUSE_DOWN,
+                                  _cb_mouse_move, obj);
+   evas_object_event_callback_del_full(inf->event2, EVAS_CALLBACK_MOUSE_MOVE,
+                                  _cb_mouse_move, obj);
+   evas_object_event_callback_del_full(inf->event2, EVAS_CALLBACK_MOUSE_OUT,
+                                  _cb_mouse_move, obj);
+
    evas_object_data_del(obj, "inf");
    free(inf);
    dnd_shutdown();
