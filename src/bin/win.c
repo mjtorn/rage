@@ -410,6 +410,7 @@ win_add(void)
    dnd_init(win, o);
 
    o = elm_button_add(win);
+   elm_object_focus_move_policy_set(o, ELM_FOCUS_MOVE_POLICY_CLICK);
    evas_object_size_hint_weight_set(o, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
    elm_win_resize_object_add(win, o);
    evas_object_color_set(o, 0, 0, 0, 0);
@@ -424,6 +425,7 @@ win_add(void)
 
    // a dummy button to collect key events and have focus
    o = elm_button_add(win);
+   elm_object_focus_highlight_style_set(o, "blank");
    evas_object_size_hint_weight_set(o, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
    elm_win_resize_object_add(win, o);
    evas_object_lower(o);
