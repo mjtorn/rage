@@ -351,6 +351,8 @@ _smart_del(Evas_Object *obj)
    if (sd->restart_job) ecore_job_del(sd->restart_job);
 
    _parent_sc.del(obj);
+
+   emotion_shutdown();
 }
 
 static void
