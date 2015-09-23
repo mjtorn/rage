@@ -1,7 +1,15 @@
-#include <string.h>
-#include <arpa/inet.h>
+#include <Eina.h>
 
 #define SHSH(n, v) ((((v) << (n)) & 0xffffffff) | ((v) >> (32 - (n))))
+
+static inline int
+int_to_bigendian(int in)
+{
+   static const unsigned char test[4] = { 0x11, 0x22, 0x33, 0x44 };
+   static const unsigned int *test_i = (const unsigned int *)test;
+   if (test_i[0] == 0x44332211) return eina_swap32(in);
+   return in;
+}
 
 int
 sha1(unsigned char *data, int size, unsigned char *dst)
@@ -85,11 +93,11 @@ sha1(unsigned char *data, int size, unsigned char *dst)
           }
      }
 
-   t = htonl(digest[0]); digest[0] = t;
-   t = htonl(digest[1]); digest[1] = t;
-   t = htonl(digest[2]); digest[2] = t;
-   t = htonl(digest[3]); digest[3] = t;
-   t = htonl(digest[4]); digest[4] = t;
+   t = int_to_bigendian(digest[0]); digest[0] = t;
+   t = int_to_bigendian(digest[1]); digest[1] = t;
+   t = int_to_bigendian(digest[2]); digest[2] = t;
+   t = int_to_bigendian(digest[3]); digest[3] = t;
+   t = int_to_bigendian(digest[4]); digest[4] = t;
 
    memcpy(dst, digest, 5 * 4);
    return 1;
