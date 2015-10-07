@@ -8,6 +8,8 @@
 
 static int pending_dir = 0;
 static Eina_List *playlist = NULL;
+static Eina_Bool do_append = EINA_FALSE;
+static Eina_Bool was_empty = EINA_FALSE;
 
 void
 _cb_drag_enter(void *data EINA_UNUSED, Evas_Object *o EINA_UNUSED)
@@ -38,12 +40,15 @@ _dnd_finish(Evas_Object *win)
 
    EINA_LIST_FOREACH(playlist, l, path)
      {
-        printf("inserting '%s'\n", path);
-        win_video_insert(win, path);
+        printf("%s '%s'\n", (do_append ? "append" : "insert"), path);
+        if (do_append) win_video_append(win, path);
+        else win_video_insert(win, path);
         free(path);
      }
 
-   win_video_next(win);
+   // Automaitc playback is started only for every new insert and
+   // the first song even if it's an append
+   if (!do_append || was_empty) win_video_next(win);
    win_list_content_update(win);
 
 end:
@@ -160,6 +165,15 @@ _cb_recurse(void *data, Eio_File *f EINA_UNUSED, const Eina_File_Direct_Info *in
    d->list = eina_list_sorted_insert(d->list, EINA_COMPARE_CB(_pathcmp), _escape_parse(info->path));
 }
 
+static Eina_Bool
+_has_empty_playlist(Evas_Object *win)
+{
+   Inf *inf = evas_object_data_get(win, "inf");
+   Eina_Bool is_empty = eina_list_count(inf->file_list) == 0;
+   printf("Playlist is empty? %s\n", (is_empty ? "yes" : "no"));
+   return is_empty;
+}
+
 static void
 _recurse_dir(Evas_Object *win, const char *path)
 {
@@ -178,6 +192,13 @@ _cb_drop(void *data, Evas_Object *o EINA_UNUSED, Elm_Selection_Data *ev)
    if (!ev->data)
       return EINA_TRUE;
 
+   // Did we start with a clear list? affects DND
+   was_empty = _has_empty_playlist(win);
+
+   // Pressing alt during dnd puts the selection in ask mode,
+   // but we want it to mean insert in rage.
+   do_append = ev->action != ELM_XDND_ACTION_ASK;
+
    plist = eina_str_split((char *) ev->data, "\n", -1);
    for (p = plist; *p != NULL; ++p)
      {
@@ -194,6 +215,7 @@ _cb_drop(void *data, Evas_Object *o EINA_UNUSED, Elm_Selection_Data *ev)
           }
         else if (!emotion_object_extension_may_play_get(esc)) continue;
 
+        printf("kk, insert one file %s\n", esc);
         playlist = eina_list_sorted_insert(playlist, EINA_COMPARE_CB(_pathcmp), esc);
      }
 

@@ -32,7 +32,10 @@ automatically. If the filename is video.mp4 or video.avi, video.mov
 etc. then rage looks for video.srt or video.sub and automatically will
 use it.
 
-If you DND files onto its window, they are added to the playlist.
+If you DND files onto its window, they are appended to the playlist.
+Press down Alt during DND to insert them to the playlist after the
+current video.
+
 Mouse over the right of the window brings up the playlist. Mouse over
 the position bar at the bottom, if it's a video, brings up a video
 thumbnail of that position (it may take a while to generate thumbnails
