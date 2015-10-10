@@ -9,6 +9,7 @@
 #include "controls.h"
 #include "gesture.h"
 #include "albumart.h"
+#include "browser.h"
 
 static void
 _cb_fullscreen(void *data EINA_UNUSED, Evas_Object *obj, void *event EINA_UNUSED)
@@ -23,9 +24,12 @@ static void
 _cb_unfullscreen(void *data EINA_UNUSED, Evas_Object *obj, void *event EINA_UNUSED)
 {
    Inf *inf = evas_object_data_get(obj, "inf");
-   elm_layout_signal_emit(inf->lay, "state,win,normal", "rage");
-   elm_win_noblank_set(obj, EINA_FALSE);
-   evas_object_hide(inf->event2);
+   if (!elm_win_fullscreen_get(obj))
+     {
+        elm_layout_signal_emit(inf->lay, "state,win,normal", "rage");
+        elm_win_noblank_set(obj, EINA_FALSE);
+        evas_object_hide(inf->event2);
+     }
 }
 
 static void
@@ -98,6 +102,23 @@ _cb_mouse_down(void *data, Evas *evas EINA_UNUSED, Evas_Object *obj EINA_UNUSED,
      elm_win_fullscreen_set(data, !elm_win_fullscreen_get(data));
 }
 
+static void
+_cb_fetched(void *data)
+{
+   Evas_Object *win = data;
+   Inf *inf = evas_object_data_get(win, "inf");
+   const char *file;
+
+   if (!inf->vid) return;
+   file = video_file_get(inf->vid);
+   if (file)
+     {
+        char *path = albumart_file_get(file);
+        win_art(win, path);
+        free(path);
+     }
+}
+
 static Eina_Bool
 _cb_albumart_delay(void *data)
 {
@@ -109,8 +130,15 @@ _cb_albumart_delay(void *data)
    if (!inf->vid) return EINA_FALSE;
 
    if ((!video_has_video_get(inf->vid)) && (video_has_audio_get(inf->vid)))
-     albumart_find(win, inf->vid);
-   else albumart_find(win, NULL);
+     {
+        const char *file = video_file_get(inf->vid);
+        const char *title = video_meta_title_get(inf->vid);
+        const char *artist = video_meta_artist_get(inf->vid);
+        const char *album = video_meta_album_get(inf->vid);
+
+        albumart_find(file, title, artist, album, _cb_fetched, win);
+     }
+   else albumart_find(NULL, NULL, NULL, NULL, NULL, NULL);
    return EINA_FALSE;
 }
 
@@ -234,7 +262,8 @@ win_video_next(Evas_Object *win)
    else l = inf->file_cur->next;
    if (!l)
      {
-        elm_exit();
+        if (inf->browse_mode) browser_show(win);
+        else elm_exit();
         return;
      }
    inf->file_cur = l;

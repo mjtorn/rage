@@ -552,7 +552,6 @@ void
 video_file_set(Evas_Object *obj, const char *file)
 {
    Video *sd = evas_object_smart_data_get(obj);
-   const char *extn;
    if (!sd) return;
    evas_object_hide(sd->o_img);
    evas_object_hide(sd->o_vid);
@@ -562,10 +561,11 @@ video_file_set(Evas_Object *obj, const char *file)
    video_position_set(obj, 0.0);
    if ((sd->file) && (sd->doart))
      {
-        extn = strchr(sd->file, '.');
+        const char *extn = strchr(sd->file, '.');
         if (extn)
           {
              if ((!strcasecmp(extn, ".mp3")) ||
+                 (!strcasecmp(extn, ".m4a")) ||
                  (!strcasecmp(extn, ".oga")) ||
                  (!strcasecmp(extn, ".aac")) ||
                  (!strcasecmp(extn, ".flac")) ||

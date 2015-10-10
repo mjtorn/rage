@@ -17,7 +17,9 @@ static Eina_Strbuf *sb_result = NULL;
 static Eina_Bool fetch_image = EINA_FALSE;
 static char *fetchfile = NULL;
 static FILE *fout = NULL;
-static Evas_Object *fetchwin = NULL;
+static void (*_fetch_done) (void *data) = NULL;
+static void *_fetch_data = NULL;
+
 
 static char *
 _inpath(const char *file)
@@ -107,17 +109,10 @@ _cb_http_complete(void *data EINA_UNUSED, int type EINA_UNUSED, void *event)
    if (ev->url_con != fetch) return EINA_TRUE;
    if (fetch_image)
      {
-        char *path;
-
         fetch_image = EINA_FALSE;
         fclose(fout);
         fout = NULL;
-        path = _thumbpath(fetchfile);
-        if (path)
-          {
-             win_art(fetchwin, path);
-             free(path);
-          }
+        if (_fetch_done) _fetch_done(_fetch_data);
      }
    else
      {
@@ -190,7 +185,10 @@ _cb_http_complete(void *data EINA_UNUSED, int type EINA_UNUSED, void *event)
              free(fetchfile);
              fetchfile = NULL;
           }
+        if (_fetch_done) _fetch_done(_fetch_data);
      }
+   _fetch_done = NULL;
+   _fetch_data = NULL;
    return EINA_FALSE;
 }
 
@@ -225,9 +223,10 @@ _search_append(Eina_Strbuf *sb, const char *str, Eina_Bool hadword)
 }
 
 void
-albumart_find(Evas_Object *win, Evas_Object *vid)
+albumart_find(const char *file,
+              const char *artist, const char *album, const char *title,
+              void (*fetch_done) (void *data), void *fetch_data)
 {
-   const char *file, *album, *artist, *title;
    Eina_Strbuf *sb;
    char *path;
 
@@ -252,7 +251,7 @@ albumart_find(Evas_Object *win, Evas_Object *vid)
         sb_result = NULL;
      }
    fetch_image = EINA_FALSE;
-   if (!vid) return;
+   if (!file) return;
 
    if (!handle_data)
      handle_data = ecore_event_handler_add(ECORE_CON_EVENT_URL_DATA,
@@ -261,16 +260,18 @@ albumart_find(Evas_Object *win, Evas_Object *vid)
      handle_complete = ecore_event_handler_add(ECORE_CON_EVENT_URL_COMPLETE,
                                                _cb_http_complete, NULL);
 
-   file = video_file_get(vid);
    if (!file) return;
    fetchfile = _inpath(file);
+
+   _fetch_done = fetch_done;
+   _fetch_data = _fetch_data;
 
    path = _thumbpath(fetchfile);
    if (path)
      {
         if (ecore_file_exists(path))
           {
-             win_art(win, path);
+             if (fetch_done) fetch_done(fetch_data);
              free(path);
              free(fetchfile);
              fetchfile = NULL;
@@ -278,14 +279,10 @@ albumart_find(Evas_Object *win, Evas_Object *vid)
           }
         else free(path);
      }
-   fetchwin = win;
 
    sb = eina_strbuf_new();
    eina_strbuf_append(sb, Q_START);
 
-   title = video_meta_title_get(vid);
-   artist = video_meta_artist_get(vid);
-   album = video_meta_album_get(vid);
    if ((title) || (album) || (artist))
      {
         Eina_Bool had = EINA_FALSE;

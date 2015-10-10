@@ -5,6 +5,7 @@
 #include "winlist.h"
 #include "winvid.h"
 #include "videothumb.h"
+#include "browser.h"
 
 static void
 _cb_resize(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUSED)
@@ -36,7 +37,11 @@ _cb_stop(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUSED)
         if (inf->next_job) ecore_job_del(inf->next_job);
         inf->next_job = ecore_job_add(_cb_stop_next, data);
      }
-   else elm_exit();
+   else
+     {
+        if (inf->browse_mode) browser_show(data);
+        else elm_exit();
+     }
 }
 
 static void
@@ -210,6 +215,15 @@ win_video_file_list_set(Evas_Object *win, Eina_List *list)
    Eina_List *l, *list2 = NULL;
    Winvid_Entry *vid;
 
+   inf->file_cur = NULL;
+   EINA_LIST_FREE(inf->file_list, vid)
+     {
+        if (vid->file) eina_stringshare_del(vid->file);
+        if (vid->sub) eina_stringshare_del(vid->sub);
+        if (vid->uri) efreet_uri_free(vid->uri);
+        free(vid);
+     }
+
    EINA_LIST_FOREACH(list, l, vid)
      {
         Winvid_Entry *vid2;
@@ -224,7 +238,7 @@ win_video_file_list_set(Evas_Object *win, Eina_List *list)
           }
      }
    inf->file_list = list2;
-   win_video_next(win);
+   win_video_first(win);
 }
 
 void

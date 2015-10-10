@@ -5,6 +5,7 @@
 #include "video.h"
 #include "key.h"
 #include "winlist.h"
+#include "browser.h"
 
 void
 key_handle(Evas_Object *win, Evas_Event_Key_Down *ev)
@@ -110,6 +111,7 @@ key_handle(Evas_Object *win, Evas_Event_Key_Down *ev)
      {
         video_stop(inf->vid);
         elm_layout_signal_emit(inf->lay, "action,stop", "rage");
+        if (inf->browse_mode) browser_show(win);
      }
    else if (!strcmp(ev->keyname, "c"))
      {
@@ -178,7 +180,8 @@ key_handle(Evas_Object *win, Evas_Event_Key_Down *ev)
      }
    else if (!strcmp(ev->keyname, "backslash"))
      {
-        win_list_toggle(win);
+        if (inf->browse_mode) browser_toggle(win);
+        else win_list_toggle(win);
      }
    else if (!strcmp(ev->keyname, "y"))
      {

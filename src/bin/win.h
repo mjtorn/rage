@@ -23,6 +23,7 @@ struct _Inf
    Eina_Bool playing : 1;
    Eina_Bool was_playing : 1;
    Eina_Bool dragging : 1;
+   Eina_Bool browse_mode : 1;
 };
 
 // ui high level controls

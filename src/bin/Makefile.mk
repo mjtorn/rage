@@ -9,6 +9,8 @@ src_bin_rage_LDADD = @RAGE_LIBS@
 src_bin_rage_SOURCES = \
 src/bin/albumart.c \
 src/bin/albumart.h \
+src/bin/browser.c \
+src/bin/browser.h \
 src/bin/config.c \
 src/bin/config.h \
 src/bin/controls.c \
@@ -39,6 +41,8 @@ internal_bin_PROGRAMS = src/bin/rage_thumb
 
 src_bin_rage_thumb_SOURCES = \
 src/bin/thumb.c \
+src/bin/albumart.c \
+src/bin/albumart.h \
 src/bin/sha1.c \
 src/bin/sha1.h
 
