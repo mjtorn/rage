@@ -500,11 +500,13 @@ _entry_free(Entry *entry)
    Entry *subentry;
    Eina_Stringshare *str;
    if (!entry) return;
+   eina_lock_take(&(entry->lock));
    entry->sels = eina_list_free(entry->sels);
    EINA_LIST_FREE(entry->files, str) eina_stringshare_del(str);
    EINA_LIST_FREE(entry->dirs, subentry) _entry_free(subentry);
    if (entry->base) evas_object_del(entry->base);
    eina_stringshare_del(entry->path);
+   eina_lock_release(&(entry->lock));
    eina_lock_free(&(entry->lock));
    if (entry == selentry) selentry = NULL;
    free(entry);
