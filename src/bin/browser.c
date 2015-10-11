@@ -40,10 +40,16 @@ struct _Entry
    Eina_Bool sel : 1;
 };
 
+static char *selfile = NULL;
+static Entry *selentry = NULL;
+static int seli = 0;
+
 static Evas_Object *bx = NULL;
 static Evas_Object *sc, *bt;
 static Ecore_Thread *fill_thread = NULL;
 static Entry *dir_entry = NULL;
+
+static void _sel_go(Evas_Object *win EINA_UNUSED, Entry *base_entry, int x, int y);
 
 static void
 _item_size_get(Evas_Object *win, Evas_Coord *w, Evas_Coord *h)
@@ -122,6 +128,7 @@ _fill_scan(Ecore_Thread *th, Entry *parent, const char *dir)
    files = ecore_file_ls(dir);
    if (!files)
      {
+        if (entry == selentry) selentry = NULL;
         free(entry);
         return NULL;
      }
@@ -298,6 +305,18 @@ _entry_files_unpop(Evas_Object *win EINA_UNUSED, Entry *entry)
 }
 
 static void
+_cb_sel_job(void *data)
+{
+   Evas_Object *win = data;
+   Entry *entry = selentry;
+   if ((!dir_entry) || (!entry)) return;
+   entry->sel = EINA_TRUE;
+   if (entry->cols > 0) entry->sel_y = seli / entry->cols;
+   entry->sel_x = seli - (entry->sel_y * entry->cols);
+   _sel_go(win, dir_entry, 0, 0);
+}
+
+static void
 _entry_files_redo(Evas_Object *win, Entry *entry)
 {
    Evas_Coord x, y,w, h, iw = 1, ih = 1, ww, wh;
@@ -330,6 +349,27 @@ _entry_files_redo(Evas_Object *win, Entry *entry)
    _entry_files_unpop(win, entry);
    if (eina_rectangles_intersect(&r1, &r2)) _entry_files_pop(win, entry);
 
+   if (selfile)
+     {
+        Eina_List *l;
+        const char *file;
+        char buf[PATH_MAX];
+        int i;
+
+        i = 0;
+        EINA_LIST_FOREACH(entry->files, l, file)
+          {
+             snprintf(buf, sizeof(buf), "%s/%s", entry->path, file);
+             if (!strcmp(buf, selfile))
+               {
+                  selentry = entry;
+                  seli = i;
+                  ecore_job_add(_cb_sel_job, win);
+                  break;
+               }
+             i++;
+          }
+     }
 done:
    eina_lock_release(&(entry->lock));
 }
@@ -467,6 +507,7 @@ _entry_free(Entry *entry)
    if (entry->base) evas_object_del(entry->base);
    eina_stringshare_del(entry->path);
    eina_lock_free(&(entry->lock));
+   if (entry == selentry) selentry = NULL;
    free(entry);
 }
 
@@ -547,6 +588,7 @@ _sel_go(Evas_Object *win EINA_UNUSED, Entry *base_entry, int x, int y)
 {
    Evas_Object *o;
    Evas_Coord bxx, bxy, tbx, tby;
+   const char *file;
 
    if (!base_entry) return;
    evas_object_geometry_get(bx, &bxx, &bxy, NULL, NULL);
@@ -676,6 +718,18 @@ _sel_go(Evas_Object *win EINA_UNUSED, Entry *base_entry, int x, int y)
           }
         eina_lock_release(&(entry->lock));
         eina_list_free(flatlist);
+     }
+   entry = _sel_find(base_entry);
+   if (entry)
+     {
+        file = _sel_file_find(entry);
+        if (file)
+          {
+             char buf[PATH_MAX];
+             snprintf(buf, sizeof(buf), "%s/%s", entry->path, file);
+             if (selfile) free(selfile);
+             selfile = strdup(buf);
+          }
      }
 }
 
