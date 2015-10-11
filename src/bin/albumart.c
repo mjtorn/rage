@@ -260,11 +260,10 @@ albumart_find(const char *file,
      handle_complete = ecore_event_handler_add(ECORE_CON_EVENT_URL_COMPLETE,
                                                _cb_http_complete, NULL);
 
-   if (!file) return;
    fetchfile = _inpath(file);
 
    _fetch_done = fetch_done;
-   _fetch_data = _fetch_data;
+   _fetch_data = fetch_data;
 
    path = _thumbpath(fetchfile);
    if (path)

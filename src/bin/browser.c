@@ -335,8 +335,7 @@ _entry_files_redo(Evas_Object *win, Entry *entry)
    _item_size_get(win, &iw, &ih);
    cols = w / iw;
    if (cols < 1) cols = 1;
-   if (cols > 0) rows = (num + (cols - 1)) / cols;
-   else rows = 0;
+   rows = (num + (cols - 1)) / cols;
 
    entry->iw = iw;
    entry->ih = ih;
