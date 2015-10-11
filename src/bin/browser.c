@@ -462,9 +462,9 @@ _entry_free(Entry *entry)
    Eina_Stringshare *str;
    if (!entry) return;
    entry->sels = eina_list_free(entry->sels);
-   if (entry->base) evas_object_del(entry->base);
    EINA_LIST_FREE(entry->files, str) eina_stringshare_del(str);
    EINA_LIST_FREE(entry->dirs, subentry) _entry_free(subentry);
+   if (entry->base) evas_object_del(entry->base);
    eina_stringshare_del(entry->path);
    eina_lock_free(&(entry->lock));
    free(entry);
@@ -793,6 +793,8 @@ _cb_hidden(void *data, Evas_Object *obj, const char *sig EINA_UNUSED, const char
    elm_layout_signal_callback_del(obj, "browser,state,hidden,finished", "rage",
                                   _cb_hidden);
    if (fill_thread) ecore_thread_cancel(fill_thread);
+   if (dir_entry) _entry_free(dir_entry);
+   dir_entry = NULL;
    evas_object_del(bx);
    bx = NULL;
    evas_object_del(bt);
