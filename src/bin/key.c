@@ -107,7 +107,9 @@ key_handle(Evas_Object *win, Evas_Event_Key_Down *ev)
         win_do_play_pause(win);
      }
    else if ((!strcmp(ev->keyname, "s")) ||
-            (!strcmp(ev->key, "XF86AudioStop")))
+            (!strcmp(ev->key, "XF86AudioStop")) ||
+            (!strcmp(ev->key, "BackSpace")) ||
+            (!strcmp(ev->key, "Delete")))
      {
         video_stop(inf->vid);
         elm_layout_signal_emit(inf->lay, "action,stop", "rage");
@@ -115,7 +117,6 @@ key_handle(Evas_Object *win, Evas_Event_Key_Down *ev)
      }
    else if (!strcmp(ev->keyname, "c"))
      {
-        printf("(c)lear!\n");
         video_stop(inf->vid);
         elm_layout_signal_emit(inf->lay, "action,stop", "rage");
         win_video_free(win);
