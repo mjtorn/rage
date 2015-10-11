@@ -142,6 +142,7 @@ elm_main(int argc, char **argv)
    if (file_num <= 0)
      {
         inf->browse_mode = EINA_TRUE;
+        inf->sized = EINA_TRUE;
         browser_show(win);
 //        elm_layout_signal_emit(inf->lay, "about,show", "rage");
         evas_object_show(win);
