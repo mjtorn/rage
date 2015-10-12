@@ -310,9 +310,11 @@ _cb_sel_job(void *data)
    Evas_Object *win = data;
    Entry *entry = selentry;
    if ((!dir_entry) || (!entry)) return;
+   eina_lock_take(&(entry->lock));
    entry->sel = EINA_TRUE;
    if (entry->cols > 0) entry->sel_y = seli / entry->cols;
    entry->sel_x = seli - (entry->sel_y * entry->cols);
+   eina_lock_release(&(entry->lock));
    _sel_go(win, dir_entry, 0, 0);
 }
 
