@@ -223,10 +223,14 @@ _cb_file_selected(void *data, Evas_Object *obj, const char *sig EINA_UNUSED, con
 {
    Evas_Object *win = data;
    Entry *entry = evas_object_data_get(obj, "entry");
+   char buf[PATH_MAX];
    const char *file = evas_object_data_get(obj, "file");
 
    elm_layout_signal_emit(obj, "rage,state,selected", "rage");
    _activate(win, entry, file);
+   snprintf(buf, sizeof(buf), "%s/%s", entry->path, file);
+   if (selfile) free(selfile);
+   selfile = strdup(buf);
 }
 
 static void
@@ -750,9 +754,14 @@ _sel_do(Evas_Object *win, Entry *base_entry)
         const char *file = _sel_file_find(entry);
         if (file)
           {
+             char buf[PATH_MAX];
+
              elm_layout_signal_emit(o, "rage,state,selected", "rage");
              _activate(win, entry, file);
-          }
+             snprintf(buf, sizeof(buf), "%s/%s", entry->path, file);
+             if (selfile) free(selfile);
+             selfile = strdup(buf);
+         }
         eina_lock_release(&(entry->lock));
      }
 }

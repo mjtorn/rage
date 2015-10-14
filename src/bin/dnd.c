@@ -1,4 +1,5 @@
 #include <Elementary.h>
+#include <Emotion.h>
 #include <Eio.h>
 #include "main.h"
 #include "win.h"
