@@ -16,6 +16,7 @@ static Ecore_Event_Handler *handle_complete = NULL;
 static Eina_Strbuf *sb_result = NULL;
 static Eina_Bool fetch_image = EINA_FALSE;
 static char *fetchfile = NULL;
+static char *fetchpath = NULL;
 static FILE *fout = NULL;
 static void (*_fetch_done) (void *data) = NULL;
 static void *_fetch_data = NULL;
@@ -112,6 +113,12 @@ _cb_http_complete(void *data EINA_UNUSED, int type EINA_UNUSED, void *event)
         fetch_image = EINA_FALSE;
         fclose(fout);
         fout = NULL;
+        if (ecore_file_size(fetchpath) < 0)
+          {
+             ecore_file_unlink(fetchpath);
+          }
+        free(fetchpath);
+        fetchpath = NULL;
         if (_fetch_done) _fetch_done(_fetch_data);
      }
    else
@@ -166,6 +173,8 @@ _cb_http_complete(void *data EINA_UNUSED, int type EINA_UNUSED, void *event)
                               {
                                  fetch_image = EINA_TRUE;
                                  fetch = _fetch(sb);
+                                 free(fetchpath);
+                                 fetchpath = strdup(path);
                               }
                             free(path);
                          }
@@ -225,6 +234,7 @@ _search_append(Eina_Strbuf *sb, const char *str, Eina_Bool hadword)
 void
 albumart_find(const char *file,
               const char *artist, const char *album, const char *title,
+              const char *extrastr,
               void (*fetch_done) (void *data), void *fetch_data)
 {
    Eina_Strbuf *sb;
@@ -292,6 +302,8 @@ albumart_find(const char *file,
      }
    else
      _search_append(sb, ecore_file_file_get(fetchfile), EINA_FALSE);
+
+   if (extrastr) _search_append(sb, extrastr, EINA_TRUE);
 
    eina_strbuf_append(sb, Q_END);
 

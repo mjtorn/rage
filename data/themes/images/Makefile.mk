@@ -3,6 +3,7 @@ data/themes/images/bevel_dark_out.png \
 data/themes/images/bg_bevel.png \
 data/themes/images/bg_glint.png \
 data/themes/images/bg_shine.png \
+data/themes/images/dimmer.png \
 data/themes/images/glow_exclam.png \
 data/themes/images/icon_arrow_right.png \
 data/themes/images/icon_close2.png \

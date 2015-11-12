@@ -136,9 +136,9 @@ _cb_albumart_delay(void *data)
         const char *artist = video_meta_artist_get(inf->vid);
         const char *album = video_meta_album_get(inf->vid);
 
-        albumart_find(file, title, artist, album, _cb_fetched, win);
+        albumart_find(file, title, artist, album, NULL, _cb_fetched, win);
      }
-   else albumart_find(NULL, NULL, NULL, NULL, NULL, NULL);
+   else albumart_find(NULL, NULL, NULL, NULL, NULL, NULL, NULL);
    return EINA_FALSE;
 }
 

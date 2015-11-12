@@ -58,7 +58,7 @@ _item_size_get(Evas_Object *win, Evas_Coord *w, Evas_Coord *h)
 
    elm_coords_finger_size_adjust(1, &sz, 1, &sz);
    evas_object_geometry_get(win, NULL, NULL, w, h);
-   *w = *w / 5;
+   *w = *w / 15;
    *h = *h / 5;
    if (*w < sz) *w = sz;
    if (*h < sz) *h = sz;
@@ -190,7 +190,7 @@ _cb_vidthumb_data(void *data EINA_UNUSED, Evas_Object *obj, void *event EINA_UNU
    int w, h;
 
    videothumb_size_get(obj, &w, &h);
-   evas_object_size_hint_aspect_set(obj, EVAS_ASPECT_CONTROL_BOTH, w, h);
+   evas_object_size_hint_aspect_set(obj, EVAS_ASPECT_CONTROL_NEITHER, w, h);
 }
 
 static void

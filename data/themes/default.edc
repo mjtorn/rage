@@ -2147,8 +2147,7 @@ collections {
    group { name: "rage/browser/item";
       images.image: "win_shadow.png" COMP;
       images.image: "win_glow.png" COMP;
-      images.image: "bg_shine.png" COMP;
-      images.image: "bg_glint.png" COMP;
+      images.image: "dimmer.png" COMP;
 
       parts {
          part { name: "shadow"; mouse_events: 0;
@@ -2209,13 +2208,6 @@ collections {
                rel2.offset: -5 -5;
             }
          }
-         part { name: "glintclip"; type: RECT;
-            description { state: "default" 0.0;
-               rel1.to: "clip";
-               rel2.to: "clip";
-               rel1.offset: 0 -10;
-            }
-         }
          part { name: "rage.content"; type: SWALLOW;
             clip_to: "clip";
             description { state: "default" 0.0;
@@ -2223,35 +2215,13 @@ collections {
                rel2.to: "clip";
             }
          }
-         part { name: "shine"; mouse_events: 0;
+         part { name: "dimmer"; mouse_events: 0;
             clip_to: "clip";
             description { state: "default" 0.0;
-               image.normal: "bg_shine.png";
+               image.normal: "dimmer.png";
                fill.smooth: 0;
                rel1.to: "clip";
                rel2.to: "clip";
-               align: 0.5 0.0;
-               aspect: (255/120) (255/120);
-               aspect_preference: HORIZONTAL;
-            }
-         }
-         part { name: "glint"; mouse_events: 0;
-            clip_to: "glintclip";
-            description { state: "default" 0.0;
-               fixed: 1 1;
-               min: 79 5;
-               max: 79 5;
-               rel1 {
-                 relative: 0.0 0.0;
-                 offset: 0 0;
-                 to: "clip";
-               }
-               rel2 {
-                 relative: 1.0 0.0;
-                 offset: -1 0;
-                 to: "clip";
-               }
-               image.normal: "bg_glint.png";
             }
          }
          part { name: "rage.title"; type: TEXT; mouse_events: 0;
@@ -2259,8 +2229,8 @@ collections {
             description { state: "default" 0.0;
                fixed: 1 1;
                align: 0.0 1.0;
-               rel1.offset: 4 4;
-               rel2.offset: -5 -5;
+               rel1.offset: 8 8;
+               rel2.offset: -9 -9;
                color: 255 255 255 255;
                text { font: "Sans"; size: 12;
                   align: 0.0 1.0;

@@ -234,36 +234,22 @@ _videothumb_image_load(Evas_Object *obj)
    char buf_base[PATH_MAX];
    char buf_file[PATH_MAX];
    char buf[PATH_MAX];
+   char *artfile;
    unsigned char sum[20];
-   Eina_Bool is_audio = EINA_FALSE;
+   Eina_Bool found = EINA_FALSE;
 
    if (!sd) return;
    if (!sd->file) return;
    sd->o_img2 = evas_object_image_filled_add(evas_object_evas_get(obj));
    evas_object_smart_member_add(sd->o_img2, obj);
-   const char *extn = strchr(sd->realpath, '.');
-   if (extn)
+   artfile = albumart_file_get(sd->realpath);
+   if (artfile)
      {
-        if ((!strcasecmp(extn, ".mp3")) ||
-            (!strcasecmp(extn, ".m4a")) ||
-            (!strcasecmp(extn, ".oga")) ||
-            (!strcasecmp(extn, ".aac")) ||
-            (!strcasecmp(extn, ".flac")) ||
-            (!strcasecmp(extn, ".wav")))
-          {
-             is_audio = EINA_TRUE;
-          }
+        sd->realfile = eina_stringshare_add(artfile);
+        free(artfile);
+        found = EINA_TRUE;
      }
-   if (is_audio)
-     {
-        char *artfile = albumart_file_get(sd->realpath);
-        if (artfile)
-          {
-             sd->realfile = eina_stringshare_add(artfile);
-             free(artfile);
-          }
-     }
-   else
+   if (!found)
      {
         if (!sha1((unsigned char *)sd->realpath, strlen(sd->realpath), sum))
           return;
