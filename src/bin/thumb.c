@@ -17,6 +17,16 @@ static const char *file = NULL;
 static void
 _cb_fetched(void *data EINA_UNUSED)
 {
+   char *path = albumart_file_get(file);
+   if (path)
+     {
+        Evas_Object *im = evas_object_image_add(evas_object_evas_get(win));
+        int w, h;
+        evas_object_image_file_set(im, path, NULL);
+        evas_object_image_size_get(im, &w, &h);
+        if ((w < 1) || (h < 0)) ecore_file_unlink(path);
+        free(path);
+     }
    elm_exit();
 }
 
@@ -25,6 +35,9 @@ _cb_loaded(void *data, Evas_Object *obj, void *info EINA_UNUSED)
 {
    const char *file, *title, *artist, *album;
 
+   if (vid_timeout) ecore_timer_del(vid_timeout);
+   vid_timeout = NULL;
+   
    file = data;
    title = emotion_object_meta_info_get(obj, EMOTION_META_INFO_TRACK_TITLE);
    artist = emotion_object_meta_info_get(obj, EMOTION_META_INFO_TRACK_ARTIST);
@@ -49,7 +62,6 @@ _cb_loaded(void *data, Evas_Object *obj, void *info EINA_UNUSED)
         emotion_object_size_get(obj, &iw, &ih);
         if (ratio > 0.0) iw = (ih * ratio);
         else ratio = iw / ih;
-        printf("ratio: %1.3f len: %1.1f\n", ratio, len);
         if ((ratio >= (4.0 / 3.0)) &&
             (ratio <= (3.0 / 1.0)) &&
             (len >= (75.0 * 60.0)) &&
@@ -67,7 +79,7 @@ _cb_loaded(void *data, Evas_Object *obj, void *info EINA_UNUSED)
      {
         char buf_base[PATH_MAX];
         char buf_file[PATH_MAX];
-        unsigned int pos, incr;
+        unsigned int pos;
 
         vidimage = evas_object_image_filled_add(evas_object_evas_get(subwin));
         evas_object_show(vidimage);
@@ -100,7 +112,11 @@ _cb_loaded(void *data, Evas_Object *obj, void *info EINA_UNUSED)
              snprintf(key, sizeof(key), "%i", pos);
              evas_object_image_file_set(vidimage, file, key);
              evas_object_image_size_get(vidimage, &iw, &ih);
-             if ((iw <= 0) || (ih <= 0)) break;
+             if ((iw <= 0) || (ih <= 0))
+               {
+                  eet_close(ef);
+                  exit(6);
+               }
              w = 160;
              h = (ih * 160) / iw;
              if (h < 1) h = 1;
@@ -112,7 +128,10 @@ _cb_loaded(void *data, Evas_Object *obj, void *info EINA_UNUSED)
                eet_data_image_write(ef, key, pixels, w, h,
                                     0, 0, 70, EET_IMAGE_JPEG);
              else
-               exit(6);
+               {
+                  eet_close(ef);
+                  exit(6);
+               }
              evas_object_image_data_set(image, pixels);
           }
         eet_close(ef);
@@ -170,7 +189,7 @@ elm_main(int argc, char **argv)
      {
         evas_object_smart_callback_add(vid, "open_done", _cb_loaded, file);
         emotion_object_file_set(vid, file);
-        vid_timeout = ecore_timer_add(2.0, _cb_timeout, NULL);
+        vid_timeout = ecore_timer_add(20.0, _cb_timeout, NULL);
         elm_run();
      }
    elm_shutdown();

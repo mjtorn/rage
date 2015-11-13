@@ -58,8 +58,8 @@ _item_size_get(Evas_Object *win, Evas_Coord *w, Evas_Coord *h)
 
    elm_coords_finger_size_adjust(1, &sz, 1, &sz);
    evas_object_geometry_get(win, NULL, NULL, w, h);
-   *w = *w / 15;
-   *h = *h / 5;
+   *w = *w / 8;
+   *h = *h / 3;
    if (*w < sz) *w = sz;
    if (*h < sz) *h = sz;
 }

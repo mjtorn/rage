@@ -117,9 +117,6 @@ _cb_http_complete(void *data EINA_UNUSED, int type EINA_UNUSED, void *event)
           {
              ecore_file_unlink(fetchpath);
           }
-        free(fetchpath);
-        fetchpath = NULL;
-        if (_fetch_done) _fetch_done(_fetch_data);
      }
    else
      {
@@ -195,9 +192,9 @@ _cb_http_complete(void *data EINA_UNUSED, int type EINA_UNUSED, void *event)
              fetchfile = NULL;
           }
         if (_fetch_done) _fetch_done(_fetch_data);
+        _fetch_done = NULL;
+        _fetch_data = NULL;
      }
-   _fetch_done = NULL;
-   _fetch_data = NULL;
    return EINA_FALSE;
 }
 

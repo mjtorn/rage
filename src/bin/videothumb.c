@@ -161,8 +161,9 @@ _cb_videothumb_delay(void *data)
 {
    Evas_Object *obj = data;
    Videothumb *sd = evas_object_smart_data_get(obj);
+   int maxnum = (eina_cpu_count() / 2) + 1;
    if (!sd) return EINA_FALSE;
-   if (_thumb_running < (eina_cpu_count() + 1))
+   if (_thumb_running < maxnum)
      {
         sd->launch_timer = NULL;
         _videothumb_launch_do(obj);
@@ -245,9 +246,12 @@ _videothumb_image_load(Evas_Object *obj)
    artfile = albumart_file_get(sd->realpath);
    if (artfile)
      {
-        sd->realfile = eina_stringshare_add(artfile);
+        if (ecore_file_exists(artfile))
+          {
+             sd->realfile = eina_stringshare_add(artfile);
+             found = EINA_TRUE;
+          }
         free(artfile);
-        found = EINA_TRUE;
      }
    if (!found)
      {
