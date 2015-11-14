@@ -58,8 +58,8 @@ _item_size_get(Evas_Object *win, Evas_Coord *w, Evas_Coord *h)
 
    elm_coords_finger_size_adjust(1, &sz, 1, &sz);
    evas_object_geometry_get(win, NULL, NULL, w, h);
-   *w = *w / 8;
-   *h = *h / 3;
+   *w = (double)(*w) / 5.0;
+   *h = (double)(*h) / 1.5;
    if (*w < sz) *w = sz;
    if (*h < sz) *h = sz;
 }
@@ -266,6 +266,7 @@ _entry_files_pop(Evas_Object *win, Entry *entry)
         elm_layout_signal_callback_add(o, "rage,selected", "rage", _cb_file_selected, win);
 
         o = videothumb_add(win);
+        videothumb_poster_mode_set(o, EINA_TRUE);
         evas_object_smart_callback_add(o, "data", _cb_vidthumb_data, base);
         evas_object_data_set(o, "entry", entry);
         evas_object_data_set(o, "file", file);

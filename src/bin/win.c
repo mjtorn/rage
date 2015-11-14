@@ -250,26 +250,27 @@ win_video_restart(Evas_Object *win)
    _restart_vid(win, inf->lay, inf->vid, vid->file, vid->sub);
 }
 
-void
+Eina_Bool
 win_video_next(Evas_Object *win)
 {
    Inf *inf = evas_object_data_get(win, "inf");
    Eina_List *l;
    Winvid_Entry *vid;
 
-   if (!inf->file_list) return;
+   if (!inf->file_list) return EINA_FALSE;
    if (!inf->file_cur) l = inf->file_list;
    else l = inf->file_cur->next;
    if (!l)
      {
         if (inf->browse_mode) browser_show(win);
         else elm_exit();
-        return;
+        return EINA_FALSE;
      }
    inf->file_cur = l;
    vid = l->data;
    _restart_vid(win, inf->lay, inf->vid, vid->file, vid->sub);
    win_list_sel_update(win);
+   return EINA_TRUE;
 }
 
 void

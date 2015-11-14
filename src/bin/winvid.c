@@ -25,7 +25,10 @@ _cb_stop_next(void *data)
 {
    Inf *inf = evas_object_data_get(data, "inf");
    inf->next_job = NULL;
-   win_video_next(data);
+   if (!win_video_next(data))
+     {
+        elm_layout_signal_emit(inf->lay, "state,default", "rage");
+     }
 }
 
 static void
@@ -39,6 +42,7 @@ _cb_stop(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUSED)
      }
    else
      {
+        elm_layout_signal_emit(inf->lay, "state,default", "rage");
         if (inf->browse_mode) browser_show(data);
         else elm_exit();
      }

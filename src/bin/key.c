@@ -113,6 +113,7 @@ key_handle(Evas_Object *win, Evas_Event_Key_Down *ev)
      {
         video_stop(inf->vid);
         elm_layout_signal_emit(inf->lay, "action,stop", "rage");
+        elm_layout_signal_emit(inf->lay, "state,default", "rage");
         if (inf->browse_mode) browser_show(win);
      }
    else if (!strcmp(ev->keyname, "c"))

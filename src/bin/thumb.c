@@ -11,6 +11,7 @@ static Ecore_Timer *vid_timeout = NULL;
 static Eina_Bool is_audio = EINA_FALSE;
 static Eina_Bool is_movie = EINA_FALSE;
 static int iw, ih, incr = 0;
+static Eina_Bool poster = 0;
 static unsigned char sum[20];
 static const char *file = NULL;
 
@@ -53,7 +54,7 @@ _cb_loaded(void *data, Evas_Object *obj, void *info EINA_UNUSED)
                       _cb_fetched, (void *)file);
         return;
      }
-   else
+   else if (poster)
      {
         double len = emotion_object_play_length_get(obj);
         double ratio = emotion_object_ratio_get(obj);
@@ -149,7 +150,7 @@ _cb_timeout(void *data EINA_UNUSED)
 EAPI_MAIN int
 elm_main(int argc, char **argv)
 {
-   if (argc < 3) exit(1);
+   if (argc < 4) exit(1);
    elm_need_efreet();
 
    elm_policy_set(ELM_POLICY_QUIT, ELM_POLICY_QUIT_LAST_WINDOW_CLOSED);
@@ -171,6 +172,7 @@ elm_main(int argc, char **argv)
    vid = emotion_object_add(evas_object_evas_get(win));
    file = argv[1];
    incr = atoi(argv[2]);
+   poster = atoi(argv[3]);
 
    const char *extn = strchr(file, '.');
    if (extn)

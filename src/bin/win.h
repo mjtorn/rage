@@ -35,7 +35,7 @@ void win_do_next(Evas_Object *win);
 
 // lower level controls
 void win_video_restart(Evas_Object *win);
-void win_video_next(Evas_Object *win);
+Eina_Bool win_video_next(Evas_Object *win);
 void win_video_prev(Evas_Object *win);
 void win_video_first(Evas_Object *win);
 void win_video_last(Evas_Object *win);

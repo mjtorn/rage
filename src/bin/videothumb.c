@@ -21,6 +21,7 @@ struct _Videothumb
    int iw, ih;
    Evas_Coord w, h;
    Eina_Bool seen : 1;
+   Eina_Bool poster_mode : 1;
 };
 
 static Evas_Smart *_smart = NULL;
@@ -142,8 +143,9 @@ _videothumb_launch_do(Evas_Object *obj)
                     sd->exe_handler = ecore_event_handler_add(ECORE_EXE_EVENT_DEL,
                                                               _cb_thumb_exe, obj);
                   snprintf(buf, sizeof(buf),
-                           "%s/rage/utils/rage_thumb %s 10000 >& /dev/null",
-                           libdir, s);
+                           "%s/rage/utils/rage_thumb %s 10000 %i >& /dev/null",
+                           libdir, s, sd->poster_mode ? 1 : 0);
+                  printf("RUN: %s\n", buf);
                   sd->thumb_exe = ecore_exe_pipe_run(buf,
                                                      ECORE_EXE_TERM_WITH_PARENT |
                                                      ECORE_EXE_NOT_LEADER,
@@ -243,15 +245,18 @@ _videothumb_image_load(Evas_Object *obj)
    if (!sd->file) return;
    sd->o_img2 = evas_object_image_filled_add(evas_object_evas_get(obj));
    evas_object_smart_member_add(sd->o_img2, obj);
-   artfile = albumart_file_get(sd->realpath);
-   if (artfile)
+   if (sd->poster_mode)
      {
-        if (ecore_file_exists(artfile))
+        artfile = albumart_file_get(sd->realpath);
+        if (artfile)
           {
-             sd->realfile = eina_stringshare_add(artfile);
-             found = EINA_TRUE;
+             if (ecore_file_exists(artfile))
+               {
+                  sd->realfile = eina_stringshare_add(artfile);
+                  found = EINA_TRUE;
+               }
+             free(artfile);
           }
-        free(artfile);
      }
    if (!found)
      {
@@ -483,6 +488,14 @@ videothumb_add(Evas_Object *parent)
    obj = evas_object_smart_add(e, _smart);
    vidthumbs = eina_list_prepend(vidthumbs, obj);
    return obj;
+}
+
+void
+videothumb_poster_mode_set(Evas_Object *obj, Eina_Bool poster_mode)
+{
+   Videothumb *sd = evas_object_smart_data_get(obj);
+   if (!sd) return;
+   sd->poster_mode = poster_mode;
 }
 
 void
