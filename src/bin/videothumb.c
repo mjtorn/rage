@@ -22,6 +22,7 @@ struct _Videothumb
    Evas_Coord w, h;
    Eina_Bool seen : 1;
    Eina_Bool poster_mode : 1;
+   Eina_Bool poster : 1;
 };
 
 static Evas_Smart *_smart = NULL;
@@ -253,6 +254,7 @@ _videothumb_image_load(Evas_Object *obj)
              if (ecore_file_exists(artfile))
                {
                   sd->realfile = eina_stringshare_add(artfile);
+                  sd->poster = EINA_TRUE;
                   found = EINA_TRUE;
                }
              free(artfile);
@@ -529,6 +531,11 @@ _cb_cycle(void *data)
 {
    Evas_Object *obj = data;
    Videothumb *sd = evas_object_smart_data_get(obj);
+   if (sd->poster)
+     {
+        sd->cycle_timer = NULL;
+        return EINA_FALSE;
+     }
    sd->pos += 10.0;
    if (!sd->thumb_exe)
      {
