@@ -283,7 +283,8 @@ _videothumb_image_load(Evas_Object *obj)
    evas_object_event_callback_add(sd->o_img2,
                                   EVAS_CALLBACK_IMAGE_PRELOADED,
                                   _cb_preload, obj);
-   evas_object_image_file_set(sd->o_img2, sd->realfile, buf);
+   evas_object_image_file_set(sd->o_img2, sd->realfile,
+                              sd->poster ? NULL : buf);
    evas_object_image_size_get(sd->o_img2, &(sd->iw), &(sd->ih));
    _smart_calculate(obj);
    if (sd->iw > 0)
