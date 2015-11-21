@@ -315,5 +315,74 @@ albumart_find(const char *file,
 char *
 albumart_file_get(const char *file)
 {
+   char *tmp = alloca(strlen(file) + 1 + 100);
+   char *dir, *fraw, *s;
+   const char *fname;
+
+   sprintf(tmp, "%s.png", file);
+   if (ecore_file_exists(tmp)) return strdup(tmp);
+   sprintf(tmp, "%s.jpg", file);
+   if (ecore_file_exists(tmp)) return strdup(tmp);
+   sprintf(tmp, "%s.jpeg", file);
+   if (ecore_file_exists(tmp)) return strdup(tmp);
+
+   dir = ecore_file_dir_get(file);
+   if (!dir) dir = strdup(".");
+   fname = ecore_file_file_get(file);
+   if (!fname)
+     {
+        free(dir);
+        return NULL;
+     }
+   fraw  = strdup(fname);
+   if (!fraw)
+     {
+        free(dir);
+        return NULL;
+     }
+   s = strrchr(fraw, '.');
+   if (s) *s = 0;
+
+   sprintf(tmp, "%s/%s.png", dir, fraw);
+   if (ecore_file_exists(tmp)) goto found;
+   sprintf(tmp, "%s/%s.jpg", dir, fraw);
+   if (ecore_file_exists(tmp)) goto found;
+   sprintf(tmp, "%s/%s.jpeg", dir, fraw);
+   if (ecore_file_exists(tmp)) goto found;
+
+   sprintf(tmp, "%s/.%s.png", dir, fname);
+   if (ecore_file_exists(tmp)) goto found;
+   sprintf(tmp, "%s/.%s.jpg", dir, fname);
+   if (ecore_file_exists(tmp)) goto found;
+   sprintf(tmp, "%s/.%s.jpeg", dir, fname);
+   if (ecore_file_exists(tmp)) goto found;
+
+   sprintf(tmp, "%s/.%s.png", dir, fraw);
+   if (ecore_file_exists(tmp)) goto found;
+   sprintf(tmp, "%s/.%s.jpg", dir, fraw);
+   if (ecore_file_exists(tmp)) goto found;
+   sprintf(tmp, "%s/.%s.jpeg", dir, fraw);
+   if (ecore_file_exists(tmp)) goto found;
+
+   sprintf(tmp, "%s/.thumb/%s.png", dir, fname);
+   if (ecore_file_exists(tmp)) goto found;
+   sprintf(tmp, "%s/.thumb/%s.jpg", dir, fname);
+   if (ecore_file_exists(tmp)) goto found;
+   sprintf(tmp, "%s/.thumb/%s.jpeg", dir, fname);
+   if (ecore_file_exists(tmp)) goto found;
+
+   sprintf(tmp, "%s/.thumb/%s.png", dir, fraw);
+   if (ecore_file_exists(tmp)) goto found;
+   sprintf(tmp, "%s/.thumb/%s.jpg", dir, fraw);
+   if (ecore_file_exists(tmp)) goto found;
+   sprintf(tmp, "%s/.thumb/%s.jpeg", dir, fraw);
+   if (ecore_file_exists(tmp)) goto found;
+
+   free(dir);
+   free(fraw);
    return _thumbpath(file);
+found:
+   free(dir);
+   free(fraw);
+   return strdup(tmp);
 }
