@@ -146,7 +146,6 @@ _videothumb_launch_do(Evas_Object *obj)
                   snprintf(buf, sizeof(buf),
                            "%s/rage/utils/rage_thumb %s 10000 %i >& /dev/null",
                            libdir, s, sd->poster_mode ? 1 : 0);
-                  printf("RUN: %s\n", buf);
                   sd->thumb_exe = ecore_exe_pipe_run(buf,
                                                      ECORE_EXE_TERM_WITH_PARENT |
                                                      ECORE_EXE_NOT_LEADER,
