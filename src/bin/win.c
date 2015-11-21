@@ -33,6 +33,20 @@ _cb_unfullscreen(void *data EINA_UNUSED, Evas_Object *obj, void *event EINA_UNUS
 }
 
 static void
+_cb_focused(void *data EINA_UNUSED, Evas_Object *obj, void *event EINA_UNUSED)
+{
+   Inf *inf = evas_object_data_get(obj, "inf");
+   elm_layout_signal_emit(inf->lay, "state,win,focused", "rage");
+}
+
+static void
+_cb_unfocused(void *data EINA_UNUSED, Evas_Object *obj, void *event EINA_UNUSED)
+{
+   Inf *inf = evas_object_data_get(obj, "inf");
+   elm_layout_signal_emit(inf->lay, "state,win,unfocused", "rage");
+}
+
+static void
 _cb_mouse_move(void *data, Evas *evas, Evas_Object *obj, void *event_info);
 static void
 _cb_win_del(void *data EINA_UNUSED, Evas *e EINA_UNUSED, Evas_Object *obj, void *ev EINA_UNUSED)
@@ -407,6 +421,8 @@ win_add(void)
    evas_object_smart_callback_add(win, "fullscreen", _cb_fullscreen, NULL);
    evas_object_smart_callback_add(win, "unfullscreen", _cb_unfullscreen, NULL);
    evas_object_smart_callback_add(win, "normal", _cb_unfullscreen, NULL);
+   evas_object_smart_callback_add(win, "focused", _cb_focused, NULL);
+   evas_object_smart_callback_add(win, "unfocused", _cb_unfocused, NULL);
 
    o = evas_object_image_add(evas_object_evas_get(win));
    snprintf(buf, sizeof(buf), "%s/images/rage.png", elm_app_data_dir_get());
