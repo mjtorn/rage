@@ -2,12 +2,16 @@ collections {
    
    group { name: "rage/core";
       images.image: "bg_bevel.png" COMP;
-      images.image: "bevel_dark_out.png" COMP;
       images.image: "pm_fill.png" COMP;
-      images.image: "pm_overlay.png" COMP;
       images.image: "pm_shadow.png" COMP;
+      images.image: "vg1.png" COMP;
+      images.image: "vg2.png" COMP;
+
+      images.image: "shadow_circle_horiz.png" COMP;
+      images.image: "shadow_circle_vert.png" COMP;
+
       images.image: "glow_exclam.png" COMP;
-      
+
       images.image: "icon_eject.png" COMP;
 
       images.image: "icon_mute.png" COMP;
@@ -31,8 +35,6 @@ collections {
       images.image: "icon_close.png" COMP;
       
       images.image: "win_shadow.png" COMP;
-      images.image: "bg_shine.png" COMP;
-      images.image: "bg_glint.png" COMP;
 
       images.image: "vgrad-dark-inv.png" COMP;
       images.image: "vgrad-dark-inv-trans.png" COMP;
@@ -82,41 +84,67 @@ collections {
       
       parts {
          //// -- BACKGROUND
+         part { name: "bg"; type: RECT; mouse_events: 0;
+            description { state: "default" 0.0;
+               color: 64 64 64 255;
+            }
+         }
          part { name: "fill"; mouse_events: 0;
             description { state: "default" 0.0;
                fixed: 1 1;
                image.normal: "pm_fill.png";
+               color: 56 56 56 255;
                fill {
                   size.relative: 0.0 0.0;
-                  size.offset: 64 64;
+                  size.offset: 256 256;
                }
             }
          }
-         part { name: "popmedia_overlay"; mouse_events: 0;
+         part { name: "vg1"; mouse_events: 0;
             description { state: "default" 0.0;
                fixed: 1 1;
-               image.normal: "pm_overlay.png";
-               fill.smooth: 0;
+               rel2.relative: 1.0 0.0;
+               rel2.to: "vg2";
+               image.normal: "vg1.png";
+               color: 64 64 64 255;
+               fill {
+                  size.relative: 0.0 1.0;
+                  size.offset: 256 0;
+                  smooth: 0;
+               }
+            }
+            description { state: "focused" 0.0;
+               inherit: "default" 0.0;
+               color: 32 32 32 255;
             }
          }
-         part { name: "bevel2";
-            description { state: "default" 0.0;
-               image.normal: "bg_bevel.png";
-               image.border: 1 1 1 1;
-               image.middle: 0;
-               fill.smooth: 0;
-            }
-         }
-         part { name: "shadow"; mouse_events: 0;
+         part { name: "vg2"; mouse_events: 0;
             description { state: "default" 0.0;
                fixed: 1 1;
-               rel1.to: "rage.content";
-               rel2.to: "rage.content";
-               image.normal: "pm_shadow.png";
-               image.border: 64 64 64 64;
-               rel1.offset: -32 -32;
-               rel2.offset: 31 31;
-               fill.smooth: 0;
+               align: 0.5 1.0;
+               image.normal: "vg2.png";
+               color: 64 64 64 255;
+               max: 99999 32;
+               fill {
+                  size.relative: 0.0 1.0;
+                  size.offset: 256 0;
+                  smooth: 0;
+               }
+            }
+         }
+         program {
+            signal: "state,win,focused"; source: "rage";
+            action: STATE_SET "focused" 0.0;
+            target: "vg1";
+         }
+         program {
+            signal: "state,win,unfocused"; source: "rage";
+            action: STATE_SET "default" 0.0;
+            target: "vg1";
+         }
+
+         part { name: "shadow"; type: RECT;
+            description { state: "default" 0.0;
                visible: 0;
             }
             description { state: "video" 0.0;
@@ -128,6 +156,55 @@ collections {
                visible: 0;
             }
          }
+         part { name: "sh_t"; nomouse;
+            scale: 1;
+            clip_to: "shadow";
+            description { state: "default" 0.0;
+               rel1.to: "rage.content";
+               rel2.to: "rage.content";
+               rel2.relative: 1.0 0.0;
+               image.normal: "shadow_circle_horiz.png";
+               min: 0 32;
+               color: 255 255 255 128;
+            }
+         }
+         part { name: "sh_b"; nomouse;
+            scale: 1;
+            clip_to: "shadow";
+            description { state: "default" 0.0;
+               rel1.to: "rage.content";
+               rel2.to: "rage.content";
+               rel1.relative: 0.0 1.0;
+               image.normal: "shadow_circle_horiz.png";
+               min: 0 32;
+               color: 255 255 255 128;
+            }
+         }
+         part { name: "sh_l"; nomouse;
+            scale: 1;
+            clip_to: "shadow";
+            description { state: "default" 0.0;
+               rel1.to: "rage.content";
+               rel2.to: "rage.content";
+               rel2.relative: 0.0 1.0;
+               image.normal: "shadow_circle_vert.png";
+               min: 32 0;
+               color: 255 255 255 128;
+            }
+         }
+         part { name: "sh_r"; nomouse;
+            scale: 1;
+            clip_to: "shadow";
+            description { state: "default" 0.0;
+               rel1.to: "rage.content";
+               rel2.to: "rage.content";
+               rel1.relative: 1.0 0.0;
+               image.normal: "shadow_circle_vert.png";
+               min: 32 0;
+               color: 255 255 255 128;
+            }
+         }
+
          part { name: "black"; type: RECT; mouse_events: 0;
             description { state: "default" 0.0;
                color: 0 0 0 0;
@@ -168,25 +245,6 @@ collections {
                visible: 0;
             }
          }
-         part { name: "base_bevel";
-            description { state: "default" 0.0;
-               rel1.to: "base";
-               rel2.to: "base";
-               image.normal: "bevel_dark_out.png";
-               image.border: 1 1 1 1;
-               image.middle: 0;
-               fill.smooth: 0;
-               visible: 0;
-            }
-            description { state: "visible" 0.0;
-               inherit: "default" 0.0;
-               visible: 1;
-            }
-            description { state: "play" 0.0;
-               inherit: "default" 0.0;
-               visible: 0;
-            }
-         }
          part { name: "exclam"; mouse_events: 0;
             scale: 1;
             clip_to: "novid_clip";
@@ -215,7 +273,6 @@ collections {
             action: STATE_SET "default" 0.0;
             target: "exclam";
             target: "base";
-            target: "base_bevel";
             after: "newvid2";
          }
          program { name: "newvid2";
@@ -224,14 +281,12 @@ collections {
             transition: SINUSOIDAL 1.0;
             target: "exclam";
             target: "base";
-            target: "base_bevel";
          }
          program {
             signal: "action,frame"; source: "rage";
             action: STATE_SET "play" 0.0;
             target: "exclam";
             target: "base";
-            target: "base_bevel";
          }
 
          part { name: "rage.content"; type: SWALLOW;
@@ -254,16 +309,16 @@ collections {
             }
          }
          part { name: "controlbar_shadow"; mouse_events: 0;
+            scale: 1;
             clip_to: "controlbar_shadow_clip";
             description { state: "default" 0.0;
                fixed: 1 1;
                rel1.to: "controlbar";
                rel2.to: "controlbar";
-               image.normal: "pm_shadow.png";
-               image.border: 64 64 64 64;
-               rel1.offset: -32 -32;
-               rel2.offset: 31 31;
-               fill.smooth: 0;
+               rel2.relative: 1.0 0.0;
+               image.normal: "shadow_circle_horiz.png";
+               min: 0 32;
+               color: 255 255 255 128;
             }
          }
 
@@ -426,33 +481,6 @@ collections {
                fill.smooth: 0;
             }
          }
-         part { name: "speaker_glintclip"; type: RECT;
-            clip_to: "speaker_clip";
-            description { state: "default" 0.0;
-               rel1.to: "speaker_cover";
-               rel2.to: "speaker_cover";
-               rel1.offset: 0 -10;
-            }
-         }
-         part { name: "speaker_glint"; mouse_events: 0;
-            clip_to: "speaker_glintclip";
-            description { state: "default" 0.0;
-               fixed: 1 1;
-               min: 79 5;
-               max: 79 5;
-               rel1 {
-                 relative: 0.0 0.0;
-                 offset: 0 0;
-                 to: "speaker_cover";
-               }
-               rel2 {
-                 relative: 1.0 0.0;
-                 offset: -1 0;
-                 to: "speaker_cover";
-               }
-               image.normal: "bg_glint.png";
-            }
-         }
          program {
             signal: "state,novideo"; source: "rage";
             action: STATE_SET "novideo" 0.0;
@@ -590,20 +618,15 @@ collections {
                visible: 1;
             }
          }
-         part { name: "controlbar"; mouse_events: 0;
+         part { name: "controlbar"; type: RECT; mouse_events: 0;
             clip_to: "controlbar_clip";
             description { state: "default" 0.0;
-               image.normal: "vgrad-dark-inv-trans.png";
-               fill {
-                  smooth: 0;
-                  size.relative: 0.0 1.0;
-                  size.offset: 160 0;
-               }
+               color: 64 64 64 128;
                rel1.to: "rage.pos.prev.swallow";
             }
             description { state: "novideo" 0.0;
                inherit: "default" 0.0;
-               image.normal: "vgrad-dark-inv.png";
+               color: 64 64 64 255;
             }
          }
          program {
@@ -652,19 +675,16 @@ collections {
             }
          }
 
-         part { name: "bar"; mouse_events: 0;
+         part { name: "bar"; type: RECT; mouse_events: 0;
             clip_to: "controlbar_clip";
             description { state: "default" 0.0;
                fixed: 1 1;
-               image.normal: "posglow.png";
-               image.border: 7 7 7 0;
-               rel1.offset: -7 -9;
+               color: 51 153 255 255;
+               rel1.offset: 0 -5;
                rel1.relative: 0.0 1.0;
                rel1.to_x: "bar_bg";
-               rel2.offset: 6 -1;
                rel2.to_x: "rage.dragable.pos";
-               min: 14 9;
-               fill.smooth: 0;
+               min: 0 5;
             }
          }
 
@@ -1052,45 +1072,6 @@ collections {
             }
          }
 
-         part { name: "controlbar_bevel"; mouse_events: 0;
-            clip_to: "controlbar_clip";
-            description { state: "default" 0.0;
-               image.normal: "bg_bevel.png";
-               image.border: 1 1 1 1;
-               image.middle: 0;
-               fill.smooth: 0;
-               rel1.to: "controlbar";
-               rel2.to: "controlbar";
-            }
-         }
-         part { name: "controlbar_glintclip"; type: RECT;
-            clip_to: "controlbar_clip";
-            description { state: "default" 0.0;
-               rel1.to: "controlbar";
-               rel2.to: "controlbar";
-               rel1.offset: 0 -10;
-            }
-         }
-         part { name: "controlbar_glint"; mouse_events: 0;
-            clip_to: "controlbar_glintclip";
-            description { state: "default" 0.0;
-               fixed: 1 1;
-               min: 79 5;
-               max: 79 5;
-               rel1 {
-                 relative: 0.0 0.0;
-                 offset: 0 0;
-                 to: "controlbar";
-               }
-               rel2 {
-                 relative: 1.0 0.0;
-                 offset: -1 0;
-                 to: "controlbar";
-               }
-               image.normal: "bg_glint.png";
-            }
-         }
-
 #define STATE_FADE_PROG(_name) \
          program { \
             signal: "action,"_name; source: "rage"; \
@@ -1422,7 +1403,7 @@ collections {
                align: 1.0 0.0;
             }
          }
-         
+
          part { name: "close";
             scale: 1;
             clip_to: "posclip";
@@ -1661,6 +1642,7 @@ collections {
                fixed: 1 1;
                rel1.to: "rage.dragable.content";
                rel2.to: "rage.dragable.content";
+               color: 255 255 255 128;
                image.normal: "win_shadow.png";
                image.border: 14 14 14 14;
                image.middle: 0;
@@ -1669,15 +1651,11 @@ collections {
                fill.smooth: 0;
             }
          }
-         part { name: "dragover_fill"; mouse_events: 0;
+         part { name: "dragover_fill"; type: RECT; mouse_events: 0;
             clip_to: "dragover_active";
             description { state: "default" 0.0;
                fixed: 1 1;
-               image.normal: "pm_fill.png";
-               fill {
-                  size.relative: 0.0 0.0;
-                  size.offset: 64 64;
-               }
+               color: 32 32 32 255;
                rel1.to: "rage.dragable.content";
                rel2.to: "rage.dragable.content";
             }
@@ -1689,64 +1667,6 @@ collections {
                rel2.to: "dragover";
                align: 0.5 1.0;
                fixed: 1 1;
-            }
-         }
-         part { name: "dragover_clip"; type: RECT;
-            clip_to: "dragover_active";
-            description { state: "default" 0.0;
-               rel1.to: "rage.dragable.content";
-               rel2.to: "rage.dragable.content";
-               fixed: 1 1;
-            }
-         }
-         part { name: "dragover_glintclip"; type: RECT;
-            clip_to: "dragover_active";
-            description { state: "default" 0.0;
-               rel1.to: "dragover_clip";
-               rel2.to: "dragover_clip";
-               rel1.offset: 0 -10;
-            }
-         }
-         part { name: "shine"; mouse_events: 0;
-            clip_to: "dragover_clip";
-            description { state: "default" 0.0;
-               image.normal: "bg_shine.png";
-               fill.smooth: 0;
-               rel1.to: "dragover_clip";
-               rel2.to: "dragover_clip";
-               align: 0.5 0.0;
-               aspect: (255/120) (255/120);
-               aspect_preference: HORIZONTAL;
-            }
-         }
-         part { name: "glint"; mouse_events: 0;
-            clip_to: "dragover_glintclip";
-            description { state: "default" 0.0;
-               fixed: 1 1;
-               min: 79 5;
-               max: 79 5;
-               rel1 {
-                 relative: 0.0 0.0;
-                 offset: 0 0;
-                 to: "dragover_clip";
-               }
-               rel2 {
-                 relative: 1.0 0.0;
-                 offset: -1 0;
-                 to: "dragover_clip";
-               }
-               image.normal: "bg_glint.png";
-            }
-         }
-         part { name: "dragover_bevel2"; mouse_events: 0;
-            clip_to: "dragover_active";
-            description { state: "default" 0.0;
-               image.normal: "bg_bevel.png";
-               image.border: 1 1 1 1;
-               image.middle: 0;
-               fill.smooth: 0;
-               rel1.to: "rage.dragable.content";
-               rel2.to: "rage.dragable.content";
             }
          }
          program { name: "dragmove";
@@ -1981,8 +1901,6 @@ collections {
    group { name: "rage/list/item";
       images.image: "win_shadow.png" COMP;
       images.image: "win_glow.png" COMP;
-      images.image: "bg_shine.png" COMP;
-      images.image: "bg_glint.png" COMP;
 
       parts {
          part { name: "shadow"; mouse_events: 0;
@@ -1990,6 +1908,7 @@ collections {
                fixed: 1 1;
                rel1.to: "clip";
                rel2.to: "clip";
+               color: 255 255 255 128;
                image.normal: "win_shadow.png";
                image.border: 14 14 14 14;
                image.middle: 0;
@@ -2043,13 +1962,6 @@ collections {
                rel2.offset: -5 -5;
             }
          }
-         part { name: "glintclip"; type: RECT;
-            description { state: "default" 0.0;
-               rel1.to: "clip";
-               rel2.to: "clip";
-               rel1.offset: 0 -10;
-            }
-         }
          part { name: "rage.sizer"; type: SWALLOW;
             description { state: "default" 0.0;
                min: 16 16;
@@ -2062,37 +1974,6 @@ collections {
             description { state: "default" 0.0;
                rel1.to: "clip";
                rel2.to: "clip";
-            }
-         }
-         part { name: "shine"; mouse_events: 0;
-            clip_to: "clip";
-            description { state: "default" 0.0;
-               image.normal: "bg_shine.png";
-               fill.smooth: 0;
-               rel1.to: "clip";
-               rel2.to: "clip";
-               align: 0.5 0.0;
-               aspect: (255/120) (255/120);
-               aspect_preference: HORIZONTAL;
-            }
-         }
-         part { name: "glint"; mouse_events: 0;
-            clip_to: "glintclip";
-            description { state: "default" 0.0;
-               fixed: 1 1;
-               min: 79 5;
-               max: 79 5;
-               rel1 {
-                 relative: 0.0 0.0;
-                 offset: 0 0;
-                 to: "clip";
-               }
-               rel2 {
-                 relative: 1.0 0.0;
-                 offset: -1 0;
-                 to: "clip";
-               }
-               image.normal: "bg_glint.png";
             }
          }
          part { name: "rage.title"; type: TEXT; mouse_events: 0;
@@ -2177,6 +2058,7 @@ collections {
                fixed: 1 1;
                rel1.to: "clip";
                rel2.to: "clip";
+               color: 255 255 255 128;
                image.normal: "win_shadow.png";
                image.border: 14 14 14 14;
                image.middle: 0;

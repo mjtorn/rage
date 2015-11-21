@@ -1,4 +1,8 @@
 THEME_IMGS = \
+data/themes/images/shadow_circle_horiz.png \
+data/themes/images/shadow_circle_vert.png \
+data/themes/images/vg1.png \
+data/themes/images/vg2.png \
 data/themes/images/bevel_dark_out.png \
 data/themes/images/bg_bevel.png \
 data/themes/images/bg_glint.png \
