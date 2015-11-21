@@ -36,14 +36,14 @@ static void
 _cb_focused(void *data EINA_UNUSED, Evas_Object *obj, void *event EINA_UNUSED)
 {
    Inf *inf = evas_object_data_get(obj, "inf");
-   elm_layout_signal_emit(inf->lay, "state,win,focused", "rage");
+   if (inf) elm_layout_signal_emit(inf->lay, "state,win,focused", "rage");
 }
 
 static void
 _cb_unfocused(void *data EINA_UNUSED, Evas_Object *obj, void *event EINA_UNUSED)
 {
    Inf *inf = evas_object_data_get(obj, "inf");
-   elm_layout_signal_emit(inf->lay, "state,win,unfocused", "rage");
+   if (inf) elm_layout_signal_emit(inf->lay, "state,win,unfocused", "rage");
 }
 
 static void
