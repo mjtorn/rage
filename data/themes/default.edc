@@ -1,7 +1,6 @@
 collections {
    
    group { name: "rage/core";
-      images.image: "bg_bevel.png" COMP;
       images.image: "pm_fill.png" COMP;
       images.image: "pm_shadow.png" COMP;
       images.image: "vg1.png" COMP;
@@ -366,17 +365,10 @@ collections {
                visible: 0;
             }
          }
-         part { name: "speaker_bg_shadow"; mouse_events: 0;
+         part { name: "speaker_bg"; type: RECT;
             clip_to: "speaker_clip";
             description { state: "default" 0.0;
-               fixed: 1 1;
-               rel1.to: "speaker_base";
-               rel2.to: "speaker_base";
-               image.normal: "pm_shadow.png";
-               image.border: 64 64 64 64;
-               rel1.offset: -32 -32;
-               rel2.offset: 31 31;
-               fill.smooth: 0;
+               color: 64 64 64 255;
             }
          }
          part { name: "speaker_base"; type: RECT;
@@ -438,6 +430,7 @@ collections {
                rel1.to: "speaker_base";
                rel2.to: "speaker_base";
                image.normal: "speaker-shadow.png";
+               color: 255 255 255 128;
             }
          }
          part { name: "speaker_lo";
@@ -468,17 +461,7 @@ collections {
                rel1.to: "speaker_base";
                rel2.to: "speaker_base";
                image.normal: "speaker-over.png";
-            }
-         }
-         part { name: "speaker_bevel";
-            clip_to: "speaker_clip";
-            description { state: "default" 0.0;
-               rel1.to: "speaker_cover";
-               rel2.to: "speaker_cover";
-               image.normal: "bg_bevel.png";
-               image.border: 1 1 1 1;
-               image.middle: 0;
-               fill.smooth: 0;
+               color: 64 64 64 255;
             }
          }
          program {
@@ -527,17 +510,17 @@ collections {
          program {
             signal: "state,noart"; source: "rage";
             action: STATE_SET "default" 0.0;
-            transition: ACCELERATE 1.0;
+            transition: ACCELERATE 0.3;
             target: "art_clip";
          }
          program {
             signal: "state,art"; source: "rage";
             action: STATE_SET "visible" 0.0;
-            transition: DECELERATE 1.0;
+            transition: DECELERATE 0.3;
             target: "art_clip";
          }
 
-         part { name: "rage.gesture"; type: SWALLOW;
+         part { name: "rage.gesture"; type: SWALLOW; repeat_events: 1;
             description { state: "default" 0.0;
             }
          }
@@ -1001,19 +984,16 @@ collections {
          
          part { name: "rage.pos"; type: TEXT; mouse_events: 0;
             clip_to: "controlbar_clip";
-            effect: GLOW;
             scale: 1;
             description { state: "default" 0.0;
                fixed: 1 1;
                rel1.to: "slash";
                rel1.relative: 0.0 0.0;
-               rel1.offset: -1 0;
+               rel1.offset: -5 0;
                rel2.to: "slash";
                rel2.relative: 0.0 1.0;
-               rel2.offset: -1 -1;
+               rel2.offset: -5 -1;
                color: 255 255 255 255;
-               color2: 51 153 255 128;
-               color3: 51 153 255 20;
                align: 1.0 0.5;
                text { font: "Sans"; size: 8;
                   align: 1.0 0.5;
@@ -1024,19 +1004,16 @@ collections {
          }
          part { name: "slash"; type: TEXT; mouse_events: 0;
             clip_to: "controlbar_clip";
-            effect: GLOW;
             scale: 1;
             description { state: "default" 0.0;
                fixed: 1 1;
                rel1.to: "rage.length";
                rel1.relative: 0.0 0.0;
-               rel1.offset: -1 0;
+               rel1.offset: -5 0;
                rel2.to: "rage.length";
                rel2.relative: 0.0 1.0;
-               rel2.offset: -1 -1;
+               rel2.offset: -5 -1;
                color: 255 255 255 255;
-               color2: 51 153 255 128;
-               color3: 51 153 255 20;
                align: 1.0 0.5;
                text { font: "Sans"; size: 8;
                   align: 1.0 0.5;
@@ -1048,7 +1025,6 @@ collections {
          }
          part { name: "rage.length"; type: TEXT; mouse_events: 0;
             clip_to: "controlbar_clip";
-            effect: GLOW;
             scale: 1;
             description { state: "default" 0.0;
                fixed: 1 1;
@@ -1061,8 +1037,6 @@ collections {
                rel2.relative: 0.0 1.0;
                rel2.offset: -1 -1;
                color: 255 255 255 255;
-               color2: 51 153 255 128;
-               color3: 51 153 255 20;
                align: 1.0 0.5;
                text { font: "Sans"; size: 8;
                   align: 1.0 0.5;
@@ -1977,7 +1951,6 @@ collections {
             }
          }
          part { name: "rage.title"; type: TEXT; mouse_events: 0;
-            effect: GLOW;
             scale: 1;
             description { state: "default" 0.0;
                fixed: 1 1;
@@ -1985,8 +1958,6 @@ collections {
                rel1.offset: 4 4;
                rel2.offset: -5 -5;
                color: 255 255 255 255;
-               color2: 51 153 255 128;
-               color3: 51 153 255 20;
                text { font: "Sans"; size: 8;
                   align: 0.0 1.0;
                   min: 0 1;
