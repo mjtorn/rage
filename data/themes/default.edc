@@ -520,8 +520,10 @@ collections {
             target: "art_clip";
          }
 
-         part { name: "rage.gesture"; type: SWALLOW; repeat_events: 1;
+         part { name: "rage.gesture"; type: SWALLOW;
             description { state: "default" 0.0;
+               rel2.to_y: "controlbar";
+               rel2.relative: 1.0 0.0;
             }
          }
 
