@@ -59,6 +59,7 @@ _cb_win_del(void *data EINA_UNUSED, Evas *e EINA_UNUSED, Evas_Object *obj, void 
    if (inf->drag_anim) ecore_animator_del(inf->drag_anim);
    if (inf->mouse_idle_timeout) ecore_timer_del(inf->mouse_idle_timeout);
    if (inf->albumart_timeout) ecore_timer_del(inf->albumart_timeout);
+   if (inf->down_timeout) ecore_timer_del(inf->down_timeout);
    EINA_LIST_FREE(inf->file_list, vid)
      {
         if (vid->file) eina_stringshare_del(vid->file);
@@ -110,10 +111,62 @@ _cb_mouse_move(void *data, Evas *evas EINA_UNUSED, Evas_Object *obj EINA_UNUSED,
 static void
 _cb_mouse_down(void *data, Evas *evas EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info)
 {
-   Evas_Event_Mouse_Down *m_info = event_info;
+   Evas_Event_Mouse_Down *ev = event_info;
+   Inf *inf = evas_object_data_get(data, "inf");
 
-   if (m_info->flags & EVAS_BUTTON_DOUBLE_CLICK)
-     elm_win_fullscreen_set(data, !elm_win_fullscreen_get(data));
+   if (ev->button != 1) return;
+   if (inf)
+     {
+        if (inf->down) return;
+        inf->down = EINA_TRUE;
+        inf->down_x = ev->canvas.x;
+        inf->down_y = ev->canvas.y;
+     }
+   if (ev->flags & EVAS_BUTTON_DOUBLE_CLICK)
+     {
+        elm_win_fullscreen_set(data, !elm_win_fullscreen_get(data));
+        if (inf->down_timeout)
+          {
+             ecore_timer_del(inf->down_timeout);
+             inf->down_timeout = NULL;
+          }
+     }
+}
+
+static Eina_Bool
+_cb_down_timeout(void *data)
+{
+   Inf *inf = evas_object_data_get(data, "inf");
+   if (inf)
+     {
+        inf->down_timeout = NULL;
+        win_do_play_pause(data);
+     }
+   return EINA_FALSE;
+}
+
+static void
+_cb_mouse_up(void *data, Evas *evas EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info)
+{
+   Evas_Event_Mouse_Up *ev = event_info;
+   Inf *inf = evas_object_data_get(data, "inf");
+   Evas_Coord dx, dy;
+
+   if (ev->button != 1) return;
+   if (!inf->down) return;
+   inf->down = EINA_FALSE;
+   if (!(ev->flags & EVAS_BUTTON_DOUBLE_CLICK))
+     {
+        dx = abs(ev->canvas.x - inf->down_x);
+        dy = abs(ev->canvas.y - inf->down_y);
+        if ((dx <= elm_config_finger_size_get()) &&
+            (dy <= elm_config_finger_size_get()) &&
+            (inf))
+          {
+             if (inf->down_timeout) ecore_timer_del(inf->down_timeout);
+             inf->down_timeout = ecore_timer_add(0.3, _cb_down_timeout, data);
+          }
+     }
 }
 
 static void
@@ -451,6 +504,8 @@ win_add(void)
                                   _cb_mouse_move, win);
    evas_object_event_callback_add(o, EVAS_CALLBACK_MOUSE_DOWN,
                                   _cb_mouse_down, win);
+   evas_object_event_callback_add(o, EVAS_CALLBACK_MOUSE_UP,
+                                  _cb_mouse_up, win);
    elm_object_part_content_set(inf->lay, "rage.gesture", o);
    gesture_init(win, o);
    dnd_init(win, o);

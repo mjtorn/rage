@@ -11,6 +11,7 @@ struct _Inf
    Ecore_Timer *show_timeout;
    Ecore_Timer *mouse_idle_timeout;
    Ecore_Timer *albumart_timeout;
+   Ecore_Timer *down_timeout;
    Ecore_Animator *drag_anim;
    double last_action;
    double jump;
@@ -18,12 +19,14 @@ struct _Inf
    double drag_time, drag_start;
    int zoom_mode;
    int drag_dist, drag_momentum;
+   Evas_Coord down_x, down_y;
    Eina_Bool sized : 1;
    Eina_Bool last_action_rwind : 1;
    Eina_Bool playing : 1;
    Eina_Bool was_playing : 1;
    Eina_Bool dragging : 1;
    Eina_Bool browse_mode : 1;
+   Eina_Bool down : 1;
 };
 
 // ui high level controls
