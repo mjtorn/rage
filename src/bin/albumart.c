@@ -378,6 +378,11 @@ albumart_file_get(const char *file)
    sprintf(tmp, "%s/.thumb/%s.jpeg", dir, fraw);
    if (ecore_file_exists(tmp)) goto found;
 
+   sprintf(tmp, "%s/cover.jpg", dir);
+   if (ecore_file_exists(tmp)) goto found;
+   sprintf(tmp, "%s/front.jpg", dir);
+   if (ecore_file_exists(tmp)) goto found;
+
    free(dir);
    free(fraw);
    return _thumbpath(file);
