@@ -180,9 +180,17 @@ _cb_fetched(void *data)
    file = video_file_get(inf->vid);
    if (file)
      {
-        char *path = albumart_file_get(file);
-        win_art(win, path);
-        free(path);
+        char *realfile = ecore_file_realpath(file);
+        if (realfile)
+          {
+             char *path = albumart_file_get(realfile);
+             if (path)
+               {
+                  win_art(win, path);
+                  free(path);
+               }
+             free(realfile);
+          }
      }
 }
 
@@ -299,6 +307,17 @@ win_do_next(Evas_Object *win)
 static void
 _restart_vid(Evas_Object *win, Evas_Object *lay, Evas_Object *vid, const char *file, const char *sub)
 {
+   const char *extn = strchr(file, '.');
+   if ((extn) &&
+       ((!strcasecmp(extn, ".mp3")) ||
+        (!strcasecmp(extn, ".m4a")) ||
+        (!strcasecmp(extn, ".oga")) ||
+        (!strcasecmp(extn, ".aac")) ||
+        (!strcasecmp(extn, ".flac")) ||
+        (!strcasecmp(extn, ".wav"))))
+     video_art_set(vid, EINA_TRUE);
+   else
+     video_art_set(vid, EINA_FALSE);
    video_position_set(vid, 0.0);
    video_play_set(vid, EINA_FALSE);
    video_file_autosub_set(vid, file, sub);
