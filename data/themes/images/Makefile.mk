@@ -26,8 +26,6 @@ data/themes/images/r-4.png \
 data/themes/images/shadow_circle_horiz.png \
 data/themes/images/shadow_circle_vert.png \
 data/themes/images/speaker-base.png \
-data/themes/images/speaker-bevel-hi.png \
-data/themes/images/speaker-bevel-lo.png \
 data/themes/images/speaker-over.png \
 data/themes/images/speaker-shadow.png \
 data/themes/images/tv-bg.png \

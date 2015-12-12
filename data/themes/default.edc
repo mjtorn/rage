@@ -35,8 +35,6 @@ collections {
       images.image: "win_shadow.png" COMP;
 
       images.image: "speaker-base.png" COMP;
-      images.image: "speaker-bevel-hi.png" COMP;
-      images.image: "speaker-bevel-lo.png" COMP;
       images.image: "speaker-over.png" COMP;
       images.image: "speaker-shadow.png" COMP;
 
@@ -416,28 +414,6 @@ collections {
                rel2.to: "speaker_base";
                image.normal: "speaker-shadow.png";
                color: 255 255 255 128;
-            }
-         }
-         part { name: "speaker_lo";
-            clip_to: "speaker_clip";
-            description { state: "default" 0.0;
-               rel1.to: "speaker_base";
-               rel1.offset: 0 1;
-               rel2.to: "speaker_base";
-               rel2.relative: 1.0 0.5;
-               rel2.offset: -1 0;
-               image.normal: "speaker-bevel-lo.png";
-            }
-         }
-         part { name: "speaker_hi";
-            clip_to: "speaker_clip";
-            description { state: "default" 0.0;
-               rel1.to: "speaker_base";
-               rel1.relative: 0.0 0.5;
-               rel1.offset: 0 -1;
-               rel2.to: "speaker_base";
-               rel2.offset: -1 -2;
-               image.normal: "speaker-bevel-hi.png";
             }
          }
          part { name: "speaker_cover";
