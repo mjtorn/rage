@@ -292,7 +292,7 @@ _ob_resize(Evas_Object *obj, Evas_Coord x, Evas_Coord y, Evas_Coord w, Evas_Coor
         sd->pih = sd->ih;
         evas_object_smart_callback_call(obj, "frame_resize", NULL);
      }
-   if ((sd->tw > 0) && (sd->th > 0))
+   if ((sd->tw > 0) && (sd->th > 0) && (sd->doart))
      {
         int iw, ih;
 
@@ -647,6 +647,7 @@ video_art_set(Evas_Object *obj, Eina_Bool art)
    Video *sd = evas_object_smart_data_get(obj);
    if (!sd) return;
    sd->doart = art;
+   if (!sd->doart) evas_object_hide(sd->o_img);
 }
 
 Eina_Bool
