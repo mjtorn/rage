@@ -98,12 +98,6 @@ key_handle(Evas_Object *win, Evas_Event_Key_Down *ev)
             (!strcmp(ev->keyname, "p")) ||
             (!strcmp(ev->key, "XF86AudioPlay")))
      {
-        printf("ch: %i/%i [%s]\n", video_chapter_get(inf->vid), video_chapter_count(inf->vid), video_chapter_name_get(inf->vid, video_chapter_get(inf->vid)));
-        printf("ti: %s\n", video_title_get(inf->vid));
-        printf("au: %i/%i [%s]\n", video_audio_channel_get(inf->vid), video_audio_channel_count(inf->vid), video_audio_channel_name_get(inf->vid, video_audio_channel_get(inf->vid)));
-        printf("vi: %i/%i [%s]\n", video_video_channel_get(inf->vid), video_video_channel_count(inf->vid), video_video_channel_name_get(inf->vid, video_video_channel_get(inf->vid)));
-        printf("sp: %i/%i [%s]\n", video_spu_channel_get(inf->vid), video_spu_channel_count(inf->vid), video_spu_channel_name_get(inf->vid, video_spu_channel_get(inf->vid)));
-
         win_do_play_pause(win);
      }
    else if ((!strcmp(ev->keyname, "s")) ||

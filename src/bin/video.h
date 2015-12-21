@@ -52,6 +52,9 @@ Eina_Bool video_lowquality_get(Evas_Object *obj);
 const char *video_meta_title_get(Evas_Object *obj);
 const char *video_meta_artist_get(Evas_Object *obj);
 const char *video_meta_album_get(Evas_Object *obj);
+const char *video_meta_year_get(Evas_Object *obj);
+const char *video_meta_genre_get(Evas_Object *obj);
+const char *video_meta_comment_get(Evas_Object *obj);
 void video_file_autosub_set(Evas_Object *obj, const char *file, const char *sub);
 
 #endif

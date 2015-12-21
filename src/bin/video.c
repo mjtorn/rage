@@ -979,6 +979,30 @@ video_meta_album_get(Evas_Object *obj)
    return emotion_object_meta_info_get(sd->o_vid, EMOTION_META_INFO_TRACK_ALBUM);
 }
 
+const char *
+video_meta_year_get(Evas_Object *obj)
+{
+   Video *sd = evas_object_smart_data_get(obj);
+   if (!sd) return NULL;
+   return emotion_object_meta_info_get(sd->o_vid, EMOTION_META_INFO_TRACK_YEAR);
+}
+
+const char *
+video_meta_genre_get(Evas_Object *obj)
+{
+   Video *sd = evas_object_smart_data_get(obj);
+   if (!sd) return NULL;
+   return emotion_object_meta_info_get(sd->o_vid, EMOTION_META_INFO_TRACK_GENRE);
+}
+
+const char *
+video_meta_comment_get(Evas_Object *obj)
+{
+   Video *sd = evas_object_smart_data_get(obj);
+   if (!sd) return NULL;
+   return emotion_object_meta_info_get(sd->o_vid, EMOTION_META_INFO_TRACK_COMMENT);
+}
+
 void
 video_file_autosub_set(Evas_Object *obj, const char *file, const char *sub)
 {
