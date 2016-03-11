@@ -133,12 +133,15 @@ _cb_http_complete(void *data EINA_UNUSED, int type EINA_UNUSED, void *event)
                   if (p)
                     {
                        p = strstr(p, "src=\"http");
-                       p += 5;
-                       pe = strchr(p, '"');
-                       if (pe)
+                       if (p)
                          {
-                            eina_strbuf_append_length(sb, p, pe - p);
-                            ok = EINA_TRUE;
+                            p += 5;
+                            pe = strchr(p, '"');
+                            if (pe)
+                              {
+                                 eina_strbuf_append_length(sb, p, pe - p);
+                                 ok = EINA_TRUE;
+                              }
                          }
                     }
                   if (!ok)
