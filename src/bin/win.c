@@ -115,13 +115,11 @@ _cb_mouse_down(void *data, Evas *evas EINA_UNUSED, Evas_Object *obj EINA_UNUSED,
    Inf *inf = evas_object_data_get(data, "inf");
 
    if (ev->button != 1) return;
-   if (inf)
-     {
-        if (inf->down) return;
-        inf->down = EINA_TRUE;
-        inf->down_x = ev->canvas.x;
-        inf->down_y = ev->canvas.y;
-     }
+   if (!inf) return;
+   if (inf->down) return;
+   inf->down = EINA_TRUE;
+   inf->down_x = ev->canvas.x;
+   inf->down_y = ev->canvas.y;
    if (ev->flags & EVAS_BUTTON_DOUBLE_CLICK)
      {
         elm_win_fullscreen_set(data, !elm_win_fullscreen_get(data));
