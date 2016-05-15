@@ -153,6 +153,7 @@ _cb_mouse_up(void *data, Evas *evas EINA_UNUSED, Evas_Object *obj EINA_UNUSED, v
    Evas_Coord dx, dy;
 
    if (ev->button != 1) return;
+   if (!inf) return;
    if (!inf->down) return;
    inf->down = EINA_FALSE;
    if (!(ev->flags & EVAS_BUTTON_DOUBLE_CLICK))
@@ -160,8 +161,7 @@ _cb_mouse_up(void *data, Evas *evas EINA_UNUSED, Evas_Object *obj EINA_UNUSED, v
         dx = abs(ev->canvas.x - inf->down_x);
         dy = abs(ev->canvas.y - inf->down_y);
         if ((dx <= elm_config_finger_size_get()) &&
-            (dy <= elm_config_finger_size_get()) &&
-            (inf))
+            (dy <= elm_config_finger_size_get()))
           {
              if (inf->down_timeout) ecore_timer_del(inf->down_timeout);
              inf->down_timeout = ecore_timer_add(0.3, _cb_down_timeout, data);
