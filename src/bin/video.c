@@ -1021,8 +1021,9 @@ video_file_autosub_set(Evas_Object *obj, const char *file, const char *sub)
         int i;
         Eina_Bool found = EINA_FALSE;
 
+        // try last dont in filename first...
         strcpy(sub, file);
-        p = strchr(sub, '.');
+        p = strrchr(sub, '.');
         if (p)
           {
              for (i = 0; subtypes[i]; i++)
@@ -1033,6 +1034,25 @@ video_file_autosub_set(Evas_Object *obj, const char *file, const char *sub)
                        video_sub_file_set(obj, sub);
                        found = EINA_TRUE;
                        break;
+                    }
+               }
+          }
+        // now try first dot as a fallback.
+        if (!found)
+          {
+             strcpy(sub, file);
+             p = strchr(sub, '.');
+             if (p)
+               {
+                  for (i = 0; subtypes[i]; i++)
+                    {
+                       strcpy(p, subtypes[i]);
+                       if (ecore_file_exists(sub))
+                         {
+                            video_sub_file_set(obj, sub);
+                            found = EINA_TRUE;
+                            break;
+                         }
                     }
                }
           }
