@@ -395,6 +395,7 @@ static void
 _smart_del(Evas_Object *obj)
 {
    Videothumb *sd = evas_object_smart_data_get(obj);
+
    if (!sd) return;
    vidthumbs = eina_list_remove(vidthumbs, obj);
    if (sd->thumb_exe)
@@ -404,10 +405,7 @@ _smart_del(Evas_Object *obj)
         ecore_exe_kill(sd->thumb_exe);
         ecore_exe_free(sd->thumb_exe);
      }
-   if (sd->launch_timer)
-     {
-        ecore_timer_del(sd->launch_timer);
-     }
+   if (sd->launch_timer) ecore_timer_del(sd->launch_timer);
    if (sd->file) eina_stringshare_del(sd->file);
    if (sd->realfile) eina_stringshare_del(sd->realfile);
    if (sd->realpath) free(sd->realpath);
@@ -415,6 +413,16 @@ _smart_del(Evas_Object *obj)
    if (sd->o_img2) evas_object_del(sd->o_img2);
    if (sd->exe_handler) ecore_event_handler_del(sd->exe_handler);
    if (sd->cycle_timer) ecore_timer_del(sd->cycle_timer);
+
+   sd->thumb_exe = NULL;
+   sd->file = NULL;
+   sd->realfile = NULL;
+   sd->realpath = NULL;
+   sd->o_img = NULL;
+   sd->o_img2 = NULL;
+   sd->exe_handler = NULL;
+   sd->cycle_timer = NULL;
+
    _parent_sc.del(obj);
 }
 
@@ -531,6 +539,7 @@ _cb_cycle(void *data)
 {
    Evas_Object *obj = data;
    Videothumb *sd = evas_object_smart_data_get(obj);
+   if (!sd) return EINA_FALSE;
    if (sd->poster)
      {
         sd->cycle_timer = NULL;
