@@ -18,6 +18,7 @@ _cb_fullscreen(void *data EINA_UNUSED, Evas_Object *obj, void *event EINA_UNUSED
    elm_layout_signal_emit(inf->lay, "state,win,fullscreen", "rage");
    elm_win_noblank_set(obj, EINA_TRUE);
    evas_object_show(inf->event2);
+   browser_fullscreen(obj, EINA_TRUE);
 }
 
 static void
@@ -29,6 +30,7 @@ _cb_unfullscreen(void *data EINA_UNUSED, Evas_Object *obj, void *event EINA_UNUS
         elm_layout_signal_emit(inf->lay, "state,win,normal", "rage");
         elm_win_noblank_set(obj, EINA_FALSE);
         evas_object_hide(inf->event2);
+        browser_fullscreen(obj, EINA_FALSE);
      }
 }
 
@@ -114,8 +116,13 @@ _cb_mouse_down(void *data, Evas *evas EINA_UNUSED, Evas_Object *obj EINA_UNUSED,
    Evas_Event_Mouse_Down *ev = event_info;
    Inf *inf = evas_object_data_get(data, "inf");
 
-   if (ev->button != 1) return;
    if (!inf) return;
+   if (ev->button == 3)
+     {
+        elm_layout_signal_emit(inf->lay, "about,show", "rage");
+        return;
+     }
+   if (ev->button != 1) return;
    if (inf->down) return;
    inf->down = EINA_TRUE;
    inf->down_x = ev->canvas.x;

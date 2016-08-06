@@ -5,6 +5,7 @@
 #include "browser.h"
 #include "videothumb.h"
 #include "key.h"
+#include "dnd.h"
 
 typedef struct _Message Message;
 typedef struct _Entry Entry;
@@ -48,6 +49,7 @@ static Evas_Object *bx = NULL;
 static Evas_Object *sc, *bt;
 static Ecore_Thread *fill_thread = NULL;
 static Entry *dir_entry = NULL;
+static Eina_List *entries = NULL;
 
 static void _sel_go(Evas_Object *win EINA_UNUSED, Entry *base_entry, int x, int y);
 
@@ -58,8 +60,16 @@ _item_size_get(Evas_Object *win, Evas_Coord *w, Evas_Coord *h)
 
    elm_coords_finger_size_adjust(1, &sz, 1, &sz);
    evas_object_geometry_get(win, NULL, NULL, w, h);
-   *w = (double)(*w) / 5.0;
-   *h = (double)(*h) / 1.5;
+   if (elm_win_fullscreen_get(win))
+     {
+        *w = (double)(*w) / 5.0;
+        *h = (double)(*h) / 1.5;
+     }
+   else
+     {
+        *w = (double)(*w) / 8.0;
+        *h = (double)(*h) / 3.0;
+     }
    if (*w < sz) *w = sz;
    if (*h < sz) *h = sz;
 }
@@ -254,6 +264,10 @@ _entry_files_pop(Evas_Object *win, Entry *entry)
         elm_object_focus_allow_set(o, EINA_FALSE);
         snprintf(buf, sizeof(buf), "%s/themes/default.edj", elm_app_data_dir_get());
         elm_layout_file_set(o, buf, "rage/browser/item");
+        if (elm_win_fullscreen_get(win))
+          elm_layout_signal_emit(base, "state,fullscreen", "rage");
+        else
+          elm_layout_signal_emit(base, "state,normal", "rage");
         snprintf(buf, sizeof(buf), "%s", file);
         p = strrchr(buf, '.');
         if (p) *p = 0;
@@ -331,6 +345,11 @@ _entry_files_redo(Evas_Object *win, Entry *entry)
    Eina_Rectangle r1, r2;
 
    eina_lock_take(&(entry->lock));
+
+   if (elm_win_fullscreen_get(win))
+     elm_layout_signal_emit(entry->base, "state,fullscreen", "rage");
+   else
+     elm_layout_signal_emit(entry->base, "state,normal", "rage");
 
    num = eina_list_count(entry->files);
    evas_object_geometry_get(win, NULL, NULL, &ww, &wh);
@@ -441,6 +460,10 @@ _fill_feedback(void *data, Ecore_Thread *th, void *msg)
                        elm_object_focus_allow_set(o, EINA_FALSE);
                        snprintf(buf, sizeof(buf), "%s/themes/default.edj", elm_app_data_dir_get());
                        elm_layout_file_set(o, buf, "rage/browser/entry");
+                       if (elm_win_fullscreen_get(win))
+                         elm_layout_signal_emit(entry->base, "state,fullscreen", "rage");
+                       else
+                         elm_layout_signal_emit(entry->base, "state,normal", "rage");
                        evas_object_size_hint_weight_set(o, EVAS_HINT_EXPAND, 0.0);
                        evas_object_size_hint_align_set(o, EVAS_HINT_FILL, 0.5);
 
@@ -479,6 +502,7 @@ _fill_feedback(void *data, Ecore_Thread *th, void *msg)
                        evas_object_show(entry->base);
                     }
                }
+             entries = eina_list_append(entries, entry);
              eina_lock_release(&(entry->lock));
           }
         else if ((message->type == TYPE_FINISH) && (entry->parent))
@@ -516,6 +540,7 @@ _entry_free(Entry *entry)
    eina_lock_release(&(entry->lock));
    eina_lock_free(&(entry->lock));
    if (entry == selentry) selentry = NULL;
+   entries = eina_list_remove(entries, entry);
    free(entry);
 }
 
@@ -822,6 +847,7 @@ browser_show(Evas_Object *win)
         bx = elm_box_add(win);
 
         sc = elm_scroller_add(win);
+        dnd_init(win, sc);
         elm_object_style_set(sc, "noclip");
         elm_object_focus_allow_set(sc, EINA_FALSE);
         evas_object_size_hint_weight_set(sc, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -890,8 +916,30 @@ browser_toggle(Evas_Object *win)
 }
 
 void
-browser_size_update(Evas_Object *win EINA_UNUSED)
+browser_size_update(Evas_Object *win)
 {
+   Inf *inf = evas_object_data_get(win, "inf");
+   Eina_List *l;
+   Entry *entry;
+   if (!inf) return;
    if (!bx) return;
-   // XXX: unpop + repop
+   EINA_LIST_FOREACH(entries, l, entry)
+     {
+        _cb_entry_table_move(entry, evas_object_evas_get(entry->table),
+                             entry->table, NULL);
+     }
+}
+
+void
+browser_fullscreen(Evas_Object *win, EINA_UNUSED Eina_Bool enabled)
+{
+   Inf *inf = evas_object_data_get(win, "inf");
+   Eina_List *l;
+   Entry *entry;
+   if (!inf) return;
+   if (!bx) return;
+   EINA_LIST_FOREACH(entries, l, entry)
+     {
+        _entry_files_redo(win, entry);
+     }
 }

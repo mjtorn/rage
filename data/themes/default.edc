@@ -1953,24 +1953,47 @@ collections {
             description { state: "default" 0.0;
                fixed: 0 1;
                align: 0.0 0.0;
-               rel1.offset: 0 40;
-               rel2.offset: -1 40;
+               rel1.offset: 0 10;
+               rel2.offset: -1 10;
                rel2.relative: 1.0 0.0;
                color: 255 255 255 255;
-               text { font: "Sans:style=Bold"; size: 40;
+               text { font: "Sans:style=Bold"; size: 10;
                   align: 0.0 0.0;
                   min: 0 1;
                   elipsis: 0;
                }
+            }
+            description { state: "fullscreen" 0.0;
+               inherit: "default" 0.0;
+               rel1.offset: 0 40;
+               rel2.offset: -1 40;
+               text.size: 40;
             }
          }
          part { name: "rage.content"; type: SWALLOW;
             description { state: "default" 0.0;
                rel1.to_y: "rage.title";
                rel1.relative: 0.0 1.0;
-               rel1.offset: 0 40;
-               rel2.offset: -1 -41;
+               rel1.offset: 0 10;
+               rel2.offset: -1 -1;
             }
+            description { state: "fullscreen" 0.0;
+               inherit: "default" 0.0;
+               rel1.offset: 0 40;
+               rel2.offset: -1 -11;
+            }
+         }
+      }
+      programs {
+         program { signal: "state,fullscreen"; source: "rage";
+            action: STATE_SET "fullscreen" 0.0;
+            target: "rage.title";
+            target: "rage.content";
+         }
+         program { signal: "state,normal"; source: "rage";
+            action: STATE_SET "default" 0.0;
+            target: "rage.title";
+            target: "rage.content";
          }
       }
    }
@@ -1981,6 +2004,9 @@ collections {
 
       styles {
          style { name: "browser_item_label";
+            base: "font=Sans font_size=10 color=#ffffffff wrap=mixed ellipsis=1.0";
+         }
+         style { name: "browser_item_label_fullscreen";
             base: "font=Sans font_size=20 color=#ffffffff wrap=mixed ellipsis=1.0";
          }
       }
@@ -2044,8 +2070,12 @@ collections {
             description { state: "default" 0.0;
                rel2.relative: 0.0 0.0;
                align: 0.0 0.0;
-               min: 16 16;
+               min: 8 8;
                fixed: 1 1;
+            }
+            description { state: "fullscreen" 0.0;
+               inherit: "default" 0.0;
+               min: 16 16;
             }
          }
          part { name: "p2"; type: SPACER;
@@ -2053,8 +2083,12 @@ collections {
             description { state: "default" 0.0;
                rel1.relative: 1.0 1.0;
                align: 1.0 1.0;
-               min: 16 16;
+               min: 8 8;
                fixed: 1 1;
+            }
+            description { state: "fullscreen" 0.0;
+               inherit: "default" 0.0;
+               min: 16 16;
             }
          }
          part { name: "clip"; type: RECT;
@@ -2092,9 +2126,9 @@ collections {
             description { state: "default" 0.0;
                fixed: 1 1;
                align: 0.0 1.0;
-               rel1.offset: 8 8;
+               rel1.offset: 2 2;
                rel1.to: "clip";
-               rel2.offset: -9 -9;
+               rel2.offset: -3 -3;
                rel2.to: "clip";
                color: 255 255 255 255;
                text { font: "Sans"; size: 20;
@@ -2103,6 +2137,12 @@ collections {
                   min: 0 1;
                   elipsis: 0;
                }
+            }
+            description { state: "fullscreen" 0.0;
+               inherit: "default" 0.0;
+               rel1.offset: 8 8;
+               rel2.offset: -9 -9;
+               text.style: "browser_item_label_fullscreen";
             }
          }
          part { name: "event"; type: RECT;
@@ -2114,6 +2154,20 @@ collections {
          program {
             signal: "mouse,clicked,1"; source: "event";
             action: SIGNAL_EMIT "rage,selected" "rage";
+         }
+      }
+      programs {
+         program { signal: "state,fullscreen"; source: "rage";
+            action: STATE_SET "fullscreen" 0.0;
+            target: "rage.title";
+            target: "p1";
+            target: "p2";
+         }
+         program { signal: "state,normal"; source: "rage";
+            action: STATE_SET "default" 0.0;
+            target: "rage.title";
+            target: "p1";
+            target: "p2";
          }
       }
    }

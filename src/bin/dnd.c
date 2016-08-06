@@ -6,6 +6,7 @@
 #include "winvid.h"
 #include "winlist.h"
 #include "dnd.h"
+#include "browser.h"
 
 static int pending_dir = 0;
 static Eina_List *playlist = NULL;
@@ -46,6 +47,7 @@ _dnd_finish(Evas_Object *win)
 
    win_video_next(win);
    win_list_content_update(win);
+   browser_hide(win);
 
 end:
    pending_dir = 0;
