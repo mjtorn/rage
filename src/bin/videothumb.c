@@ -144,7 +144,7 @@ _videothumb_launch_do(Evas_Object *obj)
                     sd->exe_handler = ecore_event_handler_add(ECORE_EXE_EVENT_DEL,
                                                               _cb_thumb_exe, obj);
                   snprintf(buf, sizeof(buf),
-                           "%s/rage/utils/rage_thumb %s 10000 %i >& /dev/null",
+                           "%s/rage/utils/rage_thumb %s 10000 %i 2>&1 /dev/null",
                            libdir, s, sd->poster_mode ? 1 : 0);
                   sd->thumb_exe = ecore_exe_pipe_run(buf,
                                                      ECORE_EXE_USE_SH |
