@@ -113,7 +113,7 @@ _cb_loaded(void *data, Evas_Object *obj, void *info EINA_UNUSED)
              snprintf(key, sizeof(key), "%i", pos);
              evas_object_image_file_set(vidimage, file, key);
              evas_object_image_size_get(vidimage, &iw, &ih);
-             if ((iw <= 0) || (ih <= 0))
+             if ((iw <= 1) || (ih <= 1))
                {
                   eet_close(ef);
                   exit(6);
@@ -121,6 +121,11 @@ _cb_loaded(void *data, Evas_Object *obj, void *info EINA_UNUSED)
              w = 160;
              h = (ih * 160) / iw;
              if (h < 1) h = 1;
+             if ((w > 4096) || (h > 4096))
+               {
+                  eet_close(ef);
+                  exit(6);
+               }
              evas_object_resize(vidimage, w, h);
              evas_object_resize(subwin, w, h);
              elm_win_render(subwin);
