@@ -64,8 +64,8 @@ _cb_loaded(void *data, Evas_Object *obj, void *info EINA_UNUSED)
         if (ratio > 0.0) iw = (ih * ratio);
         else ratio = iw / ih;
         if ((ratio >= (4.0 / 3.0)) &&
-            (ratio <= (3.0 / 1.0)) &&
-            (len >= (75.0 * 60.0)) &&
+            (ratio <= (4.0 / 1.0)) &&
+            (len >= (60.0 * 60.0)) &&
             (len <= (5.0 * 60.0 * 60.0)))
           is_movie = EINA_TRUE;
      }
