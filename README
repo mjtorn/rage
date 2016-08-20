@@ -1,4 +1,4 @@
-Rage 0.1.4
+Rage 0.2.0
 
 ******************************************************************************
 
@@ -38,6 +38,20 @@ the position bar at the bottom, if it's a video, brings up a video
 thumbnail of that position (it may take a while to generate thumbnails
 for that video - they are cached).
 
+If you run rage without arguments at all it goes into "browser" mode
+where it will index all your media files in "$HOME/Videos" or whatever
+you have configured your XDG video directory to be. It will flatten
+out all directories that it recursively scans in this videos director
+with a header with the directory name and a list of images per video
+and the filename with extensions removed. It will either generate a
+series of images to flip as the video thumb or may actually search for
+a poster file dependig on length of video file (if it is more than 60
+minutes long and less than 5 hours and the image ratio is between 4:3
+and 4:1 it'll be assumed to be a movie for example). So while it is
+fetching or generating thumbnails for the first time, be a little
+patient. They will be cached so they only need to be generated or
+fetched once (or if the file changes).
+
 It's fully key controlled too. Key controls are:
 
 ----------------+----------------------------------------------------------
@@ -72,7 +86,7 @@ Escape          - Exit
 f               - Fullscreen toggle
 F11             - Fullscreen toggle
 n               - Normalize window size to video size
-\               - Toggle File list
+\               - Toggle File list or browser mode depending on launch mode
 y               - Video low quality toggle
 z               - Video zoom fit/fill modes toggle
 e               - Eject file/media
@@ -107,15 +121,15 @@ F7              - DVD nav menu 7
 Requirements:
 -------------
 
-  * elementary (>= 1.11.0)
-  * eina (>= 1.11.0)
-  * eet (>= 1.11.0)
-  * evas (>= 1.11.0)
-  * ecore (>= 1.11.0)
-  * edje (>= 1.11.0)
-  * emotion (>= 1.11.0)
-  * ecore-imf (>= 1.11.0)
-  * ecore-imf-evas (>= 1.11.0)
-  * ecore-input (>= 1.11.0)
-  * ethumb (>= 1.11.0)
+  * elementary (>= 1.18.0)
+  * eina (>= 1.18.0)
+  * eet (>= 1.18.0)
+  * evas (>= 1.18.0)
+  * ecore (>= 1.18.0)
+  * edje (>= 1.18.0)
+  * emotion (>= 1.18.0)
+  * ecore-imf (>= 1.18.0)
+  * ecore-imf-evas (>= 1.18.0)
+  * ecore-input (>= 1.18.0)
+  * ethumb (>= 1.18.0)
 

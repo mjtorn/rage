@@ -1,7 +1,7 @@
 # get rid of that stupid cache mechanism
 rm -f config.cache
 
-AC_INIT([rage], [0.1.4], [enlightenment-devel@lists.sourceforge.net])
+AC_INIT([rage], [0.2.0], [enlightenment-devel@lists.sourceforge.net])
 AC_PREREQ([2.60])
 AC_CONFIG_SRCDIR([configure.ac])
 AC_CONFIG_MACRO_DIR([m4])
@@ -16,12 +16,15 @@ AC_PROG_CC
 AM_PROG_CC_C_O
 AC_C___ATTRIBUTE__
 
-efl_version="1.13.0"
+efl_version="1.18.0"
 requirements="\
    elementary >= ${efl_version} \
    edje >= ${efl_version} \
    emotion >= ${efl_version} \
    eio >= ${efl_version} \
+   eina >= ${efl_version} \
+   ecore >= ${efl_version} \
+   evas >= ${efl_version} \
    "
 PKG_CHECK_MODULES([RAGE], [${requirements}])
 
