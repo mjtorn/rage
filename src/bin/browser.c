@@ -189,8 +189,13 @@ static void
 _fill_thread(void *data EINA_UNUSED, Ecore_Thread *th)
 {
    char buf[PATH_MAX];
+   const char *vids;
 
-   snprintf(buf, sizeof(buf), "%s/Videos", eina_environment_home_get());
+   vids = efreet_videos_dir_get();
+   if (vids)
+     snprintf(buf, sizeof(buf), "%s", vids);
+   else
+     snprintf(buf, sizeof(buf), "%s/Videos", eina_environment_home_get());
    _fill_scan(th, NULL, buf);
 }
 
