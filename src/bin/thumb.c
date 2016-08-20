@@ -118,8 +118,8 @@ _cb_loaded(void *data, Evas_Object *obj, void *info EINA_UNUSED)
                   eet_close(ef);
                   exit(6);
                }
-             w = 160;
-             h = (ih * 160) / iw;
+             w = 320;
+             h = (ih * 320) / iw;
              if (h < 1) h = 1;
              if ((w > 4096) || (h > 4096))
                {
