@@ -274,8 +274,24 @@ _entry_files_pop(Evas_Object *win, Entry *entry)
         else
           elm_layout_signal_emit(base, "state,normal", "rage");
         snprintf(buf, sizeof(buf), "%s", file);
-        p = strrchr(buf, '.');
-        if (p) *p = 0;
+        for (p = buf; *p; p++)
+          {
+             // nuke stupid characters from the label that may be in filename
+             if ((*p == '_') || (*p == '#') || (*p == '$') || (*p == '%') ||
+                 (*p == '*') || (*p == '+') || (*p == '[') || (*p == ']') ||
+                 (*p == ';') || (*p == '<') || (*p == '=') || (*p == '>') ||
+                 (*p == '^') || (*p == '`') || (*p == '{') || (*p == '}') ||
+                 (*p == '|') || (*p == '~') || (*p == 127) ||
+                 (*p == '\'') || (*p == '\\'))
+               {
+                  *p = ' ';
+               }
+             else if (*p == '.')
+               {
+                  *p = 0;
+                  break;
+               }
+          }
         elm_object_part_text_set(o, "rage.title", buf);
         evas_object_size_hint_weight_set(o, 0.0, 0.0);
         evas_object_size_hint_align_set(o, EVAS_HINT_FILL, EVAS_HINT_FILL);
