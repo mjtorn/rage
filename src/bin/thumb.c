@@ -50,7 +50,7 @@ _cb_loaded(void *data, Evas_Object *obj, void *info EINA_UNUSED)
 
    if (is_audio)
      {
-        albumart_find(file, title, artist, album, NULL,
+        albumart_find(file, artist, album, title, NULL,
                       _cb_fetched, (void *)file);
         return;
      }
@@ -72,7 +72,7 @@ _cb_loaded(void *data, Evas_Object *obj, void *info EINA_UNUSED)
 
    if (is_movie)
      {
-        albumart_find(file, NULL, NULL, NULL, "film poster",
+        albumart_find(file, NULL, NULL, title, "film poster",
                       _cb_fetched, (void *)file);
         return;
      }
