@@ -144,7 +144,7 @@ _videothumb_launch_do(Evas_Object *obj)
                     sd->exe_handler = ecore_event_handler_add(ECORE_EXE_EVENT_DEL,
                                                               _cb_thumb_exe, obj);
                   snprintf(buf, sizeof(buf),
-                           "%s/rage/utils/rage_thumb %s 10000 %i 2>&1 /dev/null",
+                           "%s/rage/utils/rage_thumb %s 10000 %i 1> /dev/null 2>&1",
                            libdir, s, sd->poster_mode ? 1 : 0);
                   sd->thumb_exe = ecore_exe_pipe_run(buf,
                                                      ECORE_EXE_USE_SH |
@@ -160,6 +160,25 @@ _videothumb_launch_do(Evas_Object *obj)
 }
 
 static Eina_Bool
+_have_active_thumb(const char *path)
+{
+   Evas_Object *o;
+   Eina_List *l;
+
+   EINA_LIST_FOREACH(vidthumbs, l, o)
+     {
+        Videothumb *sd = evas_object_smart_data_get(o);
+
+        if (sd)
+          {
+             if ((sd->thumb_exe) && (!strcmp(path, sd->realpath)))
+               return EINA_TRUE;
+          }
+     }
+   return EINA_FALSE;
+}
+
+static Eina_Bool
 _cb_videothumb_delay(void *data)
 {
    Evas_Object *obj = data;
@@ -168,8 +187,16 @@ _cb_videothumb_delay(void *data)
    if (!sd) return EINA_FALSE;
    if (_thumb_running < maxnum)
      {
+        if (!_have_active_thumb(sd->realpath))
+          {
+             sd->launch_timer = NULL;
+             _videothumb_launch_do(obj);
+             return EINA_FALSE;
+          }
+     }
+   if ((sd->iw > 0) && (sd->ih > 0))
+     {
         sd->launch_timer = NULL;
-        _videothumb_launch_do(obj);
         return EINA_FALSE;
      }
    return EINA_TRUE;
@@ -182,7 +209,7 @@ _videothumb_launch(Evas_Object *obj)
 
    if (!sd) return;
    if (sd->launch_timer) return;
-   sd->launch_timer = ecore_timer_add(1.0, _cb_videothumb_delay, obj);
+   sd->launch_timer = ecore_timer_add(0.5, _cb_videothumb_delay, obj);
 }
 
 static Eina_Bool
