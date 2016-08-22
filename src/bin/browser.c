@@ -189,9 +189,19 @@ static void
 _fill_thread(void *data EINA_UNUSED, Ecore_Thread *th)
 {
    char buf[PATH_MAX];
-   const char *vids;
+   const char *vids, *home;
+   char *vidsreal = NULL, *homereal = NULL;
 
    vids = efreet_videos_dir_get();
+   if (vids) vidsreal = ecore_file_realpath(vids);
+   home = eina_environment_home_get();
+   if (home) homereal = ecore_file_realpath(home);
+   if ((vidsreal) && (homereal))
+     {
+        if (!strcmp(vidsreal, homereal)) vids = NULL;
+     }
+   free(vidsreal);
+   free(homereal);
    if (vids)
      snprintf(buf, sizeof(buf), "%s", vids);
    else
