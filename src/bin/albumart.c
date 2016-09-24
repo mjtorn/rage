@@ -84,7 +84,7 @@ _fetch(Eina_Strbuf *sb)
    if (!f) return NULL;
    ecore_con_url_additional_header_add
    (f, "user-agent",
-    "Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0");
+    "Mozilla/5.0 (Linux; Android 4.0.4; Galaxy Nexus Build/IMM76B) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.133 Mobile Safari/535.19");
    ecore_con_url_get(f);
    return f;
 }
@@ -129,19 +129,15 @@ _cb_http_complete(void *data EINA_UNUSED, int type EINA_UNUSED, void *event)
                   Eina_Strbuf *sb;
 
                   sb = eina_strbuf_new();
-                  p = strstr(res, "<img data-sz=\"f\" name=\"");
+                  p = strstr(res, "data-src=\"http");
                   if (p)
                     {
-                       p = strstr(p, "src=\"http");
-                       if (p)
+                       p += 10;
+                       pe = strchr(p, '"');
+                       if (pe)
                          {
-                            p += 5;
-                            pe = strchr(p, '"');
-                            if (pe)
-                              {
-                                 eina_strbuf_append_length(sb, p, pe - p);
-                                 ok = EINA_TRUE;
-                              }
+                            eina_strbuf_append_length(sb, p, pe - p);
+                            ok = EINA_TRUE;
                          }
                     }
                   if (!ok)
