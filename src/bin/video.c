@@ -86,7 +86,10 @@ _art_check(Evas_Object *obj)
              free(thumb);
           }
      }
-   else evas_object_hide(sd->o_img);
+   else
+     {
+        evas_object_hide(sd->o_img);
+     }
 }
 
 static void
@@ -97,8 +100,16 @@ _cb_vid_frame(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUSED)
 
    if (!sd) return;
    evas_object_geometry_get(data, &ox, &oy, &ow, &oh);
-   evas_object_show(sd->o_vid);
-   evas_object_hide(sd->o_img);
+   if (!emotion_object_video_handled_get(sd->o_vid))
+     {
+        evas_object_hide(sd->o_vid);
+        evas_object_show(sd->o_img);
+     }
+   else
+     {
+        evas_object_show(sd->o_vid);
+        evas_object_hide(sd->o_img);
+     }
    evas_object_show(sd->clip);
    _ob_resize(data, ox, oy, ow, oh);
    evas_object_smart_callback_call(data, "frame_decode", NULL);
@@ -292,7 +303,8 @@ _ob_resize(Evas_Object *obj, Evas_Coord x, Evas_Coord y, Evas_Coord w, Evas_Coor
         sd->pih = sd->ih;
         evas_object_smart_callback_call(obj, "frame_resize", NULL);
      }
-   if ((sd->tw > 0) && (sd->th > 0) && (sd->doart))
+   if ((sd->tw > 0) && (sd->th > 0) && (sd->doart) && 
+       (!emotion_object_video_handled_get(sd->o_vid)))
      {
         int iw, ih;
 

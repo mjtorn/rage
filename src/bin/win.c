@@ -185,7 +185,22 @@ _cb_fetched(void *data)
    file = video_file_get(inf->vid);
    if (file)
      {
-        char *realfile = ecore_file_realpath(file);
+        char *realfile = NULL;
+
+        if (!strncasecmp(file, "file:/", 6))
+          {
+             Efreet_Uri *uri = efreet_uri_decode(file);
+             if (uri)
+               {
+                  realfile = ecore_file_realpath(uri->path);
+                  efreet_uri_free(uri);
+               }
+          }
+        else if ((!strncasecmp(file, "http:/", 6)) ||
+                 (!strncasecmp(file, "https:/", 7)))
+          realfile = strdup(file);
+        else
+          realfile = ecore_file_realpath(file);
         if (realfile)
           {
              char *path = albumart_file_get(realfile);
@@ -617,24 +632,33 @@ win_art(Evas_Object *win, const char *path)
 
         if (inf->artimg)
           {
-             evas_object_del(inf->artimg);
-             inf->artimg = NULL;
+             const char *path2;
+
+             evas_object_image_file_get(inf->artimg, &path2, NULL);
+             if ((!path2) || (strcmp(path, path2)))
+               {
+                  evas_object_del(inf->artimg);
+                  inf->artimg = NULL;
+               }
           }
-        inf->artimg = evas_object_image_filled_add(evas_object_evas_get(win));
-        evas_object_image_file_set(inf->artimg, path, NULL);
-        evas_object_image_size_get(inf->artimg, &iw, &ih);
-        if ((iw > 0) && (ih > 0))
+        if (!inf->artimg)
           {
-             evas_object_size_hint_aspect_set(inf->artimg,
-                                              EVAS_ASPECT_CONTROL_NEITHER,
-                                              iw, ih);
-             elm_object_part_content_set(inf->lay, "rage.art", inf->artimg);
-             elm_layout_signal_emit(inf->lay, "state,art", "rage");
-          }
-        else
-          {
-             evas_object_del(inf->artimg);
-             inf->artimg = NULL;
+             inf->artimg = evas_object_image_filled_add(evas_object_evas_get(win));
+             evas_object_image_file_set(inf->artimg, path, NULL);
+             evas_object_image_size_get(inf->artimg, &iw, &ih);
+             if ((iw > 0) && (ih > 0))
+               {
+                  evas_object_size_hint_aspect_set(inf->artimg,
+                                                   EVAS_ASPECT_CONTROL_NEITHER,
+                                                   iw, ih);
+                  elm_object_part_content_set(inf->lay, "rage.art", inf->artimg);
+                  elm_layout_signal_emit(inf->lay, "state,art", "rage");
+               }
+             else
+               {
+                  evas_object_del(inf->artimg);
+                  inf->artimg = NULL;
+               }
           }
      }
 }
