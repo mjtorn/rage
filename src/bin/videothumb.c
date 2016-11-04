@@ -276,7 +276,6 @@ _videothumb_image_load(Evas_Object *obj)
    if (sd->poster_mode)
      {
         artfile = albumart_file_get(sd->realpath);
-        printf("artfile for %s = %s\n", sd->realpath, artfile);
         if (artfile)
           {
              if (ecore_file_exists(artfile))
