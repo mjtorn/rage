@@ -78,30 +78,10 @@ _thumb_update(Evas_Object *obj)
    if (!sd) return;
    snprintf(buf, sizeof(buf), "%u", sd->realpos);
    evas_object_image_file_set(sd->o_img2, NULL, NULL);
-   evas_object_image_file_set(sd->o_img2, sd->realfile, buf);
-   evas_object_image_size_get(sd->o_img2, &(sd->iw), &(sd->ih));
-   if ((sd->iw <= 0) || (sd->ih <= 0))
-     {
-        if (sd->cycle_timer)
-          {
-             sd->pos = 0.0;
-             if (!sd->thumb_exe)
-               {
-                  _videothumb_eval(obj, EINA_TRUE);
-               }
-          }
-        else
-          {
-             evas_object_del(sd->o_img2);
-             sd->o_img2 = NULL;
-             evas_object_smart_callback_call(obj, "failed", NULL);
-          }
-     }
-   else
-     {
-        evas_object_image_preload(sd->o_img, EINA_FALSE);
-        evas_object_smart_callback_call(obj, "loaded", NULL);
-     }
+   evas_object_image_file_set(sd->o_img2, sd->realfile,
+                              sd->poster ? NULL : buf);
+   evas_object_image_preload(sd->o_img2, EINA_FALSE);
+   evas_object_smart_callback_call(obj, "loaded", NULL);
 }
 
 static void
@@ -232,13 +212,10 @@ _cb_thumb_exe(void *data, int type EINA_UNUSED, void *event)
           {
              _thumb_match_update(o, sd->realpath);
           }
-        if ((sd->iw <= 0) || (sd->ih <= 0))
+        if (sd->exe_handler)
           {
-             if (sd->exe_handler)
-               {
-                  ecore_event_handler_del(sd->exe_handler);
-                  sd->exe_handler = NULL;
-               }
+             ecore_event_handler_del(sd->exe_handler);
+             sd->exe_handler = NULL;
           }
         return EINA_FALSE;
      }
@@ -254,8 +231,48 @@ _cb_preload(void *data, Evas *e EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void 
    if (sd->o_img) evas_object_del(sd->o_img);
    sd->o_img = sd->o_img2;
    sd->o_img2 = NULL;
-   evas_object_show(sd->o_img);
-   evas_object_smart_callback_call(data, "data", NULL);
+   evas_object_image_size_get(sd->o_img, &(sd->iw), &(sd->ih));
+   if ((sd->iw <= 0) || (sd->ih <= 0))
+     {
+        if (sd->cycle_timer)
+          {
+             if (sd->pos == 0.0)
+               {
+                  _videothumb_launch(data);
+               }
+             else
+               {
+                  sd->pos = 0.0;
+                  if (!sd->thumb_exe) _videothumb_eval(data, EINA_TRUE);
+               }
+          }
+        else
+          {
+             evas_object_del(sd->o_img);
+             sd->o_img = NULL;
+             evas_object_smart_callback_call(data, "failed", NULL);
+          }
+     }
+   else
+     {
+        Eina_Bool ok = EINA_FALSE;
+        struct stat st1, st2;
+
+        if (stat(sd->realpath, &st1) == 0)
+          {
+             if (stat(sd->realfile, &st2) == 0)
+               {
+                  if (st1.st_mtime < st2.st_mtime) ok = EINA_TRUE;
+               }
+          }
+        if (ok)
+          {
+             evas_object_show(sd->o_img);
+             evas_object_smart_callback_call(data, "data", NULL);
+          }
+        else _videothumb_launch(data);
+     }
+   _smart_calculate(data);
 }
 
 static void
@@ -272,6 +289,7 @@ _videothumb_image_load(Evas_Object *obj)
    if (!sd) return;
    if (!sd->file) return;
    sd->o_img2 = evas_object_image_filled_add(evas_object_evas_get(obj));
+   evas_object_image_load_head_skip_set(sd->o_img2, EINA_TRUE);
    evas_object_smart_member_add(sd->o_img2, obj);
    if (sd->poster_mode)
      {
@@ -312,46 +330,8 @@ _videothumb_image_load(Evas_Object *obj)
                                   _cb_preload, obj);
    evas_object_image_file_set(sd->o_img2, sd->realfile,
                               sd->poster ? NULL : buf);
-   evas_object_image_size_get(sd->o_img2, &(sd->iw), &(sd->ih));
+   evas_object_image_preload(sd->o_img2, EINA_FALSE);
    _smart_calculate(obj);
-   if (sd->iw > 0)
-     {
-        Eina_Bool ok = EINA_FALSE;
-        struct stat st1, st2;
-
-        if (stat(sd->realpath, &st1) == 0)
-          {
-             if (stat(sd->realfile, &st2) == 0)
-               {
-                  if (st1.st_mtime < st2.st_mtime) ok = EINA_TRUE;
-               }
-          }
-        if (ok)
-          {
-             evas_object_image_preload(sd->o_img2, EINA_FALSE);
-             return;
-          }
-     }
-   if (sd->iw <= 0)
-     {
-        Eina_Bool ok = EINA_FALSE;
-        struct stat st1, st2;
-
-        if (stat(sd->realpath, &st1) == 0)
-          {
-             if (stat(sd->realfile, &st2) == 0)
-               {
-                  if (st1.st_mtime < st2.st_mtime)
-                    {
-                       ok = EINA_TRUE;
-                    }
-               }
-          }
-        if (!ok)
-          {
-             _videothumb_launch(obj);
-          }
-     }
 }
 
 static void
