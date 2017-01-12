@@ -62,6 +62,7 @@ _cb_win_del(void *data EINA_UNUSED, Evas *e EINA_UNUSED, Evas_Object *obj, void 
    if (inf->mouse_idle_timeout) ecore_timer_del(inf->mouse_idle_timeout);
    if (inf->albumart_timeout) ecore_timer_del(inf->albumart_timeout);
    if (inf->down_timeout) ecore_timer_del(inf->down_timeout);
+
    EINA_LIST_FREE(inf->file_list, vid)
      {
         if (vid->file) eina_stringshare_del(vid->file);
@@ -214,6 +215,62 @@ _cb_fetched(void *data)
      }
 }
 
+Eina_Bool
+_local_artwork_get(void *data)
+{
+   Evas_Object *win = data;
+   Inf *inf = evas_object_data_get(win, "inf");
+   
+   if (!inf) return EINA_FALSE;
+   if (!inf->vid) return EINA_FALSE;
+   
+   const char *file = NULL;
+   const char *filename = video_file_get(inf->vid);
+   
+   Efreet_Uri *uri = efreet_uri_decode(filename);
+   if (uri)
+     {
+        file = ecore_file_realpath(uri->path);
+        efreet_uri_free(uri);
+     }
+   else
+     {
+        file = filename;
+     }
+
+   if ((!video_has_video_get(inf->vid)) && (video_has_audio_get(inf->vid)))
+     {
+        char *path = albumart_file_get(file);
+        if (path)
+          {
+             if (ecore_file_exists(path))
+               {
+                  win_art(win, path);
+                  free(path);
+                  return EINA_TRUE;
+               }
+
+             Evas_Object *artwork = video_meta_artwork_get(inf->vid, file, EMOTION_ARTWORK_PREVIEW_IMAGE);
+             if (!artwork) artwork = video_meta_artwork_get(inf->vid, file, EMOTION_ARTWORK_IMAGE);
+	     
+             if (artwork)
+               {
+                  evas_object_image_save(artwork, path, NULL, NULL);
+                  evas_object_del(artwork);
+                  free(path);
+               }
+             else
+               {
+                  free(path);
+                  return EINA_FALSE;
+               }
+          }
+      }
+  
+
+   return EINA_TRUE;
+}
+
 static Eina_Bool
 _cb_albumart_delay(void *data)
 {
@@ -230,7 +287,6 @@ _cb_albumart_delay(void *data)
         const char *title = video_meta_title_get(inf->vid);
         const char *artist = video_meta_artist_get(inf->vid);
         const char *album = video_meta_album_get(inf->vid);
-
         albumart_find(file, title, artist, album, NULL, _cb_fetched, win);
      }
    else albumart_find(NULL, NULL, NULL, NULL, NULL, NULL, NULL);
@@ -241,7 +297,6 @@ void
 win_do_play(Evas_Object *win)
 {
    Inf *inf = evas_object_data_get(win, "inf");
-
    video_play_set(inf->vid, EINA_TRUE);
    elm_layout_signal_emit(inf->lay, "action,play", "rage");
 }
@@ -678,8 +733,12 @@ win_show(Evas_Object *win, int w, int h)
           }
         evas_object_show(win);
      }
-   if (inf->albumart_timeout) ecore_timer_del(inf->albumart_timeout);
-   inf->albumart_timeout = ecore_timer_add(0.2, _cb_albumart_delay, win);
+
+   if (!_local_artwork_get(win))
+     {
+        if (inf->albumart_timeout) ecore_timer_del(inf->albumart_timeout);
+        inf->albumart_timeout = ecore_timer_add(0.2, _cb_albumart_delay, win);
+     }
 
    if (!video_has_video_get(inf->vid))
      elm_layout_signal_emit(inf->lay, "state,novideo", "rage");

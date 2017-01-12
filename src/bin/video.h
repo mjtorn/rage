@@ -56,5 +56,5 @@ const char *video_meta_year_get(Evas_Object *obj);
 const char *video_meta_genre_get(Evas_Object *obj);
 const char *video_meta_comment_get(Evas_Object *obj);
 void video_file_autosub_set(Evas_Object *obj, const char *file, const char *sub);
-
+Evas_Object * video_meta_artwork_get(Evas_Object *obj, const char *path, int type);
 #endif
