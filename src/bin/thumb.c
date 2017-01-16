@@ -31,6 +31,16 @@ _cb_fetched(void *data EINA_UNUSED)
    elm_exit();
 }
 
+static Evas_Object *
+_media_artwork(Evas_Object *obj, const char *path)
+{ 
+   emotion_object_file_set(obj, path);
+   Evas_Object *art = emotion_file_meta_artwork_get(obj, path, EMOTION_ARTWORK_PREVIEW_IMAGE);
+   if (!art) art = emotion_file_meta_artwork_get(obj, path, EMOTION_ARTWORK_IMAGE);
+
+   return art;
+}
+
 static void
 _cb_loaded(void *data, Evas_Object *obj, void *info EINA_UNUSED)
 {
@@ -152,6 +162,39 @@ _cb_timeout(void *data EINA_UNUSED)
    return EINA_FALSE;
 }
 
+static Eina_Bool
+_local_artwork_poster(Evas_Object *win, const char *path_to_file)
+{
+   Evas_Object *em = emotion_object_add(evas_object_evas_get(win));
+
+   emotion_object_init(em, NULL);
+   emotion_object_file_set(em, path_to_file);
+   
+   char *path = albumart_file_get(path_to_file);
+   if (path)
+     {
+       if (ecore_file_exists(path))
+         {
+             free(path);
+             return EINA_TRUE;
+         }
+
+       Evas_Object *artwork = _media_artwork(em, path_to_file);
+       if (artwork)
+         {
+            evas_object_image_save(artwork, path, NULL, NULL);
+            evas_object_del(artwork);
+            free(path);
+            /* This speeds things up */
+            exit(0);
+         }
+
+       free(path);
+     }
+
+   return EINA_FALSE;
+}
+
 EAPI_MAIN int
 elm_main(int argc, char **argv)
 {
@@ -192,6 +235,12 @@ elm_main(int argc, char **argv)
              is_audio = EINA_TRUE;
           }
      }
+
+   if (poster && _local_artwork_poster(win, file)) 
+     {
+       goto out; 
+     }
+
    if (emotion_object_init(vid, NULL))
      {
         evas_object_smart_callback_add(vid, "open_done", _cb_loaded, file);
@@ -199,7 +248,9 @@ elm_main(int argc, char **argv)
         vid_timeout = ecore_timer_add(20.0, _cb_timeout, NULL);
         elm_run();
      }
+out:
    elm_shutdown();
+
    return 0;
 }
 ELM_MAIN()
