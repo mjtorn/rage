@@ -41,6 +41,12 @@ struct _Entry
    Eina_Bool sel : 1;
 };
 
+typedef struct
+{
+   char *videos;
+   Evas_Object *win;
+} Fill_Data;
+
 static char *selfile = NULL;
 static Entry *selentry = NULL;
 static int seli = 0;
@@ -116,6 +122,30 @@ _audio_ok(const char *path)
    return EINA_FALSE;
 }
 
+static char *
+_videos_dir_get(void)
+{
+   char buf[PATH_MAX];
+   const char *vids, *home;
+   char *vidsreal = NULL, *homereal = NULL;
+
+   vids = efreet_videos_dir_get();
+   if (vids) vidsreal = ecore_file_realpath(vids);
+   home = eina_environment_home_get();
+   if (home) homereal = ecore_file_realpath(home);
+   if ((vidsreal) && (homereal))
+     {
+        if (!strcmp(vidsreal, homereal)) vids = NULL;
+     }
+   free(vidsreal);
+   free(homereal);
+   if (vids)
+     snprintf(buf, sizeof(buf), "%s", vids);
+   else
+     snprintf(buf, sizeof(buf), "%s/Videos", eina_environment_home_get());
+   return strdup(buf);
+}
+
 static void
 _fill_message(Ecore_Thread *th, Type type, Entry *entry)
 {
@@ -186,27 +216,10 @@ _fill_scan(Ecore_Thread *th, Entry *parent, const char *dir)
 }
 
 static void
-_fill_thread(void *data EINA_UNUSED, Ecore_Thread *th)
+_fill_thread(void *data, Ecore_Thread *th)
 {
-   char buf[PATH_MAX];
-   const char *vids, *home;
-   char *vidsreal = NULL, *homereal = NULL;
-
-   vids = efreet_videos_dir_get();
-   if (vids) vidsreal = ecore_file_realpath(vids);
-   home = eina_environment_home_get();
-   if (home) homereal = ecore_file_realpath(home);
-   if ((vidsreal) && (homereal))
-     {
-        if (!strcmp(vidsreal, homereal)) vids = NULL;
-     }
-   free(vidsreal);
-   free(homereal);
-   if (vids)
-     snprintf(buf, sizeof(buf), "%s", vids);
-   else
-     snprintf(buf, sizeof(buf), "%s/Videos", eina_environment_home_get());
-   _fill_scan(th, NULL, buf);
+   Fill_Data *fdat = data;
+   _fill_scan(th, NULL, fdat->videos);
 }
 
 static void
@@ -467,7 +480,8 @@ _cb_entry_table_resize(void *data, Evas *e EINA_UNUSED, Evas_Object *obj, void *
 static void
 _fill_feedback(void *data, Ecore_Thread *th, void *msg)
 {
-   Evas_Object *win = data;
+   Fill_Data *fdat = data;
+   Evas_Object *win = fdat->win;
    Message *message = msg;
    Evas_Object *o;
    char buf[PATH_MAX];
@@ -545,15 +559,21 @@ _fill_feedback(void *data, Ecore_Thread *th, void *msg)
 }
 
 static void
-_fill_end(void *data EINA_UNUSED, Ecore_Thread *th)
+_fill_end(void *data, Ecore_Thread *th)
 {
+   Fill_Data *fdat = data;
    if (th == fill_thread) fill_thread = NULL;
+   free(fdat->videos);
+   free(fdat);
 }
 
 static void
 _fill_cancel(void *data EINA_UNUSED, Ecore_Thread *th)
 {
+   Fill_Data *fdat = data;
    if (th == fill_thread) fill_thread = NULL;
+   free(fdat->videos);
+   free(fdat);
 }
 
 static void
@@ -578,6 +598,8 @@ _entry_free(Entry *entry)
 static void
 _fill(Evas_Object *win)
 {
+   Fill_Data *fdat;
+
    if (fill_thread)
      {
         ecore_thread_cancel(fill_thread);
@@ -585,9 +607,13 @@ _fill(Evas_Object *win)
      }
    _entry_free(dir_entry);
    dir_entry = NULL;
+   fdat = malloc(sizeof(Fill_Data));
+   if (!fdat) return;
+   fdat->videos = _videos_dir_get();
+   fdat->win = win;
    fill_thread = ecore_thread_feedback_run(_fill_thread, _fill_feedback,
                                            _fill_end, _fill_cancel,
-                                           win, EINA_TRUE);
+                                           fdat, EINA_TRUE);
 }
 
 static Entry *
