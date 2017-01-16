@@ -28,7 +28,7 @@ _cb_fetched(void *data EINA_UNUSED)
         if ((w < 1) || (h < 0)) ecore_file_unlink(path);
         free(path);
      }
-   elm_exit();
+   exit(0);
 }
 
 static Evas_Object *
@@ -158,7 +158,7 @@ static Eina_Bool
 _cb_timeout(void *data EINA_UNUSED)
 {
    vid_timeout = NULL;
-   elm_exit();
+   exit(0);
    return EINA_FALSE;
 }
 
