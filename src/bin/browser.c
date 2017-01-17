@@ -63,19 +63,35 @@ static void
 _item_size_get(Evas_Object *win, Evas_Coord *w, Evas_Coord *h)
 {
    Evas_Coord sz = 0;
+   Evas_Coord minw = 80, minh = 80;
+   Evas_Coord maxw = 120, maxh = 120;
 
+   minw = elm_config_scale_get() * (double)minw;
+   minh = elm_config_scale_get() * (double)minh;
+   maxw = elm_config_scale_get() * (double)maxw;
+   maxh = elm_config_scale_get() * (double)maxh;
    elm_coords_finger_size_adjust(1, &sz, 1, &sz);
    evas_object_geometry_get(win, NULL, NULL, w, h);
    if (elm_win_fullscreen_get(win))
      {
-        *w = (double)(*w) / 5.0;
-        *h = (double)(*h) / 1.5;
+        *w = (double)(*w) / 6.0;
+        *h = (double)(*h) / 3.0;
+        maxw = 0;
+        maxh = 0;
      }
    else
      {
-        *w = (double)(*w) / 8.0;
-        *h = (double)(*h) / 3.0;
+        *w = (double)(*w) / 12.0;
+        *h = (double)(*h) / 4.0;
      }
+   if (*w < minw) *w = minw;
+   if (*h < minh) *h = minh;
+   if ((maxw > 0) && (*w > maxw)) *w = maxw;
+   if ((maxh > 0) && (*h > maxh)) *h = maxh;
+   if (((*w * 100) / *h) < 50) *w = (*h * 50) / 100;
+   else if (((*w * 100) / *h) > 150) *w = (*h * 150) / 100;
+   if (*w < minw) *w = minw;
+   if (*h < minh) *h = minh;
    if (*w < sz) *w = sz;
    if (*h < sz) *h = sz;
 }
@@ -384,7 +400,7 @@ _cb_sel_job(void *data)
 static void
 _entry_files_redo(Evas_Object *win, Entry *entry)
 {
-   Evas_Coord x, y,w, h, iw = 1, ih = 1, ww, wh;
+   Evas_Coord x, y,w, h, iw = 1, ih = 1, ww, wh, sw, sh;
    int num, cols, rows;
    Eina_Rectangle r1, r2;
 
@@ -398,17 +414,16 @@ _entry_files_redo(Evas_Object *win, Entry *entry)
    num = eina_list_count(entry->files);
    evas_object_geometry_get(win, NULL, NULL, &ww, &wh);
    evas_object_geometry_get(entry->table, &x, &y, &w, &h);
-   if (w < 40) goto done;
-
-   if (w > (ww - 20)) w = (ww - 20);
+   elm_scroller_region_get(sc, NULL, NULL, &sw, &sh);
+   if (sw < w) w = sw;
 
    _item_size_get(win, &iw, &ih);
    cols = w / iw;
    if (cols < 1) cols = 1;
    rows = (num + (cols - 1)) / cols;
 
-   entry->iw = iw;
-   entry->ih = ih;
+   entry->iw = iw - 1;
+   entry->ih = ih - 1;
    entry->cols = cols;
    entry->rows = rows;
 
@@ -439,7 +454,6 @@ _entry_files_redo(Evas_Object *win, Entry *entry)
              i++;
           }
      }
-done:
    eina_lock_release(&(entry->lock));
 }
 
@@ -475,6 +489,20 @@ _cb_entry_table_resize(void *data, Evas *e EINA_UNUSED, Evas_Object *obj, void *
    Entry *entry = data;
    Evas_Object *win = evas_object_data_get(obj, "win");
    _entry_files_redo(win, entry);
+}
+
+static void
+_cb_scroller_resize(void *data, Evas *e EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *info EINA_UNUSED)
+{
+   Inf *inf = evas_object_data_get(data, "inf");
+   Eina_List *l;
+   Entry *entry;
+   if (!inf) return;
+   if (!bx) return;
+   EINA_LIST_FOREACH(entries, l, entry)
+     {
+        _entry_files_redo(data, entry);
+     }
 }
 
 static void
@@ -904,12 +932,13 @@ browser_show(Evas_Object *win)
         bx = elm_box_add(win);
 
         sc = elm_scroller_add(win);
+        evas_object_event_callback_add(sc, EVAS_CALLBACK_RESIZE, _cb_scroller_resize, win);
         dnd_init(win, sc);
         elm_object_style_set(sc, "noclip");
         elm_object_focus_allow_set(sc, EINA_FALSE);
         evas_object_size_hint_weight_set(sc, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
         evas_object_size_hint_align_set(sc, EVAS_HINT_FILL, EVAS_HINT_FILL);
-        elm_scroller_content_min_limit(sc, EINA_TRUE, EINA_FALSE);
+//        elm_scroller_content_min_limit(sc, EINA_TRUE, EINA_FALSE);
 
         bx = elm_box_add(win);
         elm_object_focus_allow_set(bx, EINA_FALSE);
