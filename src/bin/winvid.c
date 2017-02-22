@@ -66,6 +66,7 @@ _cb_length(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUSED)
 static void
 _cb_title(void *data, Evas_Object *obj, void *event EINA_UNUSED)
 {
+#if 0
    printf("title change........\n");
    printf("  meta title:   %s\n", video_meta_title_get(obj));
    printf("  meta album:   %s\n", video_meta_album_get(obj));
@@ -79,6 +80,7 @@ _cb_title(void *data, Evas_Object *obj, void *event EINA_UNUSED)
    printf("  audio: %i/%i [%s]\n", video_audio_channel_get(obj), video_audio_channel_count(obj), video_audio_channel_name_get(obj, video_audio_channel_get(obj)));
    printf("  video: %i/%i [%s]\n", video_video_channel_get(obj), video_video_channel_count(obj), video_video_channel_name_get(obj, video_video_channel_get(obj)));
    printf("  spu  : %i/%i [%s]\n", video_spu_channel_get(obj), video_spu_channel_count(obj), video_spu_channel_name_get(obj, video_spu_channel_get(obj)));
+#endif
    win_title_update(data);
 }
 
