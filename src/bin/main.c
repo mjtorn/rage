@@ -36,6 +36,7 @@ elm_main(int argc, char **argv)
    Winvid_Entry *vid = NULL;
    Eina_Bool fullscreen = EINA_FALSE;
    int file_num = 0;
+   int rotation = 0;
 
    elm_need_efreet();
    config_init();
@@ -62,6 +63,8 @@ elm_main(int argc, char **argv)
                     "      previously given filename such as:\n"
                     "\n"
                     "        rage file.mp4 -sub subs.srt file2.mp4 ...\n"
+                    "    -r 0/90/180/270\n"
+                    "      Rotate output by the given rotation\n"
                     );
              exit(0);
           }
@@ -77,6 +80,14 @@ elm_main(int argc, char **argv)
         else if (!strcmp(argv[i], "-f"))
           {
              fullscreen = EINA_TRUE;
+          }
+        else if (!strcmp(argv[i], "-rot"))
+          {
+             if (i < (argc - 1))
+               {
+                  i++;
+                  rotation = atoi(argv[i]);
+               }
           }
         else if (!strcmp(argv[i], "-sub"))
           {
@@ -125,6 +136,7 @@ elm_main(int argc, char **argv)
    evas_object_resize(win,
                       600 * elm_config_scale_get(),
                       360 * elm_config_scale_get());
+   elm_win_rotation_set(win, rotation);
 
    win_video_init(win);
    win_video_file_list_set(win, list);
