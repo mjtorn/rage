@@ -64,7 +64,7 @@ _cb_length(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUSED)
 }
 
 static void
-_cb_title(void *data, Evas_Object *obj, void *event EINA_UNUSED)
+_cb_title(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUSED)
 {
 #if 0
    printf("title change........\n");
