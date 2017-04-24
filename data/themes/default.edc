@@ -34,10 +34,6 @@ collections {
 
       images.image: "win_shadow.png" COMP;
 
-      images.image: "speaker-base.png" COMP;
-      images.image: "speaker-over.png" COMP;
-      images.image: "speaker-shadow.png" COMP;
-
       images.image: "tv-bg.png" COMP;
       images.image: "tv-over.png" COMP;
       images.image: "r-0.png" COMP;
@@ -348,41 +344,15 @@ collections {
                visible: 0;
             }
          }
-         part { name: "speaker_bg"; type: RECT;
-            clip_to: "speaker_clip";
-            description { state: "default" 0.0;
-               color: 64 64 64 255;
-            }
-         }
-         part { name: "speaker_base"; type: RECT;
-            clip_to: "speaker_clip";
-            description { state: "default" 0.0;
-               rel2.to: "controlbar";
-               rel2.relative: 1.0 0.0;
-               aspect: 1.0 1.0; aspect_preference: BOTH;
-               max: 160 160;
-               color: 32 32 32 255;
-            }
-         }
-         part { name: "speaker_cone";
-            clip_to: "speaker_clip";
-            description { state: "default" 0.0;
-               rel1.to: "speaker_base";
-               rel2.to: "speaker_base";
-               image.normal: "speaker-base.png";
-            }
-         }
          part { name: "art_clip"; type: RECT;
             clip_to: "speaker_clip";
             description { state: "default" 0.0;
                visible: 0;
                color: 255 255 255 0;
-               rel1.to: "speaker_base";
-               rel2.to: "speaker_base";
                rel1.relative: -0.5 -0.5;
                rel2.relative: 1.5 1.5;
                fixed: 1 1;
-               aspect: 1.0 1.0; aspect_preference: BOTH;
+               aspect: 1.0 1.0; aspect_preference: NONE;
             }
             description { state: "visible" 0.0;
                inherit: "default" 0.0;
@@ -395,8 +365,6 @@ collections {
          part { name: "art_clip2"; type: RECT;
             clip_to: "art_clip";
             description { state: "default" 0.0;
-               rel1.to: "speaker_base";
-               rel2.to: "speaker_base";
                fixed: 1 1;
             }
          }
@@ -405,24 +373,6 @@ collections {
             description { state: "default" 0.0;
                rel1.to: "art_clip";
                rel2.to: "art_clip";
-            }
-         }
-         part { name: "speaker_shadow";
-            clip_to: "speaker_clip";
-            description { state: "default" 0.0;
-               rel1.to: "speaker_base";
-               rel2.to: "speaker_base";
-               image.normal: "speaker-shadow.png";
-               color: 255 255 255 128;
-            }
-         }
-         part { name: "speaker_cover";
-            clip_to: "speaker_clip";
-            description { state: "default" 0.0;
-               rel1.to: "speaker_base";
-               rel2.to: "speaker_base";
-               image.normal: "speaker-over.png";
-               color: 64 64 64 255;
             }
          }
          program {
@@ -572,7 +522,7 @@ collections {
             }
             description { state: "novideo" 0.0;
                inherit: "default" 0.0;
-               color: 64 64 64 255;
+               color: 64 64 64 0;
             }
          }
          program {
@@ -1118,8 +1068,8 @@ collections {
                rel2.to: "rage.content";
             }
             description { state: "novideo" 0.0;
-               rel1.to: "speaker_base";
-               rel2.to: "speaker_base";
+               rel1.to: "rage.art";
+               rel2.to: "rage.art";
             }
          }
          part { name: "play"; mouse_events: 0;
@@ -1873,14 +1823,12 @@ collections {
             action: STATE_SET "selected" 0.0;
             transition: SINUSOIDAL 0.1;
             target: "glow";
-            target: "clip";
          }
          program {
             signal: "rage,state,unselected"; source: "rage";
             action: STATE_SET "default" 0.0;
             transition: SINUSOIDAL 0.3;
             target: "glow";
-            target: "clip";
          }
 
          part { name: "base"; type: RECT; mouse_events: 0;

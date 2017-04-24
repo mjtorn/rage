@@ -26,9 +26,6 @@ r-3.png \
 r-4.png \
 shadow_circle_horiz.png \
 shadow_circle_vert.png \
-speaker-base.png \
-speaker-over.png \
-speaker-shadow.png \
 tv-bg.png \
 tv-over.png \
 vg1.png \
