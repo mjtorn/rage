@@ -87,6 +87,17 @@ _cb_win_del(void *data EINA_UNUSED, Evas *e EINA_UNUSED, Evas_Object *obj, void 
 }
 
 static void
+_cb_win_in(void *data EINA_UNUSED, Evas *e EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *ev EINA_UNUSED)
+{
+}
+
+static void
+_cb_win_out(void *data EINA_UNUSED, Evas *e EINA_UNUSED, Evas_Object *obj, void *ev EINA_UNUSED)
+{
+   win_list_hide(obj);
+}
+
+static void
 _cb_key_down(void *data, Evas *evas EINA_UNUSED, Evas_Object *obj EINA_UNUSED, void *event_info)
 {
    key_handle(data, event_info);
@@ -565,6 +576,8 @@ win_add(void)
 
    evas_object_data_set(win, "inf", inf);
    evas_object_event_callback_add(win, EVAS_CALLBACK_DEL, _cb_win_del, NULL);
+   evas_object_event_callback_add(win, EVAS_CALLBACK_MOUSE_IN, _cb_win_in, NULL);
+   evas_object_event_callback_add(win, EVAS_CALLBACK_MOUSE_OUT, _cb_win_out, NULL);
    evas_object_smart_callback_add(win, "fullscreen", _cb_fullscreen, NULL);
    evas_object_smart_callback_add(win, "unfullscreen", _cb_unfullscreen, NULL);
    evas_object_smart_callback_add(win, "normal", _cb_unfullscreen, NULL);
