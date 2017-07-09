@@ -56,7 +56,7 @@ static Evas_Object *sc, *bt;
 static Ecore_Thread *fill_thread = NULL;
 static Entry *dir_entry = NULL;
 static Eina_List *entries = NULL;
-static Eina_Lock step_lock;
+static Eina_Semaphore step_sema;
 
 static void _sel_go(Evas_Object *win EINA_UNUSED, Entry *base_entry, int x, int y);
 
@@ -170,10 +170,10 @@ _fill_message(Ecore_Thread *th, Type type, Entry *entry)
    if (!message) return;
    message->type = type;
    message->entry = entry;
-   // take lock before sending message so we wait if the mainloop
-   // had not processed the previous message
-   eina_lock_take(&step_lock);
    ecore_thread_feedback(th, message);
+   // take semaphore lock after sending message so we wait if the mainloop
+   // had not processed the previous message
+   eina_semaphore_lock(&step_sema);
 }
 
 static Entry *
@@ -590,7 +590,7 @@ _fill_feedback(void *data, Ecore_Thread *th, void *msg)
           }
      }
    // allow the freedback thread to step more
-   eina_lock_release(&step_lock);
+   eina_semaphore_release(&step_sema, 1);
    free(msg);
 }
 
@@ -599,7 +599,7 @@ _fill_end(void *data, Ecore_Thread *th)
 {
    Fill_Data *fdat = data;
    if (th == fill_thread) fill_thread = NULL;
-   eina_lock_free(&step_lock);
+   eina_semaphore_free(&step_sema);
    free(fdat->videos);
    free(fdat);
 }
@@ -648,7 +648,7 @@ _fill(Evas_Object *win)
    if (!fdat) return;
    fdat->videos = _videos_dir_get();
    fdat->win = win;
-   eina_lock_new(&step_lock);
+   eina_semaphore_new(&step_sema, 0);
    fill_thread = ecore_thread_feedback_run(_fill_thread, _fill_feedback,
                                            _fill_end, _fill_cancel,
                                            fdat, EINA_TRUE);
