@@ -1067,6 +1067,9 @@ collections {
                rel1.to: "rage.content";
                rel2.to: "rage.content";
             }
+            description { state: "video" 0.0;
+               inherit: "default" 0.0;
+            }
             description { state: "novideo" 0.0;
                rel1.to: "rage.art";
                rel2.to: "rage.art";
