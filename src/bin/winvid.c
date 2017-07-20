@@ -279,15 +279,10 @@ win_video_free(Evas_Object *win)
 {
    Winvid_Entry *vid;
    Inf *inf = evas_object_data_get(win, "inf");
-   if (!inf->file_list)
-     {
-        printf("AAAAIEEEEEE, no file_list\n");
-        return;
-     }
+   if (!inf->file_list) return;
 
    EINA_LIST_FREE(inf->file_list, vid)
      {
-        printf("[%p] Free %s\n", vid, vid->file);
         if (vid->file) eina_stringshare_del(vid->file);
         if (vid->sub) eina_stringshare_del(vid->sub);
         if (vid->uri) efreet_uri_free(vid->uri);

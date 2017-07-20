@@ -14,13 +14,11 @@ static Eina_List *playlist = NULL;
 void
 _cb_drag_enter(void *data EINA_UNUSED, Evas_Object *o EINA_UNUSED)
 {
-   printf("dnd enter\n");
 }
 
 void
 _cb_drag_leave(void *data EINA_UNUSED, Evas_Object *o EINA_UNUSED)
 {
-   printf("dnd leave\n");
 }
 
 void
@@ -40,7 +38,6 @@ _dnd_finish(Evas_Object *win)
 
    EINA_LIST_FOREACH(playlist, l, path)
      {
-        printf("inserting '%s'\n", path);
         win_video_insert(win, path);
         free(path);
      }
@@ -142,7 +139,7 @@ end:
 static void
 _cb_recurse_error(void *data EINA_UNUSED, Eio_File *f EINA_UNUSED, int error)
 {
-   printf("error recursing: %d\n", error);
+   printf("ERROR: I/O error while recursing: %i\n", error);
 }
 
 static Eina_Bool

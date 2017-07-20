@@ -128,7 +128,7 @@ elm_main(int argc, char **argv)
    win = win_add();
    if (!win)
      {
-        printf("ERROR - cannto create window!\n");
+        printf("ERROR: cannot create window!\n");
         goto end;
      }
 
