@@ -77,11 +77,14 @@ _thumb_update(Evas_Object *obj)
 
    if (!sd) return;
    snprintf(buf, sizeof(buf), "%u", sd->realpos);
-   evas_object_image_file_set(sd->o_img2, NULL, NULL);
-   evas_object_image_file_set(sd->o_img2, sd->realfile,
-                              sd->poster ? NULL : buf);
-   evas_object_image_preload(sd->o_img2, EINA_FALSE);
-   evas_object_smart_callback_call(obj, "loaded", NULL);
+   if (sd->o_img2)
+     {
+        evas_object_image_file_set(sd->o_img2, NULL, NULL);
+        evas_object_image_file_set(sd->o_img2, sd->realfile,
+                                   sd->poster ? NULL : buf);
+        evas_object_image_preload(sd->o_img2, EINA_FALSE);
+        evas_object_smart_callback_call(obj, "loaded", NULL);
+     }
 }
 
 static void
@@ -357,8 +360,11 @@ _videothumb_eval(Evas_Object *obj, Eina_Bool force)
              sd->o_img2 = NULL;
           }
         _videothumb_image_load(obj);
-        evas_object_move(sd->o_img2, ox, oy);
-        evas_object_resize(sd->o_img2, ow, oh);
+        if (sd->o_img2)
+          {
+             evas_object_move(sd->o_img2, ox, oy);
+             evas_object_resize(sd->o_img2, ow, oh);
+          }
      }
    else
      {
@@ -373,8 +379,11 @@ _videothumb_eval(Evas_Object *obj, Eina_Bool force)
                        sd->o_img2 = NULL;
                     }
                   _videothumb_image_load(obj);
-                  evas_object_move(sd->o_img2, ox, oy);
-                  evas_object_resize(sd->o_img2, ow, oh);
+                  if (sd->o_img2)
+                    {
+                       evas_object_move(sd->o_img2, ox, oy);
+                       evas_object_resize(sd->o_img2, ow, oh);
+                    }
                }
              else
                {
