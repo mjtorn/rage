@@ -1,11 +1,37 @@
-COMPILING and INSTALLING:
+COMPILING and INSTALLING
+------------------------
 
-If you got a official release tar archive do:
-    ./configure
-    
-Then to compile:
-    make
+Meson is the build system used for this project. For more information please
+see:
 
-To install (run this as root, or the user who handles installs):
-    make install
+    http://mesonbuild.com
+
+----
+
+Normal compilation in /usr/local:
+
+    meson . build
+    cd build
+    ninja
+    sudo ninja install
+
+For meson build generic options:
+
+    meson --help
+
+For a list of project specific options supported:
+
+    cat meson_options.txt
+
+To set 1 or more project specific options:
+
+    meson -Doption=value [-Dother=value2] ...
+
+To display current configuration:
+
+    mesonconf build
+
+The above will only work after at least the following is done:
+
+    meson . build
 

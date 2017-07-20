@@ -2,7 +2,7 @@
 #include <Emotion.h>
 #include "sha1.h"
 #include "albumart.h"
-
+#include "rage_config.h"
 
 static Evas_Object *win = NULL, *subwin = NULL, *image = NULL, *vid = NULL;
 static Evas_Object *vidimage = NULL;

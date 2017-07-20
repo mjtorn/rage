@@ -121,15 +121,15 @@ F7              - DVD nav menu 7
 Requirements:
 -------------
 
-  * elementary (>= 1.18.0)
-  * eina (>= 1.18.0)
-  * eet (>= 1.18.0)
-  * evas (>= 1.18.0)
-  * ecore (>= 1.18.0)
-  * edje (>= 1.18.0)
-  * emotion (>= 1.18.0)
-  * ecore-imf (>= 1.18.0)
-  * ecore-imf-evas (>= 1.18.0)
-  * ecore-input (>= 1.18.0)
-  * ethumb (>= 1.18.0)
+  * elementary (>= 1.19.0)
+  * eina (>= 1.19.0)
+  * eet (>= 1.19.0)
+  * evas (>= 1.19.0)
+  * ecore (>= 1.19.0)
+  * edje (>= 1.19.0)
+  * emotion (>= 1.19.0)
+  * ecore-imf (>= 1.19.0)
+  * ecore-imf-evas (>= 1.19.0)
+  * ecore-input (>= 1.19.0)
+  * ethumb (>= 1.19.0)
 
