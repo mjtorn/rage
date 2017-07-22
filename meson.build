@@ -9,6 +9,7 @@ base_url = 'https://www.enlightenment.org/about-'
 ##### convenience variables for later
 proj     = meson.project_name()
 ver      = meson.project_version()
+chmod    = join_paths(meson.source_root(), 'meson-chmod.sh')
 
 ##### dependencies
 efl_version = '>= 1.19.0'

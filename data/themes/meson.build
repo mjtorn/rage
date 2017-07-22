@@ -10,4 +10,5 @@ custom_target(src + '.edj',
               install_dir: join_paths(dir_data, proj, 'themes'),
               install    : true
              )
-meson.add_install_script('perms.sh')
+out = join_paths(dir_data, proj, 'themes', 'default.edj')
+meson.add_install_script(chmod, 'a+r', out)
