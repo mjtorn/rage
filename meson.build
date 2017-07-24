@@ -49,17 +49,6 @@ cfg.set       ('_POSIX_SOURCE'           , 1)
 cfg.set       ('_POSIX_1_SOURCE'         , 1)
 configure_file(output: 'rage_config.h', configuration: cfg)
 
-##### packaging files for distro packages
-pkg = configuration_data()
-pkg.set('PACKAGE', proj)
-pkg.set('VERSION', ver)
-configure_file(input        : proj + '.spec.in',
-               output       : proj + '.spec',
-               configuration: pkg)
-configure_file(input        : join_paths('pkgbuild', 'PKGBUILD.in'),
-               output       : 'PKGBUILD',
-               configuration: pkg)
-
 ##### subdirs
 subdir('src')
 subdir('data')
