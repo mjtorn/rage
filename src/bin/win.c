@@ -584,11 +584,6 @@ win_add(void)
    evas_object_smart_callback_add(win, "focused", _cb_focused, NULL);
    evas_object_smart_callback_add(win, "unfocused", _cb_unfocused, NULL);
 
-   o = evas_object_image_add(evas_object_evas_get(win));
-   snprintf(buf, sizeof(buf), "%s/images/rage.png", elm_app_data_dir_get());
-   evas_object_image_file_set(o, buf, NULL);
-   elm_win_icon_object_set(win, o);
-
    o = elm_layout_add(win);
    snprintf(buf, sizeof(buf), "%s/themes/default.edj", elm_app_data_dir_get());
    elm_layout_file_set(o, buf, "rage/core");
