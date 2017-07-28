@@ -25,7 +25,7 @@ _cb_fetched(void *data EINA_UNUSED)
         int w, h;
         evas_object_image_file_set(im, path, NULL);
         evas_object_image_size_get(im, &w, &h);
-        if ((w < 1) || (h < 0)) ecore_file_unlink(path);
+        if ((w < 1) || (h < 1)) ecore_file_unlink(path);
         free(path);
      }
    exit(0);
@@ -33,7 +33,7 @@ _cb_fetched(void *data EINA_UNUSED)
 
 static Evas_Object *
 _media_artwork(Evas_Object *obj, const char *path)
-{ 
+{
    emotion_object_file_set(obj, path);
    Evas_Object *art = emotion_file_meta_artwork_get(obj, path, EMOTION_ARTWORK_PREVIEW_IMAGE);
    if (!art) art = emotion_file_meta_artwork_get(obj, path, EMOTION_ARTWORK_IMAGE);
@@ -48,7 +48,7 @@ _cb_loaded(void *data, Evas_Object *obj, void *info EINA_UNUSED)
 
    if (vid_timeout) ecore_timer_del(vid_timeout);
    vid_timeout = NULL;
-   
+
    file = data;
    title = emotion_object_meta_info_get(obj, EMOTION_META_INFO_TRACK_TITLE);
    artist = emotion_object_meta_info_get(obj, EMOTION_META_INFO_TRACK_ARTIST);
@@ -90,6 +90,7 @@ _cb_loaded(void *data, Evas_Object *obj, void *info EINA_UNUSED)
      {
         char buf_base[PATH_MAX];
         char buf_file[PATH_MAX];
+        char buf_file2[PATH_MAX];
         unsigned int pos;
 
         vidimage = evas_object_image_filled_add(evas_object_evas_get(subwin));
@@ -101,7 +102,7 @@ _cb_loaded(void *data, Evas_Object *obj, void *info EINA_UNUSED)
         if (!efreet_cache_home_get()) exit(3);
         snprintf(buf_base, sizeof(buf_base), "%s/rage/thumb/%02x",
                  efreet_cache_home_get(), sum[0]);
-        snprintf(buf_file, sizeof(buf_base),
+        snprintf(buf_file, sizeof(buf_file),
                  "%s/%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x"
                  "%02x%02x%02x%02x%02x%02x%02x%02x.eet",
                  buf_base,
@@ -110,8 +111,9 @@ _cb_loaded(void *data, Evas_Object *obj, void *info EINA_UNUSED)
                  sum[8], sum[9], sum[10], sum[11],
                  sum[12], sum[13], sum[14], sum[15],
                  sum[16], sum[17], sum[18], sum[19]);
+        snprintf(buf_file2, sizeof(buf_file2), "%s.tmp", buf_file);
         if (!ecore_file_mkpath(buf_base)) exit(4);
-        ef = eet_open(buf_file, EET_FILE_MODE_WRITE);
+        ef = eet_open(buf_file2, EET_FILE_MODE_WRITE);
         if (!ef) exit(5);
         pos = 0;
         for (pos = 0; ; pos += incr)
@@ -125,16 +127,16 @@ _cb_loaded(void *data, Evas_Object *obj, void *info EINA_UNUSED)
              evas_object_image_size_get(vidimage, &iw, &ih);
              if ((iw <= 1) || (ih <= 1))
                {
-                  eet_close(ef);
-                  exit(6);
+                  if (pos <= 0) goto err;
+                  else goto ok;
                }
              w = 320;
              h = (ih * 320) / iw;
              if (h < 1) h = 1;
              if ((w > 4096) || (h > 4096))
                {
-                  eet_close(ef);
-                  exit(6);
+                  if (pos <= 0) goto err;
+                  else goto ok;
                }
              evas_object_resize(vidimage, w, h);
              evas_object_resize(subwin, w, h);
@@ -145,12 +147,19 @@ _cb_loaded(void *data, Evas_Object *obj, void *info EINA_UNUSED)
                                     0, 0, 70, EET_IMAGE_JPEG);
              else
                {
-                  eet_close(ef);
-                  exit(6);
+                  if (pos <= 0) goto err;
+                  else goto ok;
                }
              evas_object_image_data_set(image, pixels);
           }
+ok:
         eet_close(ef);
+        ecore_file_mv(buf_file2, buf_file);
+        exit(0);
+err:
+        eet_close(ef);
+        ecore_file_unlink(buf_file2);
+        exit(6);
      }
 }
 
@@ -169,7 +178,7 @@ _local_artwork_poster(Evas_Object *win, const char *path_to_file)
 
    emotion_object_init(em, NULL);
    emotion_object_file_set(em, path_to_file);
-   
+
    char *path = albumart_file_get(path_to_file);
    if (path)
      {
@@ -182,10 +191,14 @@ _local_artwork_poster(Evas_Object *win, const char *path_to_file)
        Evas_Object *artwork = _media_artwork(em, path_to_file);
        if (artwork)
          {
-            evas_object_image_save(artwork, path, NULL, NULL);
+            char *path2 = alloca(strlen(path) + 4 + 1);
+
+            sprintf(path2, "%s.tmp", path);
+            evas_object_image_save(artwork, path2, NULL, NULL);
             evas_object_del(artwork);
             free(path);
             /* This speeds things up */
+            ecore_file_mv(path2, path);
             exit(0);
          }
 
@@ -236,9 +249,9 @@ elm_main(int argc, char **argv)
           }
      }
 
-   if (poster && _local_artwork_poster(win, file)) 
+   if ((poster) && (_local_artwork_poster(win, file)))
      {
-       goto out; 
+        goto out;
      }
 
    if (emotion_object_init(vid, NULL))

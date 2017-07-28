@@ -17,6 +17,7 @@ static Eina_Strbuf *sb_result = NULL;
 static Eina_Bool fetch_image = EINA_FALSE;
 static char *fetchfile = NULL;
 static char *fetchpath = NULL;
+static char *fetchpath2 = NULL;
 static FILE *fout = NULL;
 static void (*_fetch_done) (void *data) = NULL;
 static void *_fetch_data = NULL;
@@ -113,10 +114,14 @@ _cb_http_complete(void *data EINA_UNUSED, int type EINA_UNUSED, void *event)
         fetch_image = EINA_FALSE;
         fclose(fout);
         fout = NULL;
-        if (ecore_file_size(fetchpath) < 0)
-          {
-             ecore_file_unlink(fetchpath);
-          }
+        if (ecore_file_size(fetchpath2) < 0)
+          ecore_file_unlink(fetchpath2);
+        else
+          ecore_file_mv(fetchpath2, fetchpath);
+        free(fetchpath);
+        free(fetchpath2);
+        fetchpath = NULL;
+        fetchpath2 = NULL;
      }
    else
      {
@@ -156,7 +161,7 @@ _cb_http_complete(void *data EINA_UNUSED, int type EINA_UNUSED, void *event)
                     }
                   if (ok)
                     {
-                       char *path;
+                       char *path, *path2;
 
                        ecore_con_url_free(fetch);
                        fetch = NULL;
@@ -164,13 +169,18 @@ _cb_http_complete(void *data EINA_UNUSED, int type EINA_UNUSED, void *event)
                        path = _thumbpath(fetchfile);
                        if (path)
                          {
-                            fout = fopen(path, "wb");
+                            path2 = alloca(strlen(path) + 4  + 1);
+                            sprintf(path2, "%s.tmo", path);
+
+                            fout = fopen(path2, "wb");
                             if (fout)
                               {
                                  fetch_image = EINA_TRUE;
                                  fetch = _fetch(sb);
                                  free(fetchpath);
+                                 free(fetchpath2);
                                  fetchpath = strdup(path);
+                                 fetchpath2 = strdup(path2);
                               }
                             free(path);
                          }
