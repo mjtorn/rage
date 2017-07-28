@@ -63,7 +63,7 @@ elm_main(int argc, char **argv)
                     "      previously given filename such as:\n"
                     "\n"
                     "        rage file.mp4 -sub subs.srt file2.mp4 ...\n"
-                    "    -r 0/90/180/270\n"
+                    "    -rot 0/90/180/270\n"
                     "      Rotate output by the given rotation\n"
                     );
              exit(0);
