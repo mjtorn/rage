@@ -275,6 +275,20 @@ win_video_insert(Evas_Object *win, const char *file)
 }
 
 void
+win_video_insert_append(Evas_Object *win, const char *file)
+{
+   Inf *inf = evas_object_data_get(win, "inf");
+   Winvid_Entry *vid;
+
+   vid = calloc(1, sizeof(Winvid_Entry));
+   vid->file = eina_stringshare_add(file);
+   vid->uri = efreet_uri_decode(vid->file);
+
+   inf->file_list = eina_list_append(inf->file_list, vid);
+   evas_object_data_set(win, "file_list", inf->file_list);
+}
+
+void
 win_video_free(Evas_Object *win)
 {
    Winvid_Entry *vid;
