@@ -47,15 +47,41 @@ collections {
          public pos_timer;
          public drag_is_down;
          public novideo;
+         public browser;
 
          public pos_timeout(val) {
-            set_int(pos_visible, 0);
             set_int(pos_timer, 0);
-            stop_program(PROGRAM:"posshow");
-            run_program(PROGRAM:"poshide");
-            if (!get_int(novideo)) {
+            if (get_int(pos_visible)) {
+               set_int(pos_visible, 0);
+               stop_program(PROGRAM:"poshide");
+               stop_program(PROGRAM:"posshow");
+               run_program(PROGRAM:"poshide");
+               stop_program(PROGRAM:"cbarhide");
                stop_program(PROGRAM:"cbarshow");
                run_program(PROGRAM:"cbarhide");
+            }
+         }
+         public pos_show() {
+            if (!get_int(browser)) {
+               new t;
+
+               if (!get_int(pos_visible)) {
+                  set_int(pos_visible, 1);
+                  stop_program(PROGRAM:"poshide");
+                  stop_program(PROGRAM:"posshow");
+                  run_program(PROGRAM:"posshow");
+                  stop_program(PROGRAM:"cbarhide");
+                  stop_program(PROGRAM:"cbarshow");
+                  run_program(PROGRAM:"cbarshow");
+               }
+               t = get_int(pos_timer);
+               if (t) cancel_timer(t);
+               if (!get_int(novideo)) {
+                  t = timer(5.0, "pos_timeout", 1);
+               } else {
+                  t = 0;
+               }
+               set_int(pos_timer, t);
             }
          }
       }
@@ -403,12 +429,14 @@ collections {
             signal: "state,novideo"; source: "rage";
             script {
                set_int(novideo, 1);
+               pos_show();
             }
          }
          program {
             signal: "state,video"; source: "rage";
             script {
                set_int(novideo, 0);
+               pos_show();
             }
          }
 
@@ -463,6 +491,17 @@ collections {
             target: "rage.browser";
          }
          program {
+            signal: "browser,state,visible"; source: "rage";
+            script {
+               set_int(browser, 1);
+               if (get_int(pos_visible)) {
+                  new t = get_int(pos_timer);
+                  if (t) cancel_timer(t);
+                  pos_timeout(0);
+               }
+            }
+         }
+         program {
             signal: "browser,state,hidden"; source: "rage";
             action: STATE_SET "default" 0.0;
             transition: ACCELERATE 0.5;
@@ -471,6 +510,13 @@ collections {
          }
          program { name: "browser_hidden";
             action: SIGNAL_EMIT "browser,state,hidden,finished" "rage";
+            after: "browser_hidden2";
+         }
+         program { name: "browser_hidden2";
+            script {
+               set_int(browser, 0);
+               pos_show();
+            }
          }
 
          part { name: "rage.list"; type: SWALLOW;
@@ -1615,24 +1661,10 @@ collections {
                color: 0 0 0 0;
             }
          }
-         program { name: "move1";
+         program { // mouse moves around causing control bar to show until idle
             signal: "mouse,move"; source: "event";
             script {
-               new t;
-
-               if (!get_int(pos_visible)) {
-                  stop_program(PROGRAM:"poshide");
-                  run_program(PROGRAM:"posshow");
-                  if (!get_int(novideo)) {
-                     stop_program(PROGRAM:"cbarhide");
-                     run_program(PROGRAM:"cbarshow");
-                  }
-                  set_int(pos_visible, 1);
-               }
-               t = get_int(pos_timer);
-               if (t) cancel_timer(t);
-               t = timer(5.0, "pos_timeout", 1);
-               set_int(pos_timer, t);
+               pos_show();
             }
          }
          program { name: "posshow";

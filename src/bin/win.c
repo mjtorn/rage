@@ -129,6 +129,7 @@ _cb_mouse_down(void *data, Evas *evas EINA_UNUSED, Evas_Object *obj EINA_UNUSED,
    Inf *inf = evas_object_data_get(data, "inf");
 
    if (!inf) return;
+   if (browser_visible()) return;
    if (ev->button == 3)
      {
         elm_layout_signal_emit(inf->lay, "about,show", "rage");

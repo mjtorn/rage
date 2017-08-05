@@ -892,6 +892,8 @@ _cb_key_down(void *data, Evas *evas EINA_UNUSED, Evas_Object *obj EINA_UNUSED, v
 {
    Evas_Event_Key_Down *ev = event_info;
    Evas_Object *win = data;
+
+   printf("brow %s\n", ev->key);
    if ((!strcmp(ev->key, "Left")) ||
        (!strcmp(ev->key, "bracketleft")))
      {
@@ -903,16 +905,22 @@ _cb_key_down(void *data, Evas *evas EINA_UNUSED, Evas_Object *obj EINA_UNUSED, v
         _sel_go(win, dir_entry, 1, 0);
      }
    else if ((!strcmp(ev->key, "Up")) ||
-            (!strcmp(ev->key, "Prior")) ||
             (!strcmp(ev->key, "XF86AudioPrev")))
      {
         _sel_go(win, dir_entry, 0, -1);
      }
+   else if ((!strcmp(ev->key, "Prior")))
+     {
+        _sel_go(win, dir_entry, 0, -10);
+     }
    else if ((!strcmp(ev->key, "Down")) ||
-            (!strcmp(ev->key, "Next")) ||
             (!strcmp(ev->key, "XF86AudioNext")))
      {
         _sel_go(win, dir_entry, 0, 1);
+     }
+   else if ((!strcmp(ev->key, "Next")))
+     {
+        _sel_go(win, dir_entry, 0, 10);
      }
    else if ((!strcmp(ev->key, "space")) ||
             (!strcmp(ev->key, "Pause")) ||
@@ -930,6 +938,24 @@ _cb_key_down(void *data, Evas *evas EINA_UNUSED, Evas_Object *obj EINA_UNUSED, v
         browser_hide(win);
      }
    else key_handle(win, ev);
+   elm_object_focus_set(bt, EINA_TRUE);
+}
+
+static Ecore_Timer *focus_timer = NULL;
+
+static Eina_Bool
+_browser_focus_timer_cb(void *data)
+{
+   focus_timer = NULL;
+   elm_object_focus_set(data, EINA_TRUE);
+   return EINA_FALSE;
+}
+
+Eina_Bool
+browser_visible(void)
+{
+   if (bx) return EINA_TRUE;
+   return EINA_FALSE;
 }
 
 void
@@ -968,9 +994,11 @@ browser_show(Evas_Object *win)
         elm_win_resize_object_add(win, bt);
         evas_object_lower(bt);
         evas_object_show(bt);
-        elm_object_focus_set(bt, EINA_TRUE);
         evas_object_event_callback_add(bt, EVAS_CALLBACK_KEY_DOWN,
                                        _cb_key_down, win);
+
+        if (focus_timer) ecore_timer_del(focus_timer);
+        focus_timer = ecore_timer_add(0.7, _browser_focus_timer_cb, bt);
      }
    elm_layout_signal_emit(inf->lay, "browser,state,visible", "rage");
 }
@@ -998,6 +1026,8 @@ browser_hide(Evas_Object *win)
    Inf *inf = evas_object_data_get(win, "inf");
 
    if (!bx) return;
+   if (focus_timer) ecore_timer_del(focus_timer);
+   focus_timer = NULL;
    elm_layout_signal_callback_add(inf->lay, "browser,state,hidden,finished", "rage",
                                   _cb_hidden, win);
    elm_layout_signal_emit(inf->lay, "browser,state,hidden", "rage");
