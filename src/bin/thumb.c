@@ -191,15 +191,18 @@ _local_artwork_poster(Evas_Object *win, const char *path_to_file)
        Evas_Object *artwork = _media_artwork(em, path_to_file);
        if (artwork)
          {
-            char *path2 = alloca(strlen(path) + 4 + 1);
-
-            sprintf(path2, "%s.tmp", path);
-            evas_object_image_save(artwork, path2, NULL, NULL);
-            evas_object_del(artwork);
-            free(path);
-            /* This speeds things up */
-            ecore_file_mv(path2, path);
-            exit(0);
+            const char *ext = strrchr(path, '.');
+            if (ext && (ext[0] && ext[1]))
+              {
+                 char *path2 = alloca(strlen(path) + 4 + strlen(ext) + 1);
+                 sprintf(path2, "%s.tmp%s", path, ext);
+                 evas_object_image_save(artwork, path2, NULL, NULL);
+                 evas_object_del(artwork);
+                 /* This speeds things up */
+                 ecore_file_mv(path2, path);
+                 free(path);
+                 exit(0);
+              }
          }
 
        free(path);
