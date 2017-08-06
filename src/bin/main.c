@@ -93,14 +93,15 @@ _files_recursion(Ecore_Thread *thread, const char *path, Recursion_Data *recursi
 }
 
 static void
-_cb_start_recursion(void *data, Ecore_Thread *thread)
+_cb_start_recursion(void *data, Ecore_Thread *thread EINA_UNUSED)
 {
    Recursion_Data *recursion = data;
 
    _files_recursion(thread, recursion->realpath, recursion);
 }
 
-static void _cb_end_recursion(void *data, Ecore_Thread *thread)
+static void
+_cb_end_recursion(void *data, Ecore_Thread *thread EINA_UNUSED)
 {
    Recursion_Data *recursion = data;
 
@@ -108,7 +109,8 @@ static void _cb_end_recursion(void *data, Ecore_Thread *thread)
    free(recursion);
 }
 
-static void _cb_feedback_recursion(void *data, Ecore_Thread *thread, void *msg)
+static void
+_cb_feedback_recursion(void *data, Ecore_Thread *thread EINA_UNUSED, void *msg)
 {
    Recursion_Data *recursion;
    Eina_List *list;
