@@ -89,8 +89,8 @@ static void
 _busy_pending_del(Pending *p)
 {
    eina_stringshare_del(p->realpath);
-   free(p);
    busy_thumbs = eina_list_remove(busy_thumbs, p);
+   free(p);
 }
 
 static Eina_Bool
