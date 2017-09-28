@@ -174,6 +174,7 @@ elm_main(int argc, char **argv)
    Recursion_Data *recursion = NULL;
    Winvid_Entry *vid = NULL;
    Eina_List *list = NULL;
+
    elm_need_efreet();
    config_init();
    config = config_get();
@@ -324,7 +325,7 @@ elm_main(int argc, char **argv)
              free(vid);
           }
      }
-   else if (recursion)
+   if (recursion)
      {
         recursion->win = win;
         ecore_thread_feedback_run(_cb_start_recursion, _cb_feedback_recursion,
