@@ -628,6 +628,7 @@ win_add(void)
 
    // a dummy button to collect key events and have focus
    o = elm_button_add(win);
+   inf->focus = o;
    elm_object_focus_highlight_style_set(o, "blank");
    evas_object_size_hint_weight_set(o, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
    elm_win_resize_object_add(win, o);
@@ -637,6 +638,14 @@ win_add(void)
    evas_object_event_callback_add(o, EVAS_CALLBACK_KEY_DOWN,
                                   _cb_key_down, win);
    return win;
+}
+
+void
+win_focus(Evas_Object *win)
+{
+   Inf *inf = evas_object_data_get(win, "inf");
+
+   elm_object_focus_set(inf->focus, EINA_TRUE);
 }
 
 void

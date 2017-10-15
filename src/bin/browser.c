@@ -56,6 +56,7 @@ static Evas_Object *sc, *bt;
 static Ecore_Thread *fill_thread = NULL;
 static Entry *dir_entry = NULL;
 static Eina_List *entries = NULL;
+static Ecore_Timer *_browser_hide_focus_restore_timer = NULL;
 static Eina_Semaphore step_sema;
 
 static void _sel_go(Evas_Object *win EINA_UNUSED, Entry *base_entry, int x, int y);
@@ -893,7 +894,6 @@ _cb_key_down(void *data, Evas *evas EINA_UNUSED, Evas_Object *obj EINA_UNUSED, v
    Evas_Event_Key_Down *ev = event_info;
    Evas_Object *win = data;
 
-   printf("brow %s\n", ev->key);
    if ((!strcmp(ev->key, "Left")) ||
        (!strcmp(ev->key, "bracketleft")))
      {
@@ -963,6 +963,8 @@ browser_show(Evas_Object *win)
 {
    Inf *inf = evas_object_data_get(win, "inf");
 
+   if (_browser_hide_focus_restore_timer) ecore_timer_del(_browser_hide_focus_restore_timer);
+   _browser_hide_focus_restore_timer = NULL;
    if (!bx)
      {
         bx = elm_box_add(win);
@@ -1020,6 +1022,14 @@ _cb_hidden(void *data, Evas_Object *obj, const char *sig EINA_UNUSED, const char
    elm_object_focus_next(data, ELM_FOCUS_PREVIOUS);
 }
 
+static Eina_Bool
+_browser_hide_focus_restore_cb(void *data)
+{
+   win_focus(data);
+   _browser_hide_focus_restore_timer = NULL;
+   return EINA_FALSE;
+}
+
 void
 browser_hide(Evas_Object *win)
 {
@@ -1031,6 +1041,8 @@ browser_hide(Evas_Object *win)
    elm_layout_signal_callback_add(inf->lay, "browser,state,hidden,finished", "rage",
                                   _cb_hidden, win);
    elm_layout_signal_emit(inf->lay, "browser,state,hidden", "rage");
+   if (_browser_hide_focus_restore_timer) ecore_timer_del(_browser_hide_focus_restore_timer);
+   _browser_hide_focus_restore_timer = ecore_timer_add(0.2, _browser_hide_focus_restore_cb, win);
 }
 
 void
