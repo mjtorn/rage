@@ -5,6 +5,7 @@
 #include "winlist.h"
 #include "browser.h"
 #include "config.h"
+#include "mpris.h"
 
 #define DEPTH_DEFAULT 99
 
@@ -344,9 +345,12 @@ elm_main(int argc, char **argv)
         inf->show_timeout = ecore_timer_add(10.0, _cb_show_timeout, win);
      }
 
+   mpris_init(win);
+
    elm_run();
 
 end:
+   mpris_shutdown();
    config_shutdown();
    return 0;
 }

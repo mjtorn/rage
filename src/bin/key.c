@@ -6,6 +6,7 @@
 #include "key.h"
 #include "winlist.h"
 #include "browser.h"
+#include "mpris.h"
 
 void
 key_handle(Evas_Object *win, Evas_Event_Key_Down *ev)
@@ -80,6 +81,7 @@ key_handle(Evas_Object *win, Evas_Event_Key_Down *ev)
              if (vol > 1.0) vol = 1.0;
              video_volume_set(inf->vid, vol);
              elm_layout_signal_emit(inf->lay, "action,volume_up", "rage");
+             mpris_volume_change();
           }
      }
    else if ((!strcmp(ev->key, "Down")) ||
@@ -95,6 +97,7 @@ key_handle(Evas_Object *win, Evas_Event_Key_Down *ev)
              if (vol < 0.0) vol = 0.0;
              video_volume_set(inf->vid, vol);
              elm_layout_signal_emit(inf->lay, "action,volume_down", "rage");
+             mpris_volume_change();
           }
      }
    else if ((!strcmp(ev->key, "space")) ||
@@ -116,11 +119,13 @@ key_handle(Evas_Object *win, Evas_Event_Key_Down *ev)
         elm_layout_signal_emit(inf->lay, "state,default", "rage");
         if (inf->browse_mode) browser_show(win);
         else evas_object_del(win);
+        mpris_playback_status_change();
      }
    else if (!strcmp(ev->keyname, "c"))
      {
         video_stop(inf->vid);
         elm_layout_signal_emit(inf->lay, "action,stop", "rage");
+        mpris_playback_status_change();
         win_video_free(win);
      }
    else if ((!strcmp(ev->key, "Prior")) ||
@@ -161,6 +166,7 @@ key_handle(Evas_Object *win, Evas_Event_Key_Down *ev)
           elm_layout_signal_emit(inf->lay, "action,mute", "rage");
         else
           elm_layout_signal_emit(inf->lay, "action,unmute", "rage");
+        mpris_volume_change();
      }
    else if (!strcmp(ev->keyname, "l"))
      {
@@ -170,6 +176,7 @@ key_handle(Evas_Object *win, Evas_Event_Key_Down *ev)
           elm_layout_signal_emit(inf->lay, "action,loop", "rage");
         else
           elm_layout_signal_emit(inf->lay, "action,sequential", "rage");
+        mpris_loop_status_change();
      }
    else if ((!strcmp(ev->keyname, "q")) ||
             (!strcmp(ev->key, "Escape")))

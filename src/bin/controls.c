@@ -4,6 +4,7 @@
 #include "video.h"
 #include "controls.h"
 #include "winlist.h"
+#include "mpris.h"
 
 static void
 _cb_drag(void *data, Evas_Object *obj EINA_UNUSED, const char *emission EINA_UNUSED, const char *source EINA_UNUSED)
@@ -191,4 +192,5 @@ controls_update(Evas_Object *lay, Evas_Object *vid)
    else p = 0.0;
    edje_object_part_drag_value_set(elm_layout_edje_get(lay),
                                    "rage.dragable.pos", p, 0.0);
+   mpris_position_change(video_position_get(vid));
 }

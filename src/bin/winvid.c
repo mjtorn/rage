@@ -6,6 +6,7 @@
 #include "winvid.h"
 #include "videothumb.h"
 #include "browser.h"
+#include "mpris.h"
 
 static void
 _cb_resize(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUSED)
@@ -28,6 +29,7 @@ _cb_stop_next(void *data)
    if (!win_video_next(data))
      {
         elm_layout_signal_emit(inf->lay, "state,default", "rage");
+        mpris_playback_status_change();
      }
 }
 
@@ -46,6 +48,7 @@ _cb_stop(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUSED)
         if (inf->browse_mode) browser_show(data);
         else elm_exit();
      }
+   mpris_playback_status_change();
 }
 
 static void
@@ -104,6 +107,7 @@ _cb_play_start(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUSED
    win_frame_decode(data);
    win_title_update(data);
    inf->playing = EINA_TRUE;
+   mpris_playback_status_change();
 }
 
 static void
@@ -121,6 +125,7 @@ _cb_play_finish(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUSE
         win_show(data, mw, mh);
      }
    inf->playing = EINA_FALSE;
+   mpris_playback_status_change();
 }
 
 static void

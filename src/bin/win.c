@@ -10,6 +10,7 @@
 #include "gesture.h"
 #include "albumart.h"
 #include "browser.h"
+#include "mpris.h"
 
 static void
 _cb_fullscreen(void *data EINA_UNUSED, Evas_Object *obj, void *event EINA_UNUSED)
@@ -19,6 +20,7 @@ _cb_fullscreen(void *data EINA_UNUSED, Evas_Object *obj, void *event EINA_UNUSED
    elm_win_noblank_set(obj, EINA_TRUE);
    evas_object_show(inf->event2);
    browser_fullscreen(obj, EINA_TRUE);
+   mpris_fullscreen_change();
 }
 
 static void
@@ -31,6 +33,7 @@ _cb_unfullscreen(void *data EINA_UNUSED, Evas_Object *obj, void *event EINA_UNUS
         elm_win_noblank_set(obj, EINA_FALSE);
         evas_object_hide(inf->event2);
         browser_fullscreen(obj, EINA_FALSE);
+        mpris_fullscreen_change();
      }
 }
 
@@ -311,6 +314,7 @@ win_do_play(Evas_Object *win)
    Inf *inf = evas_object_data_get(win, "inf");
    video_play_set(inf->vid, EINA_TRUE);
    elm_layout_signal_emit(inf->lay, "action,play", "rage");
+   mpris_playback_status_change();
 }
 
 void
@@ -320,6 +324,7 @@ win_do_pause(Evas_Object *win)
 
    video_play_set(inf->vid, EINA_FALSE);
    elm_layout_signal_emit(inf->lay, "action,pause", "rage");
+   mpris_playback_status_change();
 }
 
 void
@@ -332,6 +337,7 @@ win_do_play_pause(Evas_Object *win)
      elm_layout_signal_emit(inf->lay, "action,play", "rage");
    else
      elm_layout_signal_emit(inf->lay, "action,pause", "rage");
+   mpris_playback_status_change();
 }
 
 void
@@ -413,6 +419,7 @@ _restart_vid(Evas_Object *win, Evas_Object *lay, Evas_Object *vid, const char *f
    elm_layout_signal_emit(lay, "action,newvid", "rage");
    win_aspect_adjust(win);
    win_title_update(win);
+   mpris_playback_status_change();
 }
 
 void

@@ -13,7 +13,8 @@ executable('rage', [
     'sha1.c',       'sha1.h',
     'videothumb.c', 'videothumb.h',
     'albumart.c',   'albumart.h',
-    'browser.c',    'browser.h'
+    'browser.c',    'browser.h',
+    'mpris.c',      'mpris.h'
   ],
   include_directories: inc,
   dependencies       : deps,
