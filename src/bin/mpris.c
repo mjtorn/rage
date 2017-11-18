@@ -17,9 +17,11 @@ static Eldbus_Service_Interface *iface_player = NULL;
 #define PATH    "/org/mpris/MediaPlayer2"
 
 static void
-_cb_name_request(void *data EINA_UNUSED, const Eldbus_Message *msg,
+_cb_name_request(void *data EINA_UNUSED, const Eldbus_Message *msg EINA_UNUSED,
                  Eldbus_Pending *pending EINA_UNUSED)
 {
+   return;
+/*
    unsigned int flag;
 
    if (eldbus_message_error_get(msg, NULL, NULL))
@@ -34,10 +36,23 @@ _cb_name_request(void *data EINA_UNUSED, const Eldbus_Message *msg,
      }
    if (!(flag & ELDBUS_NAME_REQUEST_REPLY_PRIMARY_OWNER))
      fprintf(stderr, "Name already in use\n");
+ */
 }
 
-/*
+/* Implementing almost all of:
+ * 
 https://specifications.freedesktop.org/mpris-spec/latest/Player_Interface.html
+ * 
+ * Not implemented:
+ * Tracklist objects
+ * Metadata
+ * SetPosition (requires Tracklist objects)
+ * 
+ * In rage generally and here:
+ * 
+ * Loop playlist vs just loop current
+ * Shuffle play
+ * Playback rate
  */
 
 #define API(fn) \
@@ -106,6 +121,7 @@ GETTER(can_raise)
 
 GETTER(has_track_list)
 {
+   // XXX: Implement Tracklist
    eldbus_message_iter_arguments_append(iter, "b", EINA_FALSE);
    return EINA_TRUE;
 }
@@ -113,7 +129,6 @@ GETTER(has_track_list)
 GETTER(identity)
 {
    char buf[] = "Rage";
-
    eldbus_message_iter_arguments_append(iter, "s", buf);
    return EINA_TRUE;
 }
@@ -130,11 +145,383 @@ GETTER(supported_mime_types)
    Eldbus_Message_Iter *array = NULL;
 
    eldbus_message_iter_arguments_append(iter, "as", &array);
-   eldbus_message_iter_arguments_append(array, "s", "application/ogg");
-   eldbus_message_iter_arguments_append(array, "s", "video/mpeg");
-   eldbus_message_iter_arguments_append(array, "s", "audio/*");
-   eldbus_message_iter_arguments_append(array, "s", "video/*");
-   eldbus_message_iter_arguments_append(array, "s", "item3");
+#define A(s) eldbus_message_iter_arguments_append(array, "s", s)
+   A("application/ogg");
+
+   A("audio/1d-interleaved-parityfec");
+   A("audio/32kadpcm");
+   A("audio/3gpp");
+   A("audio/3gpp2");
+   A("audio/AMR");
+   A("audio/AMR-WB");
+   A("audio/ATRAC-ADVANCED-LOSSLESS");
+   A("audio/ATRAC-X");
+   A("audio/ATRAC3");
+   A("audio/BV16");
+   A("audio/BV32");
+   A("audio/CN");
+   A("audio/DAT12");
+   A("audio/DV");
+   A("audio/DVI4");
+   A("audio/EVRC");
+   A("audio/EVRC-QCP");
+   A("audio/EVRC0");
+   A("audio/EVRC1");
+   A("audio/EVRCB");
+   A("audio/EVRCB0");
+   A("audio/EVRCB1");
+   A("audio/EVRCWB");
+   A("audio/EVRCWB0");
+   A("audio/EVRCWB1");
+   A("audio/G719");
+   A("audio/G722");
+   A("audio/G7221");
+   A("audio/G723");
+   A("audio/G726-16");
+   A("audio/G726-24");
+   A("audio/G726-32");
+   A("audio/G726-40");
+   A("audio/G728");
+   A("audio/G729");
+   A("audio/G7291");
+   A("audio/G729D");
+   A("audio/G729E");
+   A("audio/GSM");
+   A("audio/GSM-EFR");
+   A("audio/GSM-HR-08");
+   A("audio/L16");
+   A("audio/L20");
+   A("audio/L24");
+   A("audio/L8");
+   A("audio/LPC");
+   A("audio/MP4A-LATM");
+   A("audio/MPA");
+   A("audio/PCMA");
+   A("audio/PCMA-WB");
+   A("audio/PCMU");
+   A("audio/PCMU-WB");
+   A("audio/QCELP");
+   A("audio/RED");
+   A("audio/SMV");
+   A("audio/SMV-QCP");
+   A("audio/SMV0");
+   A("audio/UEMCLIP");
+   A("audio/VDVI");
+   A("audio/VMR-WB");
+   A("audio/aac");
+   A("audio/ac3");
+   A("audio/adpcm");
+   A("audio/amr");
+   A("audio/amr-wb");
+   A("audio/amr-wb+");
+   A("audio/annodex");
+   A("audio/asc");
+   A("audio/basic");
+   A("audio/bv16");
+   A("audio/bv32");
+   A("audio/clearmode");
+   A("audio/cn");
+   A("audio/csound");
+   A("audio/dat12");
+   A("audio/dls");
+   A("audio/dsr-es201108");
+   A("audio/dsr-es202050");
+   A("audio/dsr-es202211");
+   A("audio/dsr-es202212");
+   A("audio/dvi4");
+   A("audio/eac3");
+   A("audio/evrc");
+   A("audio/evrc-qcp");
+   A("audio/evrc0");
+   A("audio/evrc1");
+   A("audio/evrcb");
+   A("audio/evrcb0");
+   A("audio/evrcb1");
+   A("audio/evrcwb");
+   A("audio/evrcwb0");
+   A("audio/evrcwb1");
+   A("audio/example");
+   A("audio/flac");
+   A("audio/fwdred");
+   A("audio/g.722.1");
+   A("audio/g719");
+   A("audio/g722");
+   A("audio/g7221");
+   A("audio/g723");
+   A("audio/g726-16");
+   A("audio/g726-24");
+   A("audio/g726-32");
+   A("audio/g726-40");
+   A("audio/g728");
+   A("audio/g729");
+   A("audio/g7291");
+   A("audio/g729d");
+   A("audio/g729e");
+   A("audio/gsm");
+   A("audio/gsm-efr");
+   A("audio/iLBC");
+   A("audio/ilbc");
+   A("audio/ip-mr_v2.5");
+   A("audio/l16");
+   A("audio/l20");
+   A("audio/l24");
+   A("audio/l8");
+   A("audio/lpc");
+   A("audio/midi");
+   A("audio/mobile-xmf");
+   A("audio/mp2");
+   A("audio/mp4");
+   A("audio/mp4a-latm");
+   A("audio/mpa");
+   A("audio/mpa-robust");
+   A("audio/mpeg");
+   A("audio/mpeg4-generic");
+   A("audio/mpegurl");
+   A("audio/ogg");
+   A("audio/parityfec");
+   A("audio/pcma");
+   A("audio/pcma-wb");
+   A("audio/pcmu");
+   A("audio/pcmu-wb");
+   A("audio/prs.sid");
+   A("audio/qcelp");
+   A("audio/raptorfec");
+   A("audio/red");
+   A("audio/rtp-enc-aescm128");
+   A("audio/rtp-midi");
+   A("audio/rtx");
+   A("audio/s3m");
+   A("audio/silk");
+   A("audio/smv");
+   A("audio/smv-qcp");
+   A("audio/smv0");
+   A("audio/sp-midi");
+   A("audio/speex");
+   A("audio/t140c");
+   A("audio/t38");
+   A("audio/telephone-event");
+   A("audio/tone");
+   A("audio/ulpfec");
+   A("audio/vdvi");
+   A("audio/vmr-wb");
+   A("audio/vnd.3gpp.iufp");
+   A("audio/vnd.4SB");
+   A("audio/vnd.4sb");
+   A("audio/vnd.CELP");
+   A("audio/vnd.audiokoz");
+   A("audio/vnd.celp");
+   A("audio/vnd.cisco.nse");
+   A("audio/vnd.cmles.radio-events");
+   A("audio/vnd.cns.anp1");
+   A("audio/vnd.cns.inf1");
+   A("audio/vnd.dece.audio");
+   A("audio/vnd.digital-winds");
+   A("audio/vnd.dlna.adts");
+   A("audio/vnd.dolby.heaac.1");
+   A("audio/vnd.dolby.heaac.2");
+   A("audio/vnd.dolby.mlp");
+   A("audio/vnd.dolby.mps");
+   A("audio/vnd.dolby.pl2");
+   A("audio/vnd.dolby.pl2x");
+   A("audio/vnd.dolby.pl2z");
+   A("audio/vnd.dolby.pulse.1");
+   A("audio/vnd.dra");
+   A("audio/vnd.dts");
+   A("audio/vnd.dts.hd");
+   A("audio/vnd.dvb.file");
+   A("audio/vnd.everad.plj");
+   A("audio/vnd.hns.audio");
+   A("audio/vnd.lucent.voice");
+   A("audio/vnd.rn-realaudio");
+   A("audio/vnd.ms-playready.media.pya");
+   A("audio/vnd.nokia.mobile-xmf");
+   A("audio/vnd.nortel.vbk");
+   A("audio/vnd.nuera.ecelp4800");
+   A("audio/vnd.nuera.ecelp7470");
+   A("audio/vnd.nuera.ecelp9600");
+   A("audio/vnd.octel.sbc");
+   A("audio/vnd.qcelp");
+   A("audio/vnd.rhetorex.32kadpcm");
+   A("audio/vnd.rip");
+   A("audio/vnd.sealedmedia.softseal.mpeg");
+   A("audio/vnd.vmx.cvsd");
+   A("audio/vorbis");
+   A("audio/vorbis-config");
+   A("audio/webm");
+   A("audio/x-aac");
+   A("audio/x-adpcm");
+   A("audio/x-aifc");
+   A("audio/x-aiff");
+   A("audio/x-amzxml");
+   A("audio/x-ape");
+   A("audio/x-caf");
+   A("audio/x-flac");
+   A("audio/x-flac+ogg");
+   A("audio/x-gsm");
+   A("audio/x-iriver-pla");
+   A("audio/x-it");
+   A("audio/x-m4b");
+   A("audio/x-matroska");
+   A("audio/x-minipsf");
+   A("audio/x-mo3");
+   A("audio/x-mod");
+   A("audio/x-mpegurl");
+   A("audio/x-ms-asx");
+   A("audio/x-ms-wax");
+   A("audio/x-ms-wma");
+   A("audio/x-musepack");
+   A("audio/x-opus+ogg");
+   A("audio/x-pn-audibleaudio");
+   A("audio/x-pn-realaudio");
+   A("audio/x-pn-realaudio-plugin");
+   A("audio/x-psf");
+   A("audio/x-psflib");
+   A("audio/x-realaudio");
+   A("audio/x-riff");
+   A("audio/x-s3m");
+   A("audio/x-scpls");
+   A("audio/x-sd2");
+   A("audio/x-speex");
+   A("audio/x-speex+ogg");
+   A("audio/x-stm");
+   A("audio/x-tta");
+   A("audio/x-voc");
+   A("audio/x-vorbis+ogg");
+   A("audio/x-wav");
+   A("audio/x-wavpack");
+   A("audio/x-wavpack-correction");
+   A("audio/x-xi");
+   A("audio/x-xm");
+   A("audio/x-xmf");
+   A("audio/xm");
+
+   A("video/1d-interleaved-parityfec");
+   A("video/3gpp");
+   A("video/3gpp-tt");
+   A("video/3gpp2");
+   A("video/BMPEG");
+   A("video/BT656");
+   A("video/CelB");
+   A("video/DV");
+   A("video/H261");
+   A("video/H263");
+   A("video/H263-1998");
+   A("video/H263-2000");
+   A("video/H264");
+   A("video/H264-RCDO");
+   A("video/H264-SVC");
+   A("video/JPEG");
+   A("video/MJ2");
+   A("video/MP1S");
+   A("video/MP2P");
+   A("video/MP2T");
+   A("video/MP4V-ES");
+   A("video/MPV");
+   A("video/SMPTE292M");
+   A("video/annodex");
+   A("video/bmpeg");
+   A("video/bt656");
+   A("video/celb");
+   A("video/dl");
+   A("video/dv");
+   A("video/example");
+   A("video/fli");
+   A("video/gl");
+   A("video/h261");
+   A("video/h263");
+   A("video/h263-1998");
+   A("video/h263-2000");
+   A("video/h264");
+   A("video/isivideo");
+   A("video/jpeg");
+   A("video/jpeg2000");
+   A("video/jpm");
+   A("video/mj2");
+   A("video/mp1s");
+   A("video/mp2p");
+   A("video/mp2t");
+   A("video/mp4");
+   A("video/mp4v-es");
+   A("video/mpeg");
+   A("video/mpeg4-generic");
+   A("video/mpv");
+   A("video/nv");
+   A("video/ogg");
+   A("video/parityfec");
+   A("video/pointer");
+   A("video/quicktime");
+   A("video/raptorfec");
+   A("video/raw");
+   A("video/rtp-enc-aescm128");
+   A("video/rtx");
+   A("video/smpte292m");
+   A("video/ulpfec");
+   A("video/vc1");
+   A("video/vnd.CCTV");
+   A("video/vnd.cctv");
+   A("video/vnd.dece.hd");
+   A("video/vnd.dece.mobile");
+   A("video/vnd.dece.mp4");
+   A("video/vnd.dece.pd");
+   A("video/vnd.dece.sd");
+   A("video/vnd.dece.video");
+   A("video/vnd.directv.mpeg");
+   A("video/vnd.directv.mpeg-tts");
+   A("video/vnd.dlna.mpeg-tts");
+   A("video/vnd.dvb.file");
+   A("video/vnd.fvt");
+   A("video/vnd.hns.video");
+   A("video/vnd.iptvforum.1dparityfec-1010");
+   A("video/vnd.iptvforum.1dparityfec-2005");
+   A("video/vnd.iptvforum.2dparityfec-1010");
+   A("video/vnd.iptvforum.2dparityfec-2005");
+   A("video/vnd.iptvforum.ttsavc");
+   A("video/vnd.iptvforum.ttsmpeg2");
+   A("video/vnd.motorola.video");
+   A("video/vnd.motorola.videop");
+   A("video/vnd.mpegurl");
+   A("video/vnd.ms-playready.media.pyv");
+   A("video/vnd.mts");
+   A("video/vnd.nokia.interleaved-multimedia");
+   A("video/vnd.nokia.videovoip");
+   A("video/vnd.objectvideo");
+   A("video/vnd.rn-realvideo");
+   A("video/vnd.sealed.mpeg1");
+   A("video/vnd.sealed.mpeg4");
+   A("video/vnd.sealed.swf");
+   A("video/vnd.sealedmedia.softseal.mov");
+   A("video/vnd.uvvu.mp4");
+   A("video/vnd.vivo");
+   A("video/wavelet");
+   A("video/webm");
+   A("video/x-anim");
+   A("video/x-f4v");
+   A("video/x-fli");
+   A("video/x-flic");
+   A("video/x-flv");
+   A("video/x-javafx");
+   A("video/x-la-asf");
+   A("video/x-m4v");
+   A("video/x-matroska");
+   A("video/x-matroska-3d");
+   A("video/x-mng");
+   A("video/x-ms-asf");
+   A("video/x-ms-vob");
+   A("video/x-ms-wm");
+   A("video/x-ms-wmp");
+   A("video/x-ms-wmv");
+   A("video/x-ms-wmx");
+   A("video/x-ms-wvx");
+   A("video/x-msvideo");
+   A("video/x-nsv");
+   A("video/x-ogm+ogg");
+   A("video/x-sgi-movie");
+   A("video/x-smv");
+   A("video/x-theora+ogg");
+
+   // hope the other end understands globs?
+   A("video/*");
+   A("audio/*");
    eldbus_message_iter_container_close(iter, array);
    return EINA_TRUE;
 }
@@ -144,10 +531,10 @@ GETTER(supported_uri_schemes)
    Eldbus_Message_Iter *array = NULL;
 
    eldbus_message_iter_arguments_append(iter, "as", &array);
-   eldbus_message_iter_arguments_append(array, "s", "file");
-   eldbus_message_iter_arguments_append(array, "s", "http");
-   eldbus_message_iter_arguments_append(array, "s", "https");
-   eldbus_message_iter_arguments_append(array, "s", "rtsp");
+   A("file");
+   A("http");
+   A("https");
+   A("rtsp");
    eldbus_message_iter_container_close(iter, array);
    return EINA_TRUE;
 }
@@ -260,6 +647,7 @@ end:
 GETTER(rate)
 {
    double rate = 1.0;
+   // XXX: Implement playback rate
    eldbus_message_iter_arguments_append(iter, "d", rate);
    return EINA_TRUE;
 }
@@ -267,6 +655,7 @@ GETTER(rate)
 SETTER(rate)
 {
    double rate = 1.0;
+   // XXX: Implement playback rate
    eldbus_message_iter_arguments_get(iter, "d", &rate);
    return eldbus_message_method_return_new(msg);
 }
@@ -274,6 +663,7 @@ SETTER(rate)
 GETTER(shuffle)
 {
    Eina_Bool shuffle = EINA_FALSE;
+   // XXX: Implement shuffle mode
    eldbus_message_iter_arguments_append(iter, "b", shuffle);
    return EINA_TRUE;
 }
@@ -281,6 +671,7 @@ GETTER(shuffle)
 SETTER(shuffle)
 {
    Eina_Bool shuffle = EINA_FALSE;
+   // XXX: Implement shuffle mode
    fprintf(stderr, "Cannot set shuffle mode yet.\n");
    eldbus_message_iter_arguments_get(iter, "b", &shuffle);
    return eldbus_message_method_return_new(msg);
@@ -467,7 +858,6 @@ API(seek)
 
    if (!inf) goto end;
    if (browser_visible()) goto end;
-   // XXX: seek to pos in usec
    if (!eldbus_message_arguments_get(msg, "x", &pos))
      return eldbus_message_error_new(msg, "Invalid arguments", "Error getting position");
    video_position_set(inf->vid, (double)pos / 1000000.0);
@@ -475,18 +865,19 @@ end:
    return eldbus_message_method_return_new(msg);
 }
 
+/*
 API(set_position)
 {
    fprintf(stderr, "Cannot do set_position yet.\n");
    // XXX: get track + position
    return eldbus_message_method_return_new(msg);
 }
+*/
 
 API(open_uri)
 {
    char *uri = NULL;
 
-   // XXX: handle uri open
    if (!eldbus_message_arguments_get(msg, "s", &uri))
      return eldbus_message_error_new(msg, "Invalid arguments", "Error getting URI string");
    win_video_insert(mainwin, uri);
@@ -505,7 +896,7 @@ static const Eldbus_Method methods_player[] =
    METHOD("Stop", NULL, stop),
    METHOD("Play", NULL, play),
    METHOD("Seek", ELDBUS_ARGS({"x", "Offset"}), seek),
-   METHOD("SetPosition", ELDBUS_ARGS({ "ox", "Path,Position"}), set_position),
+//   METHOD("SetPosition", ELDBUS_ARGS({ "ox", "Path,Position"}), set_position),
    METHOD("OpenUri", ELDBUS_ARGS({"s", "Uri"}), open_uri),
    { 0 }
 };
@@ -515,7 +906,6 @@ static const Eldbus_Signal signals_player[] =
    [ 0 ] = { "Seeked", ELDBUS_ARGS({ "x", "Position" }), 0 },
    { 0 }
 };
-// XXX: Signal: Seeked (x: Position)
 
 static const Eldbus_Service_Interface_Desc desc_player = {
    "org.mpris.MediaPlayer2.Player", methods_player, signals_player, properties_player, NULL, NULL
