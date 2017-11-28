@@ -45,7 +45,6 @@ https://specifications.freedesktop.org/mpris-spec/latest/Player_Interface.html
  * 
  * Not implemented:
  * Tracklist objects
- * Metadata
  * SetPosition (requires Tracklist objects)
  * 
  * In rage generally and here:
@@ -677,14 +676,140 @@ SETTER(shuffle)
    return eldbus_message_method_return_new(msg);
 }
 
-/*
 GETTER(metadata)
 {
-   // XXX: return metadata
-   eldbus_message_iter_arguments_append(iter, "a{sv}", NULL);
+   Inf *inf = evas_object_data_get(mainwin, "inf");
+   Eldbus_Message_Iter *array = NULL, *entry = NULL, *var, *var2;
+   uint64_t len = 0;
+   char *buf = NULL;
+   const char *s;
+
+   // XXX: TODO:
+   // mpris:trackid
+
+   eldbus_message_iter_arguments_append(iter, "a{sv}", &array);
+
+   s = video_file_get(inf->vid);
+   if (s)
+     {
+        if (s[0] == '/')
+          {
+             buf = alloca(strlen(s) + sizeof("file://") + 1);
+             sprintf(buf, "file://%s", s);
+          }
+        else if (strstr(s, "://"))
+          {
+             buf = alloca(strlen(s) + 1);
+             strcpy(buf, s);
+          }
+        else
+          {
+             char cwd[PATH_MAX];
+
+             if (getcwd(cwd, sizeof(cwd) - 1))
+               {
+                  cwd[sizeof(cwd) - 1] = 0;
+                  buf = alloca(strlen(cwd) + 1 + strlen(s) + sizeof("file://") + 1);
+                  sprintf(buf, "file://%s/%s", cwd, s);
+               }
+          }
+     }
+   if (buf)
+     {
+        eldbus_message_iter_arguments_append(array, "{sv}", &entry);
+        eldbus_message_iter_basic_append(entry, 's', "xesam:url");
+        var = eldbus_message_iter_container_new(entry, 'v', "s");
+        eldbus_message_iter_basic_append(var, 's', buf);
+        eldbus_message_iter_container_close(entry, var);
+        eldbus_message_iter_container_close(array, entry);
+     }
+
+   s = video_artfile_get(inf->vid);
+   if (s)
+     {
+        buf = alloca(strlen(s) + sizeof("file://") + 1);
+        sprintf(buf, "file://%s", s);
+        eldbus_message_iter_arguments_append(array, "{sv}", &entry);
+        eldbus_message_iter_basic_append(entry, 's', "mpris:artUrl");
+        var = eldbus_message_iter_container_new(entry, 'v', "s");
+        eldbus_message_iter_basic_append(var, 's', buf);
+        eldbus_message_iter_container_close(entry, var);
+        eldbus_message_iter_container_close(array, entry);
+     }
+
+   s = video_title_get(inf->vid);
+   if (!s) s = video_meta_title_get(inf->vid);
+   if (s)
+     {
+        eldbus_message_iter_arguments_append(array, "{sv}", &entry);
+        eldbus_message_iter_basic_append(entry, 's', "xesam:title");
+        var = eldbus_message_iter_container_new(entry, 'v', "s");
+        eldbus_message_iter_basic_append(var, 's', buf);
+        eldbus_message_iter_container_close(entry, var);
+        eldbus_message_iter_container_close(array, entry);
+     }
+
+   s = video_meta_album_get(inf->vid);
+   if (s)
+     {
+        eldbus_message_iter_arguments_append(array, "{sv}", &entry);
+        eldbus_message_iter_basic_append(entry, 's', "xesam:album");
+        var = eldbus_message_iter_container_new(entry, 'v', "s");
+        eldbus_message_iter_basic_append(var, 's', buf);
+        eldbus_message_iter_container_close(entry, var);
+        eldbus_message_iter_container_close(array, entry);
+     }
+
+   s = video_meta_artist_get(inf->vid);
+   if (s)
+     {
+        eldbus_message_iter_arguments_append(array, "{sv}", &entry);
+        eldbus_message_iter_basic_append(entry, 's', "xesam:artist");
+        var = eldbus_message_iter_container_new(entry, 'v', "as");
+        eldbus_message_iter_arguments_append(var, "as", &var2);
+        eldbus_message_iter_basic_append(var2, 's', s);
+        eldbus_message_iter_container_close(var, var2);
+        eldbus_message_iter_container_close(entry, var);
+        eldbus_message_iter_container_close(array, entry);
+     }
+
+   s = video_meta_comment_get(inf->vid);
+   if (s)
+     {
+        eldbus_message_iter_arguments_append(array, "{sv}", &entry);
+        eldbus_message_iter_basic_append(entry, 's', "xesam:comment");
+        var = eldbus_message_iter_container_new(entry, 'v', "as");
+        eldbus_message_iter_arguments_append(var, "as", &var2);
+        eldbus_message_iter_basic_append(var2, 's', s);
+        eldbus_message_iter_container_close(var, var2);
+        eldbus_message_iter_container_close(entry, var);
+        eldbus_message_iter_container_close(array, entry);
+     }
+
+   s = video_meta_genre_get(inf->vid);
+   if (s)
+     {
+        eldbus_message_iter_arguments_append(array, "{sv}", &entry);
+        eldbus_message_iter_basic_append(entry, 's', "xesam:genre");
+        var = eldbus_message_iter_container_new(entry, 'v', "as");
+        eldbus_message_iter_arguments_append(var, "as", &var2);
+        eldbus_message_iter_basic_append(var2, 's', s);
+        eldbus_message_iter_container_close(var, var2);
+        eldbus_message_iter_container_close(entry, var);
+        eldbus_message_iter_container_close(array, entry);
+     }
+
+   len = video_length_get(inf->vid) * 1000000.0;
+   eldbus_message_iter_arguments_append(array, "{sv}", &entry);
+   eldbus_message_iter_basic_append(entry, 's', "mpris:length");
+   var = eldbus_message_iter_container_new(entry, 'v', "x");
+   eldbus_message_iter_basic_append(var, 'x', len);
+   eldbus_message_iter_container_close(entry, var);
+   eldbus_message_iter_container_close(array, entry);
+
+   eldbus_message_iter_container_close(iter, array);
    return EINA_TRUE;
 }
-*/
 
 GETTER(volume)
 {
@@ -782,7 +907,7 @@ static const Eldbus_Property properties_player[] =
    PROP_RW("LoopStatus",     "s", loop_status),
    PROP_RW("Rate",           "d", rate),
    PROP_RW("Shuffle",        "b", shuffle),
-//   PROP_RO("Metadata",       "a{sv}", metadata),
+   PROP_RO("Metadata",       "a{sv}", metadata),
    PROP_RW("Volume",         "d", volume),
    PROP_RO("Position",       "x", position),
    PROP_RO("MinimumRate",    "d", minimum_rate),
@@ -947,6 +1072,13 @@ mpris_position_change(double pos)
    if (!iface_player) return;
    eldbus_service_signal_emit(iface_player, 0, p);
    eldbus_service_property_changed(iface_player, "Position");
+}
+
+void
+mpris_metadata_change(void)
+{
+   if (!iface_player) return;
+   eldbus_service_property_changed(iface_player, "Metadata");
 }
 
 void

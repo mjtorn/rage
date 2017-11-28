@@ -26,7 +26,7 @@ void video_eject(Evas_Object *obj);
 int video_chapter_count(Evas_Object *obj);
 void video_chapter_set(Evas_Object *obj, int chapter);
 int video_chapter_get(Evas_Object *obj);
-const char * video_chapter_name_get(Evas_Object *obj, int chapter);
+const char *video_chapter_name_get(Evas_Object *obj, int chapter);
 void video_volume_set(Evas_Object *obj, double vol);
 double video_volume_get(Evas_Object *obj);
 Eina_Bool video_has_video_get(Evas_Object *obj);
@@ -56,5 +56,6 @@ const char *video_meta_year_get(Evas_Object *obj);
 const char *video_meta_genre_get(Evas_Object *obj);
 const char *video_meta_comment_get(Evas_Object *obj);
 void video_file_autosub_set(Evas_Object *obj, const char *file, const char *sub);
-Evas_Object * video_meta_artwork_get(Evas_Object *obj, const char *path, int type);
+Evas_Object *video_meta_artwork_get(Evas_Object *obj, const char *path, int type);
+const char *video_artfile_get(Evas_Object *obj);
 #endif

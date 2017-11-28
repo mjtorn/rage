@@ -9,6 +9,7 @@ static Evas_Object *vidimage = NULL;
 static Eet_File *ef = NULL;
 static Ecore_Timer *vid_timeout = NULL;
 static Eina_Bool is_audio = EINA_FALSE;
+static Eina_Bool is_video = EINA_FALSE;
 static Eina_Bool is_movie = EINA_FALSE;
 static int iw, ih, incr = 0;
 static Eina_Bool poster = 0;
@@ -78,11 +79,18 @@ _cb_loaded(void *data, Evas_Object *obj, void *info EINA_UNUSED)
             (len >= (60.0 * 60.0)) &&
             (len <= (5.0 * 60.0 * 60.0)))
           is_movie = EINA_TRUE;
+        if (poster == 2) is_video = EINA_TRUE;
      }
 
    if (is_movie)
      {
         albumart_find(file, NULL, NULL, title, "film poster",
+                      _cb_fetched, (void *)file);
+        return;
+     }
+   else if (is_video)
+     {
+        albumart_find(file, NULL, NULL, title, NULL,
                       _cb_fetched, (void *)file);
         return;
      }

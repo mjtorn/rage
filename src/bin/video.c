@@ -3,6 +3,7 @@
 #include "rage_config.h"
 #include "config.h"
 #include "albumart.h"
+#include "mpris.h"
 
 typedef struct _Video Video;
 
@@ -13,6 +14,10 @@ struct _Video
    Ecore_Timer *smooth_timer;
    Ecore_Job *restart_job;
    const char *file;
+   const char *realfile;
+   const char *artfile;
+   Ecore_Exe  *exe;
+   Ecore_Event_Handler *exe_handler;
    int w, h;
    int iw, ih, piw, pih, tw, th;
    int resizes;
@@ -33,6 +38,27 @@ static Evas_Smart_Class _parent_sc = EVAS_SMART_CLASS_INIT_NULL;
 
 static void _ob_resize(Evas_Object *obj, Evas_Coord x, Evas_Coord y, Evas_Coord w, Evas_Coord h);
 
+static Eina_Bool
+_cb_thumb_exe(void *data, int type EINA_UNUSED, void *event)
+{
+   Ecore_Exe_Event_Del *ev = event;
+   Video *sd = evas_object_smart_data_get(data);
+   char *path;
+
+   if (!sd) return EINA_TRUE;
+   if (ev->exe == sd->exe)
+     {
+        sd->exe = NULL;
+        if (ev->exit_code == 0)
+          {
+             path = albumart_file_get(sd->realfile);
+             eina_stringshare_replace(&(sd->artfile), path);
+             mpris_metadata_change();
+          }
+     }
+   return EINA_TRUE;
+}
+
 static void
 _art_check(Evas_Object *obj)
 {
@@ -50,28 +76,9 @@ _art_check(Evas_Object *obj)
      }
    if (sd->doart)
      {
-        char *thumb = NULL, *realfile = NULL;
+        char *thumb = NULL;
 
-        evas_object_show(sd->o_img);
-        if (!strncasecmp(sd->file, "file:/", 6))
-          {
-             Efreet_Uri *uri = efreet_uri_decode(sd->file);
-             if (uri)
-               {
-                  realfile = ecore_file_realpath(uri->path);
-                  efreet_uri_free(uri);
-               }
-          }
-        else if ((!strncasecmp(sd->file, "http:/", 6)) ||
-                 (!strncasecmp(sd->file, "https:/", 7)))
-          realfile = strdup(sd->file);
-        else
-          realfile = ecore_file_realpath(sd->file);
-        if (realfile)
-          {
-             thumb = albumart_file_get(realfile);
-             free(realfile);
-          }
+        thumb = albumart_file_get(sd->realfile);
         if (thumb)
           {
              Evas_Coord ox, oy, ow, oh;
@@ -83,12 +90,47 @@ _art_check(Evas_Object *obj)
                   evas_object_geometry_get(obj, &ox, &oy, &ow, &oh);
                   _ob_resize(obj, ox, oy, ow, oh);
                }
+             eina_stringshare_replace(&(sd->artfile), thumb);
+             mpris_metadata_change();
              free(thumb);
           }
      }
    else
      {
         evas_object_hide(sd->o_img);
+     }
+   if (!sd->artfile)
+     {
+        char buf[PATH_MAX];
+        const char *libdir;
+        char *s;
+
+        ecore_exe_run_priority_set(10);
+        s = ecore_file_escape_name(sd->realfile);
+        if (s)
+          {
+             libdir = elm_app_lib_dir_get();
+             if (libdir)
+               {
+                  if (!sd->exe_handler)
+                    sd->exe_handler = ecore_event_handler_add
+                      (ECORE_EXE_EVENT_DEL, _cb_thumb_exe, obj);
+                  snprintf(buf, sizeof(buf),
+                           "%s/rage/utils/rage_thumb %s 10000 %i",
+                           libdir, s, 2);
+                  if (sd->exe)
+                    {
+                       ecore_exe_kill(sd->exe);
+                       ecore_exe_free(sd->exe);
+                       sd->exe = NULL;
+                    }
+                  sd->exe = ecore_exe_pipe_run(buf,
+                                               ECORE_EXE_TERM_WITH_PARENT |
+                                               ECORE_EXE_NOT_LEADER,
+                                               obj);
+               }
+             free(s);
+          }
      }
 }
 
@@ -153,11 +195,13 @@ _cb_vid_stop(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUSED)
      {
         sd->restart_job = ecore_job_add(_cb_restart, data);
         evas_object_smart_callback_call(data, "loop", NULL);
+        mpris_metadata_change();
      }
    else
      {
         sd->restart_job = NULL;
         evas_object_smart_callback_call(data, "stop", NULL);
+        mpris_metadata_change();
      }
 }
 
@@ -184,6 +228,7 @@ _cb_open_done(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUSED)
    if (!sd) return;
    evas_object_smart_callback_call(data, "opened", NULL);
    _art_check(data);
+   mpris_metadata_change();
 }
 
 static void
@@ -200,6 +245,7 @@ _cb_length_change(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNU
    Video *sd = evas_object_smart_data_get(data);
    if (!sd) return;
    evas_object_smart_callback_call(data, "length", NULL);
+   mpris_metadata_change();
 }
 
 static void
@@ -208,6 +254,7 @@ _cb_title_change(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUS
    Video *sd = evas_object_smart_data_get(data);
    if (!sd) return;
    evas_object_smart_callback_call(data, "title", NULL);
+   mpris_metadata_change();
 }
 
 static void
@@ -216,6 +263,7 @@ _cb_audio_change(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUS
    Video *sd = evas_object_smart_data_get(data);
    if (!sd) return;
    evas_object_smart_callback_call(data, "audio", NULL);
+   mpris_metadata_change();
 }
 
 static void
@@ -224,6 +272,7 @@ _cb_channels_change(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_U
    Video *sd = evas_object_smart_data_get(data);
    if (!sd) return;
    evas_object_smart_callback_call(data, "channels", NULL);
+   mpris_metadata_change();
 }
 
 static void
@@ -232,6 +281,7 @@ _cb_play_start(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUSED
    Video *sd = evas_object_smart_data_get(data);
    if (!sd) return;
    evas_object_smart_callback_call(data, "play_start", NULL);
+   mpris_metadata_change();
 }
 
 static void
@@ -240,6 +290,7 @@ _cb_play_finish(void *data, Evas_Object *obj EINA_UNUSED, void *event EINA_UNUSE
    Video *sd = evas_object_smart_data_get(data);
    if (!sd) return;
    evas_object_smart_callback_call(data, "play_finish", NULL);
+   mpris_metadata_change();
 }
 
 static void
@@ -355,6 +406,8 @@ _smart_del(Evas_Object *obj)
    Video *sd = evas_object_smart_data_get(obj);
    if (!sd) return;
    if (sd->file) eina_stringshare_del(sd->file);
+   if (sd->realfile) eina_stringshare_del(sd->realfile);
+   if (sd->artfile) eina_stringshare_del(sd->artfile);
    if (sd->clip) evas_object_del(sd->clip);
    if (sd->o_vid) evas_object_del(sd->o_vid);
    if (sd->o_img) evas_object_del(sd->o_img);
@@ -362,6 +415,17 @@ _smart_del(Evas_Object *obj)
    if (sd->smooth_timer) sd->smooth_timer = ecore_timer_del(sd->smooth_timer);
    if (sd->restart_job) ecore_job_del(sd->restart_job);
 
+   if (sd->exe)
+     {
+        ecore_exe_kill(sd->exe);
+        ecore_exe_free(sd->exe);
+        sd->exe = NULL;
+     }
+   if (sd->exe_handler)
+     {
+        ecore_event_handler_del(sd->exe_handler);
+        sd->exe_handler = NULL;
+     }
    _parent_sc.del(obj);
 
    emotion_shutdown();
@@ -563,12 +627,30 @@ video_add(Evas_Object *parent)
 void
 video_file_set(Evas_Object *obj, const char *file)
 {
+   char *realfile = NULL;
    Video *sd = evas_object_smart_data_get(obj);
    if (!sd) return;
    evas_object_hide(sd->o_img);
    evas_object_hide(sd->o_vid);
    evas_object_hide(sd->clip);
    eina_stringshare_replace(&(sd->file), file);
+   if (!strncasecmp(sd->file, "file:/", 6))
+     {
+        Efreet_Uri *uri = efreet_uri_decode(sd->file);
+        if (uri)
+          {
+             realfile = ecore_file_realpath(uri->path);
+             efreet_uri_free(uri);
+          }
+     }
+   else if ((!strncasecmp(sd->file, "http:/", 6)) ||
+            (!strncasecmp(sd->file, "https:/", 7)))
+     realfile = strdup(sd->file);
+   else
+     realfile = ecore_file_realpath(sd->file);
+   eina_stringshare_replace(&(sd->realfile), realfile);
+   free(realfile);
+   eina_stringshare_replace(&(sd->artfile), NULL);
    emotion_object_file_set(sd->o_vid, sd->file);
    video_position_set(obj, 0.0);
    if ((sd->file) && (sd->doart))
@@ -1080,6 +1162,14 @@ video_file_autosub_set(Evas_Object *obj, const char *file, const char *sub)
      }
    else video_sub_file_set(obj, sub);
    video_file_set(obj, file);
+}
+
+const char *
+video_artfile_get(Evas_Object *obj)
+{
+   Video *sd = evas_object_smart_data_get(obj);
+   if (!sd) return NULL;
+   return sd->artfile;
 }
 
 // emotion_object_seekable_get
