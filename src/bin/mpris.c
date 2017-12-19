@@ -549,7 +549,7 @@ static const Eldbus_Property properties[] =
    PROP_RO("DesktopEntry",        "s",  desktop_entry),
    PROP_RO("SupportedMimeTypes",  "as", supported_mime_types),
    PROP_RO("SupportedUriSchemes", "as", supported_uri_schemes),
-   { 0 }
+   { NULL, NULL, NULL, NULL, 0 }
 };
 
 API(quit)
@@ -568,7 +568,7 @@ static const Eldbus_Method methods[] =
 {
    METHOD("Quit",  NULL, quit),
    METHOD("Raise", NULL, raize),
-   { 0 }
+   { NULL, NULL, NULL, NULL, 0 }
 };
 
 static const Eldbus_Service_Interface_Desc desc = {
@@ -918,7 +918,7 @@ static const Eldbus_Property properties_player[] =
    PROP_RO("CanPause",       "b", can_pause),
    PROP_RO("CanSeek",        "b", can_seek),
    PROP_RO("CanControl",     "b", can_control),
-   { 0 }
+   { NULL, NULL, NULL, NULL, 0 }
 };
 
 API(next)
@@ -1023,13 +1023,13 @@ static const Eldbus_Method methods_player[] =
    METHOD("Seek", ELDBUS_ARGS({"x", "Offset"}), seek),
 //   METHOD("SetPosition", ELDBUS_ARGS({ "ox", "Path,Position"}), set_position),
    METHOD("OpenUri", ELDBUS_ARGS({"s", "Uri"}), open_uri),
-   { 0 }
+   { NULL, NULL, NULL, NULL, 0 }
 };
 
 static const Eldbus_Signal signals_player[] =
 {
    [ 0 ] = { "Seeked", ELDBUS_ARGS({ "x", "Position" }), 0 },
-   { 0 }
+   { NULL, NULL, 0 }
 };
 
 static const Eldbus_Service_Interface_Desc desc_player = {
