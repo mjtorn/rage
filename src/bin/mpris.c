@@ -684,6 +684,7 @@ GETTER(metadata)
    char *buf = NULL;
    const char *s;
 
+   if (!inf) return EINA_FALSE;
    // XXX: TODO:
    // mpris:trackid
 
