@@ -1,4 +1,4 @@
-Rage 0.2.1
+Rage 0.3.0
 
 ******************************************************************************
 
@@ -25,6 +25,13 @@ You can tell it what media/video engine in emotion to ue via -e:
 You can also specify subtitle files with -sub:
 
   rage file.mp4 -sub mysubs.srt
+
+And of course you can run it with no arguments:
+
+  rage
+
+Which goes into "Browser mode" where Rage will index/list your
+~/Videos directory as a library (and subdirectories).
 
 This depends on video engine support to display them, so it may not
 work. Also rage will use a srt or sub format file if found,
